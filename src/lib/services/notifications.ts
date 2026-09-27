@@ -1,4 +1,5 @@
-import {
+﻿import {
+  QueryConstraint,
   Timestamp,
   addDoc,
   getDocs,
@@ -31,7 +32,7 @@ export async function fetchNotifications(
   userId: string,
   max?: number
 ): Promise<AppNotification[]> {
-  const constraints = [orderBy("createdAt", "desc")];
+  const constraints: QueryConstraint[] = [orderBy("createdAt", "desc")];
   if (typeof max === "number") constraints.push(fbLimit(max));
   const snap = await getDocs(
     query(notificationsCol(userId), ...constraints)
