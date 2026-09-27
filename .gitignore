@@ -8,4 +8,4 @@ build/
 .vercel
 .DS_Store
 *.tsbuildinfo
-next-env.d.ts
+next-env.d.tspackage-lock.json
