@@ -1,0 +1,173 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------------
+    // Helper functions
+    // ---------------------------------------------------------------------
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Firebase Auth sets `email_verified` in the token. Google sign-ins
+    // arrive verified; email/password users must click the link first.
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ---------------------------------------------------------------------
+    // users/{uid}
+    //   - Self can read own doc.
+    //   - Self can create own doc with role="student" and zeroed counters.
+    //   - Self can update own name/email only; role + counters are frozen.
+    //   - Admin can read/write any user (grading updates counters, role change).
+    // ---------------------------------------------------------------------
+    match /users/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+
+      allow create: if isSelf(uid)
+        && request.resource.data.role == "student"
+        && request.resource.data.allTimeStars == 0
+        && request.resource.data.allTimeSubmissionCount == 0
+        && request.resource.data.monthlyStars == {};
+
+      allow update: if isAdmin()
+        || (
+          isSelf(uid)
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.email == resource.data.email
+          && request.resource.data.allTimeStars == resource.data.allTimeStars
+          && request.resource.data.allTimeSubmissionCount == resource.data.allTimeSubmissionCount
+          && request.resource.data.monthlyStars == resource.data.monthlyStars
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // courses/{courseId}
+    //   - Public read (homepage + signed-out catalog).
+    //   - Admin-only write.
+    //   - Create: status must be "ongoing" or "soon" (never "completed").
+    //   - Update: once "completed", status cannot change (one-way action).
+    // ---------------------------------------------------------------------
+    match /courses/{courseId} {
+      allow read: if true;
+
+      allow create: if isAdmin()
+        && request.resource.data.status in ["ongoing", "soon"];
+
+      allow update: if isAdmin()
+        && (
+          resource.data.status != "completed"
+          || request.resource.data.status == "completed"
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // enrollments/{enrollmentId}
+    //   - Doc ID is deterministic: `{userId}_{courseId}`.
+    //   - Student creates only for themselves, only when email-verified.
+    //   - Read: self only, or admin.
+    //   - Immutable after create (delete + recreate to change).
+    // ---------------------------------------------------------------------
+    match /enrollments/{enrollmentId} {
+      allow read: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isAdmin());
+
+      allow create: if isEmailVerified()
+        && request.resource.data.userId == request.auth.uid
+        && enrollmentId == request.resource.data.userId + "_" + request.resource.data.courseId;
+
+      allow update: if false;
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // assignments/{assignmentId}
+    //   - Read: any signed-in user (the UI scopes to enrolled courses anyway).
+    //   - Write: admin only.
+    //   - Create blocked if the parent course is already "completed" — mirrors
+    //     the service-side guard so the assignment list stays frozen.
+    // ---------------------------------------------------------------------
+    match /assignments/{assignmentId} {
+      allow read: if isSignedIn();
+
+      allow create: if isAdmin()
+        && get(/databases/$(database)/documents/courses/$(request.resource.data.courseId)).data.status != "completed";
+
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // submissions/{submissionId}
+    //   - Doc ID is deterministic: `{assignmentId}_{userId}`. That single
+    //     invariant enforces "one submission per student per assignment"
+    //     with a plain !exists() check — no query needed.
+    //   - Create: self, email-verified, locked=true, grading=null.
+    //   - Update: admin only (grading). Student can never edit → no resubmit.
+    //   - Delete: admin only (cascade + prune).
+    // ---------------------------------------------------------------------
+    match /submissions/{submissionId} {
+      allow read: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isAdmin());
+
+      allow create: if isEmailVerified()
+        && request.resource.data.userId == request.auth.uid
+        && submissionId == request.resource.data.assignmentId + "_" + request.resource.data.userId
+        && request.resource.data.locked == true
+        && request.resource.data.grading == null
+        && request.resource.data.gradedAt == null;
+
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // notifications/{userId}/items/{notificationId}
+    //   - Read: owner or admin.
+    //   - Create: admin only (grading, new assignment, new course).
+    //   - Update: owner may only flip `read`; admin may do anything.
+    // ---------------------------------------------------------------------
+    match /notifications/{userId}/items/{notificationId} {
+      allow read: if isSelf(userId) || isAdmin();
+
+      allow create: if isAdmin()
+        && request.resource.data.read == false;
+
+      allow update: if (
+        isSelf(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["read"])
+      ) || isAdmin();
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // settings/{docId}
+    //   - Public read — the WhatsApp number on the public footer is
+    //     available to signed-out visitors.
+    //   - Admin-only write.
+    // ---------------------------------------------------------------------
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Default: deny anything not explicitly matched above.
+  }
+}
