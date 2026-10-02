@@ -3,9 +3,11 @@ import OpenAI from "openai";
 import { fetchCourses } from "@/lib/services/courses";
 import { fetchSiteSettings } from "@/lib/services/settings";
 
+export const dynamic = "force-dynamic";
+
 // Initialize OpenAI client for Groq
 const openai = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY || "",
+  apiKey: process.env.GROQ_API_KEY || "dummy_key_for_build",
   baseURL: "https://api.groq.com/openai/v1",
 });
 

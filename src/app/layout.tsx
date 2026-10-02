@@ -19,10 +19,38 @@ const lexend = Lexend({
 
 export const metadata: Metadata = {
   title: {
-    default: `${SITE_NAME} — Programming, AI & Automation Courses`,
-    template: `%s · ${SITE_NAME}`,
+    default: `${SITE_NAME} | Learn Python, AI & Automation`,
+    template: `%s | ${SITE_NAME}`,
   },
-  description: SITE_DESCRIPTION,
+  description: "Join Auto AI Academy to learn Python, AI, and Automation for free. Complete courses, submit assignments, get AI help, and earn certificates.",
+  keywords: [
+    "Auto AI Academy", 
+    "Python course", 
+    "Python course Pakistan", 
+    "Free AI courses", 
+    "Programming in Urdu", 
+    "Learn Automation", 
+    "Online Coding Courses",
+    "Muzammil Irshad",
+    "Best Python Course"
+  ],
+  openGraph: {
+    title: "Auto AI Academy | Learn Python & AI",
+    description: "Premium platform for practical tech education. Learn Python, AI, and automation completely free.",
+    url: "https://auto-ai-academy-website.vercel.app/",
+    siteName: "Auto AI Academy",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Auto AI Academy | Learn Python & AI",
+    description: "Premium platform for practical tech education. Learn Python, AI, and automation completely free.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  }
 };
 
 import { FloatingAITutor } from "@/components/layout/FloatingAITutor";
