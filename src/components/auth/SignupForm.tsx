@@ -129,11 +129,11 @@ export function SignupForm() {
         Create account
       </Button>
 
-      <div className="relative my-2 text-center">
+      <div className="relative my-4 text-center">
         <div className="absolute inset-0 flex items-center" aria-hidden="true">
-          <div className="w-full border-t border-slate-200" />
+          <div className="w-full border-t border-slate-200 dark:border-slate-800" />
         </div>
-        <span className="relative bg-white px-3 text-xs uppercase tracking-wide text-slate-400">
+        <span className="relative bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-3 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
           or
         </span>
       </div>
@@ -145,11 +145,11 @@ export function SignupForm() {
         }
       />
 
-      <p className="pt-2 text-center text-sm text-slate-600">
+      <p className="pt-2 text-center text-sm text-slate-600 dark:text-slate-400">
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-medium text-accent-600 hover:text-accent-700"
+          className="font-medium text-accent-600 hover:text-accent-700 dark:text-accent-400 dark:hover:text-accent-300"
         >
           Sign in
         </Link>

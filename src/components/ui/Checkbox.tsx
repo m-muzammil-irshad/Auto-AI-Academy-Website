@@ -17,14 +17,14 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       <div className="w-full">
         <label
           htmlFor={inputId}
-          className="flex cursor-pointer items-start gap-2 text-sm text-slate-700"
+          className="flex cursor-pointer items-start gap-2 text-sm text-slate-700 dark:text-slate-300"
         >
           <input
             ref={ref}
             id={inputId}
             type="checkbox"
             className={cn(
-              "mt-0.5 h-4 w-4 rounded border-slate-300 text-accent-600",
+              "mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-accent-600 dark:bg-slate-900 dark:checked:bg-accent-500",
               "focus:ring-accent-500 disabled:cursor-not-allowed",
               className
             )}
@@ -32,7 +32,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           />
           <span>{label}</span>
         </label>
-        {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>}
       </div>
     );
   }

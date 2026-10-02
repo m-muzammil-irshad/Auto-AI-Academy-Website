@@ -6,6 +6,7 @@ import { useEnrollments } from "@/hooks/useEnrollments";
 import { useAssignments } from "@/hooks/useAssignments";
 import { useSubmissions } from "@/hooks/useSubmissions";
 import { useCourses } from "@/hooks/useCourses";
+import { motion } from "framer-motion";
 import { AssignmentCard } from "@/components/assignments/AssignmentCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -72,15 +73,19 @@ export default function StudentAssignmentsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold sm:text-3xl">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <h1 className="font-heading text-2xl font-semibold sm:text-3xl text-slate-900 dark:text-white">
           Assignments
         </h1>
-        <p className="mt-1 text-slate-600">
+        <p className="mt-1 text-slate-600 dark:text-slate-400">
           Submit each assignment before its deadline. One submission per
           assignment — no resubmissions.
         </p>
-      </div>
+      </motion.div>
 
       {assignError && (
         <EmptyState title="Could not load assignments" description={assignError} />
@@ -91,7 +96,7 @@ export default function StudentAssignmentsPage() {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="rounded-lg border border-slate-200 bg-white p-4"
+              className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4"
             >
               <Skeleton className="mb-3 h-5 w-1/2" />
               <Skeleton className="mb-2 h-4 w-full" />
@@ -106,9 +111,14 @@ export default function StudentAssignmentsPage() {
         />
       ) : (
         <div className="space-y-10">
-          {grouped.map((group) => (
-            <section key={group.courseId}>
-              <h2 className="mb-4 font-heading text-lg font-semibold text-slate-900">
+          {grouped.map((group, i) => (
+            <motion.section 
+              key={group.courseId}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: i * 0.1 }}
+            >
+              <h2 className="mb-4 font-heading text-lg font-semibold text-slate-900 dark:text-white">
                 {group.courseTitle}
               </h2>
               <div className="space-y-4">
@@ -124,7 +134,7 @@ export default function StudentAssignmentsPage() {
                   />
                 ))}
               </div>
-            </section>
+            </motion.section>
           ))}
         </div>
       )}

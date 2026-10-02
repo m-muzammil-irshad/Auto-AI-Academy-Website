@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
 import type { LeaderboardMode } from "@/lib/services/leaderboard";
@@ -21,25 +22,40 @@ export default function StudentLeaderboardPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-6">
-        <h1 className="font-heading text-2xl font-semibold sm:text-3xl">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className="mb-6"
+      >
+        <h1 className="font-heading text-2xl font-semibold sm:text-3xl text-slate-900 dark:text-white">
           Leaderboard
         </h1>
-        <p className="mt-1 text-slate-600">
+        <p className="mt-1 text-slate-600 dark:text-slate-400">
           Ranked by total stars earned from graded submissions.
         </p>
-      </div>
+      </motion.div>
 
-      <div className="mb-6">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2, delay: 0.1 }}
+        className="mb-6"
+      >
         <Tabs value={mode} onChange={setMode} items={TABS} />
-      </div>
+      </motion.div>
 
       {error && (
         <EmptyState title="Could not load leaderboard" description={error} />
       )}
 
       {loading ? (
-        <div className="space-y-2 rounded-lg border border-slate-200 bg-white p-2">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, delay: 0.1 }}
+          className="space-y-2 rounded-2xl border border-slate-200/50 bg-white/50 backdrop-blur-md p-2 dark:border-slate-800/50 dark:bg-slate-900/50"
+        >
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-3 py-3">
               <Skeleton className="h-6 w-8" />
@@ -51,7 +67,7 @@ export default function StudentLeaderboardPage() {
               <Skeleton className="h-6 w-12" />
             </div>
           ))}
-        </div>
+        </motion.div>
       ) : entries.length === 0 ? (
         <EmptyState
           title={
@@ -66,8 +82,15 @@ export default function StudentLeaderboardPage() {
           }
         />
       ) : (
-        <LeaderboardTable entries={entries} currentUserId={user?.uid} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, delay: 0.1 }}
+        >
+          <LeaderboardTable entries={entries} currentUserId={user?.uid} />
+        </motion.div>
       )}
     </div>
   );
 }
+

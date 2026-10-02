@@ -44,28 +44,28 @@ export function SubmissionForm({
   // Already submitted → status card, no form.
   if (existingSubmission) {
     return (
-      <div className="rounded-md border border-slate-200 bg-slate-50/60 p-4">
+      <div className="rounded-xl border border-slate-200/50 bg-slate-50/60 p-4 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-900/50">
         <div className="mb-2 flex items-center justify-between">
-          <p className="font-heading text-sm font-semibold text-slate-800">
+          <p className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
             Submitted
           </p>
           <Badge variant="info">
             {formatDateTime(existingSubmission.submittedAt)}
           </Badge>
         </div>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
           You have already submitted this assignment.
         </p>
         <a
           href={existingSubmission.driveLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-block break-all text-sm font-medium text-accent-600 hover:text-accent-700"
+          className="mt-2 inline-block break-all text-sm font-medium text-accent-600 hover:text-accent-700 dark:text-accent-400 dark:hover:text-accent-300"
         >
           {existingSubmission.driveLink}
         </a>
         {existingSubmission.description && (
-          <p className="mt-3 whitespace-pre-wrap text-sm text-slate-600">
+          <p className="mt-3 whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-400">
             {existingSubmission.description}
           </p>
         )}
@@ -76,11 +76,11 @@ export function SubmissionForm({
   // Deadline passed → locked, no form.
   if (deadlinePassed) {
     return (
-      <div className="rounded-md border border-slate-200 bg-slate-50/60 p-4">
-        <p className="font-heading text-sm font-semibold text-slate-800">
+      <div className="rounded-xl border border-slate-200/50 bg-slate-50/60 p-4 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-900/50">
+        <p className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
           Deadline passed
         </p>
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           This assignment is no longer accepting submissions. It closed on{" "}
           {formatDateTime(assignment.dueDate)}.
         </p>
@@ -120,10 +120,10 @@ export function SubmissionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-md border border-slate-200 bg-slate-50/40 p-4"
+      className="space-y-4 rounded-xl border border-slate-200/50 bg-slate-50/40 p-4 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-900/50"
       noValidate
     >
-      <p className="font-heading text-sm font-semibold text-slate-800">
+      <p className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
         Submit assignment
       </p>
 

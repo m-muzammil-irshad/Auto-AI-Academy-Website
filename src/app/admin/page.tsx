@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { StatCard } from "@/components/admin/StatCard";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -118,20 +119,29 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold sm:text-3xl">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <h1 className="font-heading text-2xl font-semibold sm:text-3xl text-slate-900 dark:text-white">
           Admin Dashboard
         </h1>
-        <p className="mt-1 text-slate-600">
+        <p className="mt-1 text-slate-600 dark:text-slate-400">
           A quick overview of platform activity.
         </p>
-      </div>
+      </motion.div>
 
       {error && (
         <EmptyState title="Could not load analytics" description={error} />
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: 0.1 }}
+        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
         <StatCard
           label="Registered accounts"
           value={ready ? analytics.totalUsers : null}
@@ -148,15 +158,20 @@ export default function AdminDashboardPage() {
           label="Total submissions"
           value={ready ? analytics.totalSubmissions : null}
         />
-      </div>
+      </motion.div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <h2 className="font-heading text-base font-semibold">
-              Enrollments per course
-            </h2>
-          </CardHeader>
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2, delay: 0.1 }}
+        >
+          <Card className="h-full transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+            <CardHeader>
+              <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
+                Enrollments per course
+              </h2>
+            </CardHeader>
           <CardBody>
             {!ready ? (
               <BreakdownSkeleton />
@@ -166,16 +181,16 @@ export default function AdminDashboardPage() {
                 description="Create your first course to see enrollment data here."
               />
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-slate-100/50 dark:divide-slate-800/50">
                 {analytics.enrollmentsPerCourse.map((row) => (
                   <li
                     key={row.courseId}
                     className="flex items-center justify-between py-2 text-sm"
                   >
-                    <span className="truncate pr-3 text-slate-700">
+                    <span className="truncate pr-3 text-slate-700 dark:text-slate-300">
                       {row.title}
                     </span>
-                    <span className="font-medium tabular-nums text-slate-900">
+                    <span className="font-medium tabular-nums text-slate-900 dark:text-white">
                       {row.count}
                     </span>
                   </li>
@@ -183,14 +198,20 @@ export default function AdminDashboardPage() {
               </ul>
             )}
           </CardBody>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card>
-          <CardHeader>
-            <h2 className="font-heading text-base font-semibold">
-              Submissions per assignment
-            </h2>
-          </CardHeader>
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2, delay: 0.1 }}
+        >
+          <Card className="h-full transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+            <CardHeader>
+              <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
+                Submissions per assignment
+              </h2>
+            </CardHeader>
           <CardBody>
             {!ready ? (
               <BreakdownSkeleton />
@@ -200,21 +221,21 @@ export default function AdminDashboardPage() {
                 description="Add assignments to your courses to see submission data here."
               />
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-slate-100/50 dark:divide-slate-800/50">
                 {analytics.submissionsPerAssignment.map((row) => (
                   <li
                     key={row.assignmentId}
                     className="flex items-center justify-between py-2 text-sm"
                   >
                     <span className="min-w-0 pr-3">
-                      <span className="block truncate text-slate-700">
+                      <span className="block truncate text-slate-700 dark:text-slate-300">
                         {row.title}
                       </span>
-                      <span className="block truncate text-xs text-slate-500">
+                      <span className="block truncate text-xs text-slate-500 dark:text-slate-400">
                         {row.courseTitle}
                       </span>
                     </span>
-                    <span className="font-medium tabular-nums text-slate-900">
+                    <span className="font-medium tabular-nums text-slate-900 dark:text-white">
                       {row.count}
                     </span>
                   </li>
@@ -222,15 +243,21 @@ export default function AdminDashboardPage() {
               </ul>
             )}
           </CardBody>
-        </Card>
+          </Card>
+        </motion.div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <h2 className="font-heading text-base font-semibold">
-            Quick actions
-          </h2>
-        </CardHeader>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: 0.1 }}
+      >
+        <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+          <CardHeader>
+            <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
+              Quick actions
+            </h2>
+          </CardHeader>
         <CardBody className="flex flex-wrap gap-2">
           <Link href="/admin/courses">
             <Button variant="secondary">Manage courses</Button>
@@ -245,7 +272,8 @@ export default function AdminDashboardPage() {
             <Button variant="secondary">View students</Button>
           </Link>
         </CardBody>
-      </Card>
+        </Card>
+      </motion.div>
     </div>
   );
 }
@@ -262,3 +290,4 @@ function BreakdownSkeleton() {
     </div>
   );
 }
+

@@ -37,8 +37,8 @@ export function StudentCourseCard({
   }
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-      <div className="relative aspect-video w-full bg-slate-100">
+    <article className="flex flex-col rounded-2xl border border-slate-200/50 bg-white shadow-sm dark:border-slate-800/50 dark:bg-slate-900/50 backdrop-blur-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-500/10 dark:hover:shadow-accent-500/5">
+      <div className="relative aspect-video w-full overflow-hidden rounded-t-2xl bg-slate-100 dark:bg-slate-800/50">
         {course.thumbnail ? (
           <Image
             src={course.thumbnail}
@@ -49,8 +49,8 @@ export function StudentCourseCard({
             unoptimized
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent-100 to-accent-50">
-            <span className="font-heading text-sm font-medium text-accent-700">
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent-100 to-accent-50 dark:from-accent-900/40 dark:to-accent-800/40">
+            <span className="font-heading text-sm font-medium text-accent-700 dark:text-accent-400">
               Auto AI Academy
             </span>
           </div>
@@ -58,14 +58,14 @@ export function StudentCourseCard({
       </div>
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-2 flex items-start justify-between gap-3">
-          <h3 className="font-heading text-base font-semibold text-slate-900">
+          <h3 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
             {course.title}
           </h3>
           <Badge variant={courseStatusVariant(course.status)}>
             {COURSE_STATUS_LABELS[course.status]}
           </Badge>
         </div>
-        <p className="mb-5 line-clamp-3 flex-1 text-sm text-slate-600">
+        <p className="mb-5 line-clamp-3 flex-1 text-sm text-slate-600 dark:text-slate-400">
           {course.description}
         </p>
 

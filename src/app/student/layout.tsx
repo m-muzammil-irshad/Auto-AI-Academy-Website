@@ -8,6 +8,7 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { SITE_NAME } from "@/lib/constants";
 
 export default function StudentLayout({
@@ -19,12 +20,12 @@ export default function StudentLayout({
 
   return (
     <RoleGuard required="student">
-      <div className="flex min-h-screen bg-slate-50">
-        <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white md:block">
-          <div className="flex h-16 items-center border-b border-slate-200 px-4">
+      <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+        <aside className="hidden w-64 shrink-0 border-r border-slate-200/50 bg-white dark:border-slate-800/50 dark:bg-slate-950 md:block transition-colors duration-300">
+          <div className="flex h-16 items-center border-b border-slate-200/50 dark:border-slate-800/50 px-4">
             <Link
               href="/student"
-              className="font-heading text-base font-semibold text-slate-900"
+              className="font-heading text-base font-semibold text-slate-900 dark:text-white"
             >
               {SITE_NAME}
             </Link>
@@ -33,11 +34,11 @@ export default function StudentLayout({
         </aside>
 
         <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)}>
-          <div className="flex h-16 items-center border-b border-slate-200 px-4">
+          <div className="flex h-16 items-center border-b border-slate-200/50 dark:border-slate-800/50 px-4">
             <Link
               href="/student"
               onClick={() => setMobileOpen(false)}
-              className="font-heading text-base font-semibold text-slate-900"
+              className="font-heading text-base font-semibold text-slate-900 dark:text-white"
             >
               {SITE_NAME}
             </Link>
@@ -46,12 +47,12 @@ export default function StudentLayout({
         </MobileNav>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4">
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200/50 bg-white dark:border-slate-800/50 dark:bg-slate-950/80 backdrop-blur-md px-4 transition-colors duration-300">
             <button
               type="button"
               aria-label="Open menu"
               onClick={() => setMobileOpen(true)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 md:hidden"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 md:hidden"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -68,6 +69,7 @@ export default function StudentLayout({
             </button>
             <div className="hidden md:block" />
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <NotificationBell href="/student/notifications" />
               <UserMenu profileHref="/student/profile" />
             </div>

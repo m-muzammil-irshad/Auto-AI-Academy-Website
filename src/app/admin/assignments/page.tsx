@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge, courseStatusVariant } from "@/components/ui/Badge";
@@ -126,22 +127,27 @@ export default function AdminAssignmentsPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className="flex flex-wrap items-end justify-between gap-3"
+      >
         <div>
-          <h1 className="font-heading text-2xl font-semibold sm:text-3xl">
+          <h1 className="font-heading text-2xl font-semibold sm:text-3xl text-slate-900 dark:text-white">
             Assignment Management
           </h1>
-          <p className="mt-1 text-slate-600">
+          <p className="mt-1 text-slate-600 dark:text-slate-400">
             Add, edit, or delete assignments for your courses.
           </p>
         </div>
         <Button onClick={openCreate} disabled={noOngoingCourses}>
           Add assignment
         </Button>
-      </div>
+      </motion.div>
 
       {noOngoingCourses && courses.length > 0 && (
-        <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+        <div className="rounded-2xl border border-amber-200/50 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-900/20 backdrop-blur-md p-4 text-sm text-amber-800 dark:text-amber-200">
           No ongoing courses available. Assignments can only be added to
           courses with status <strong>Ongoing</strong>. Flip a course from
           “Coming Soon” to “Ongoing” in Course Management first.
@@ -157,7 +163,7 @@ export default function AdminAssignmentsPage() {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="rounded-lg border border-slate-200 bg-white p-4"
+              className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4"
             >
               <Skeleton className="mb-2 h-5 w-1/3" />
               <Skeleton className="h-4 w-2/3" />
@@ -179,21 +185,26 @@ export default function AdminAssignmentsPage() {
           }
         />
       ) : (
-        <div className="space-y-8">
+        <motion.div 
+          initial="hidden"
+          animate="show"
+          variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
+          className="space-y-8"
+        >
           {grouped.map((group) => {
             const course = group.course!;
             const isCompleted = course.status === "completed";
             return (
               <section key={group.courseId}>
                 <div className="mb-3 flex flex-wrap items-center gap-2">
-                  <h2 className="font-heading text-lg font-semibold text-slate-900">
+                  <h2 className="font-heading text-lg font-semibold text-slate-900 dark:text-white">
                     {course.title}
                   </h2>
                   <Badge variant={courseStatusVariant(course.status)}>
                     {COURSE_STATUS_LABELS[course.status]}
                   </Badge>
                   {isCompleted && (
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
                       Assignment list is frozen.
                     </span>
                   )}
@@ -219,7 +230,7 @@ export default function AdminAssignmentsPage() {
               </section>
             );
           })}
-        </div>
+        </motion.div>
       )}
 
       <Modal
@@ -248,13 +259,13 @@ export default function AdminAssignmentsPage() {
         title="Delete assignment?"
       >
         <div className="space-y-4">
-          <p className="text-sm text-slate-700">
+          <p className="text-sm text-slate-700 dark:text-slate-300">
             This will permanently delete{" "}
             <strong>{deleteTarget?.assignment.title}</strong> from{" "}
             <strong>{deleteTarget?.course.title}</strong> and remove all of its
             submissions.
           </p>
-          <p className="text-sm text-slate-700">
+          <p className="text-sm text-slate-700 dark:text-slate-300">
             The course and any other assignments are unaffected. This action
             cannot be undone.
           </p>
@@ -285,28 +296,29 @@ function AssignmentRow({
   onDelete: (() => void) | null;
 }) {
   return (
-    <Card>
-      <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <h3 className="font-heading text-base font-semibold text-slate-900">
-            {assignment.title}
-          </h3>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Due {formatDateTime(assignment.dueDate)}
-          </p>
-          {assignment.description && (
-            <p className="mt-2 line-clamp-2 text-sm text-slate-600">
-              {assignment.description}
+    <motion.div variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
+      <Card className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1 dark:hover:shadow-accent-500/5">
+        <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <h3 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
+              {assignment.title}
+            </h3>
+            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              Due {formatDateTime(assignment.dueDate)}
             </p>
-          )}
-          {assignment.deliverables.length > 0 && (
-            <p className="mt-1 text-xs text-slate-500">
-              {assignment.deliverables.length}{" "}
-              {assignment.deliverables.length === 1
-                ? "deliverable"
-                : "deliverables"}
-            </p>
-          )}
+            {assignment.description && (
+              <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
+                {assignment.description}
+              </p>
+            )}
+            {assignment.deliverables.length > 0 && (
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                {assignment.deliverables.length}{" "}
+                {assignment.deliverables.length === 1
+                  ? "deliverable"
+                  : "deliverables"}
+              </p>
+            )}
         </div>
 
         <div className="flex shrink-0 flex-wrap gap-2">
@@ -321,5 +333,7 @@ function AssignmentRow({
         </div>
       </CardBody>
     </Card>
+    </motion.div>
   );
 }
+

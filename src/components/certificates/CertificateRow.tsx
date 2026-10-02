@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -24,22 +25,23 @@ export function CertificateRow({ status }: CertificateRowProps) {
 
   return (
     <>
-      <Card>
-        <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <div className="mb-1 flex flex-wrap items-center gap-2">
-              <h3 className="font-heading text-base font-semibold text-slate-900">
-                {course.title}
-              </h3>
+      <motion.div variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
+        <Card className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1 dark:hover:shadow-accent-500/5">
+          <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <div className="mb-1 flex flex-wrap items-center gap-2">
+                <h3 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
+                  {course.title}
+                </h3>
               {eligible ? (
                 <Badge variant="success">Eligible</Badge>
               ) : (
                 <Badge variant="neutral">Not yet eligible</Badge>
               )}
             </div>
-            <p className="text-sm text-slate-500">{progressLabel}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{progressLabel}</p>
             {!eligible && reason && (
-              <p className="mt-1 text-xs text-slate-500">{reason}</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{reason}</p>
             )}
           </div>
 
@@ -58,6 +60,7 @@ export function CertificateRow({ status }: CertificateRowProps) {
           </div>
         </CardBody>
       </Card>
+    </motion.div>
 
       <WhatsAppModal
         open={modalOpen}

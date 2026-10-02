@@ -43,19 +43,19 @@ export function Modal({
       ref={overlayRef}
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 transition-all"
       onClick={(e) => {
         if (e.target === overlayRef.current) onClose();
       }}
     >
       <div
         className={cn(
-          "w-full max-w-md rounded-lg bg-white p-6 shadow-xl",
+          "w-full max-w-md rounded-2xl border border-slate-200/50 bg-white/80 p-6 shadow-2xl backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-900/80 transition-all",
           className
         )}
       >
         {title && (
-          <h2 className="mb-3 text-lg font-semibold">{title}</h2>
+          <h2 className="mb-4 font-heading text-xl font-semibold text-slate-900 dark:text-white">{title}</h2>
         )}
         {children}
       </div>

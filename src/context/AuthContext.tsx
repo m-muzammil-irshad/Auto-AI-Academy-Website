@@ -36,10 +36,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [profile, setProfile] = useState<AppUser | null>(null);
-  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
+      if (u) {
+        setProfileLoading(true);
+        // Set a generic cookie for middleware to prevent landing page flicker
+        document.cookie = "has_session=true; path=/; max-age=31536000";
+      } else {
+        document.cookie = "has_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      }
       setUser(u);
       setAuthLoading(false);
     });

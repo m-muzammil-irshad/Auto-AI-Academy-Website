@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -87,23 +88,32 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold sm:text-3xl">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <h1 className="font-heading text-2xl font-semibold sm:text-3xl text-slate-900 dark:text-white">
           Settings
         </h1>
-        <p className="mt-1 text-slate-600">
+        <p className="mt-1 text-slate-600 dark:text-slate-400">
           Support contact and storage maintenance.
         </p>
-      </div>
+      </motion.div>
 
-      <Card>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: 0.1 }}
+      >
+        <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
         <CardHeader>
-          <h2 className="font-heading text-base font-semibold">
+          <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
             WhatsApp support number
           </h2>
         </CardHeader>
         <CardBody className="space-y-4">
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Used by the student portal’s support icon and the certificate
             issuance popup. Digits only, with country code (no “+”).
           </p>
@@ -140,11 +150,17 @@ export default function AdminSettingsPage() {
           )}
         </CardBody>
       </Card>
+      </motion.div>
 
-      <Card>
-        <CardHeader>
-          <h2 className="font-heading text-base font-semibold">
-            Prune old raw submissions
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: 0.1 }}
+      >
+        <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+          <CardHeader>
+            <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
+              Prune old raw submissions
           </h2>
         </CardHeader>
         <CardBody>
@@ -163,6 +179,8 @@ export default function AdminSettingsPage() {
           )}
         </CardBody>
       </Card>
+      </motion.div>
     </div>
   );
 }
+

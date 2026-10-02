@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge, courseStatusVariant } from "@/components/ui/Badge";
@@ -89,17 +90,22 @@ export default function AdminCoursesPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className="flex flex-wrap items-end justify-between gap-3"
+      >
         <div>
-          <h1 className="font-heading text-2xl font-semibold sm:text-3xl">
+          <h1 className="font-heading text-2xl font-semibold sm:text-3xl text-slate-900 dark:text-white">
             Course Management
           </h1>
-          <p className="mt-1 text-slate-600">
+          <p className="mt-1 text-slate-600 dark:text-slate-400">
             Create, edit, mark completed, or delete courses.
           </p>
         </div>
         <Button onClick={openCreate}>Add course</Button>
-      </div>
+      </motion.div>
 
       {error && (
         <EmptyState title="Could not load courses" description={error} />
@@ -110,7 +116,7 @@ export default function AdminCoursesPage() {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="rounded-lg border border-slate-200 bg-white p-4"
+              className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4"
             >
               <Skeleton className="mb-2 h-5 w-1/3" />
               <Skeleton className="h-4 w-2/3" />
@@ -124,7 +130,12 @@ export default function AdminCoursesPage() {
           action={<Button onClick={openCreate}>Add course</Button>}
         />
       ) : (
-        <div className="space-y-3">
+        <motion.div 
+          initial="hidden"
+          animate="show"
+          variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
+          className="space-y-3"
+        >
           {courses.map((course) => (
             <CourseRow
               key={course.id}
@@ -134,7 +145,7 @@ export default function AdminCoursesPage() {
               onDelete={() => setDeleteTarget(course)}
             />
           ))}
-        </div>
+        </motion.div>
       )}
 
       <Modal
@@ -187,21 +198,22 @@ function CourseRow({
   const canMarkCompleted = course.status === "ongoing";
 
   return (
-    <Card>
+    <motion.div variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
+      <Card className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1 dark:hover:shadow-accent-500/5">
       <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="mb-1 flex flex-wrap items-center gap-2">
-            <h3 className="font-heading text-base font-semibold text-slate-900">
+            <h3 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
               {course.title}
             </h3>
             <Badge variant={courseStatusVariant(course.status)}>
               {COURSE_STATUS_LABELS[course.status]}
             </Badge>
           </div>
-          <p className="line-clamp-2 text-sm text-slate-600">
+          <p className="line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
             {course.description}
           </p>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
             Created {formatDate(course.createdAt)}
             {course.completedAt && ` · Completed ${formatDate(course.completedAt)}`}
           </p>
@@ -222,5 +234,7 @@ function CourseRow({
         </div>
       </CardBody>
     </Card>
+    </motion.div>
   );
 }
+

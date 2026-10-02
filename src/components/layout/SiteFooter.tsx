@@ -3,32 +3,33 @@
 import Link from "next/link";
 import { SITE_NAME } from "@/lib/constants";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function SiteFooter() {
   const { whatsappUrl } = useSiteSettings();
 
   return (
-    <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 md:flex-row md:items-center md:justify-between">
+    <footer className="border-t border-slate-200/50 bg-white dark:border-slate-800/50 dark:bg-slate-950 transition-colors duration-300">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="font-heading text-base font-semibold text-slate-900">
+          <p className="font-heading text-xl font-bold tracking-tight text-slate-900 dark:text-white">
             {SITE_NAME}
           </p>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-2 text-base text-slate-500 dark:text-slate-400 max-w-xs">
             Programming, AI, and automation — taught properly.
           </p>
         </div>
-        <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600">
-          <Link href="/" className="hover:text-slate-900">
+        <nav className="flex flex-wrap items-center gap-x-8 gap-y-4 text-base font-medium text-slate-600 dark:text-slate-400">
+          <Link href="/" className="transition-colors hover:text-accent-600 dark:hover:text-accent-400">
             Home
           </Link>
-          <Link href="/courses" className="hover:text-slate-900">
+          <Link href="/courses" className="transition-colors hover:text-accent-600 dark:hover:text-accent-400">
             Courses
           </Link>
-          <Link href="/login" className="hover:text-slate-900">
+          <Link href="/login" className="transition-colors hover:text-accent-600 dark:hover:text-accent-400">
             Log in
           </Link>
-          <Link href="/signup" className="hover:text-slate-900">
+          <Link href="/signup" className="transition-colors hover:text-accent-600 dark:hover:text-accent-400">
             Sign up
           </Link>
           <a
@@ -36,7 +37,7 @@ export function SiteFooter() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Support on WhatsApp"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-green-600 hover:bg-green-50"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-50 text-green-600 transition-colors hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50"
           >
             <svg
               viewBox="0 0 24 24"
@@ -49,8 +50,9 @@ export function SiteFooter() {
           </a>
         </nav>
       </div>
-      <div className="border-t border-slate-100 py-4 text-center text-xs text-slate-400">
-        © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
+      <div className="border-t border-slate-200/50 dark:border-slate-800/50 py-6 text-center text-sm font-medium text-slate-500 dark:text-slate-500 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <span>© {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</span>
+        <ThemeToggle />
       </div>
     </footer>
   );

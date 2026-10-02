@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ADMIN_NAV } from "@/lib/constants";
 import { cn } from "@/lib/utils/cn";
+import { Spinner } from "@/components/ui/Spinner";
 
 function NavIcon({ name }: { name: string }) {
   const common = {
@@ -66,9 +68,14 @@ export interface AdminSidebarProps {
 
 export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPendingHref(null);
+  }, [pathname]);
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-transparent">
       <nav className="flex-1 space-y-1 p-4">
         {ADMIN_NAV.map((item) => {
           const active =
@@ -79,22 +86,29 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              onClick={onNavigate}
+              prefetch={true}
+              onClick={() => {
+                setPendingHref(item.href);
+                onNavigate?.();
+              }}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
                 active
-                  ? "bg-accent-50 text-accent-700"
-                  : "text-slate-700 hover:bg-slate-50"
+                  ? "bg-accent-50 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300"
+                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50"
               )}
             >
               <NavIcon name={item.icon} />
               {item.label}
+              {pendingHref === item.href && (
+                <Spinner className="ml-auto h-4 w-4 text-accent-500" />
+              )}
             </Link>
           );
         })}
       </nav>
-      <div className="border-t border-slate-200 p-4">
-        <p className="text-xs text-slate-500">
+      <div className="border-t border-slate-200/50 dark:border-slate-800/50 p-4">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Admin Panel · Auto AI Academy
         </p>
       </div>

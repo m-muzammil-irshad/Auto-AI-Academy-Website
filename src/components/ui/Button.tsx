@@ -16,12 +16,12 @@ export interface ButtonProps
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent-600 text-white hover:bg-accent-700 disabled:bg-accent-600/50",
+    "bg-accent-600/90 hover:bg-accent-600 backdrop-blur-md text-white shadow-sm hover:shadow-accent-500/25 disabled:bg-accent-600/50 dark:bg-accent-500/90 dark:hover:bg-accent-500 dark:disabled:bg-accent-500/50 transition-all",
   secondary:
-    "bg-white text-slate-900 border border-slate-300 hover:bg-slate-50 disabled:opacity-50",
-  danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-600/50",
+    "bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-slate-900 dark:text-white border border-slate-300/50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50",
+  danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-600/50 dark:bg-red-500 dark:hover:bg-red-600",
   ghost:
-    "bg-transparent text-slate-700 hover:bg-slate-100 disabled:opacity-50",
+    "bg-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50",
 };
 
 const sizes: Record<Size, string> = {
@@ -40,7 +40,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors disabled:cursor-not-allowed",
+          "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-colors disabled:cursor-not-allowed",
           variants[variant],
           sizes[size],
           className

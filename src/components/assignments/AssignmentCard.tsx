@@ -54,14 +54,14 @@ export function AssignmentCard({
   };
 
   return (
-    <Card>
+    <Card className="transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-500/10 dark:hover:shadow-accent-500/5">
       <CardBody className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="font-heading text-base font-semibold text-slate-900">
+            <h3 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
               {assignment.title}
             </h3>
-            <p className="mt-0.5 text-xs text-slate-500">
+            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
               Due {formatDateTime(assignment.dueDate)}
             </p>
           </div>
@@ -69,7 +69,7 @@ export function AssignmentCard({
         </div>
 
         {assignment.description && (
-          <p className="whitespace-pre-wrap text-sm text-slate-700">
+          <p className="whitespace-pre-wrap text-sm text-slate-700 dark:text-slate-300">
             {assignment.description}
           </p>
         )}

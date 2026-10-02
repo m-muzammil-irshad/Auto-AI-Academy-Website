@@ -18,37 +18,60 @@ export interface UseNotificationsResult {
   markAllRead: () => Promise<void>;
 }
 
+const cachedNotifications: Record<string, { data: AppNotification[]; time: number }> = {};
+const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes
+
 export function useNotifications(
   userId: string | null | undefined,
   max?: number
 ): UseNotificationsResult {
-  const [notifications, setNotifications] = useState<AppNotification[]>([]);
-  const [loading, setLoading] = useState(true);
+  const key = `${userId}-${max || "all"}`;
+  
+  const [notifications, setNotifications] = useState<AppNotification[]>(() => 
+    userId && cachedNotifications[key] ? cachedNotifications[key].data : []
+  );
+  const [loading, setLoading] = useState(() => 
+    userId ? !cachedNotifications[key] : false
+  );
   const [error, setError] = useState("");
 
-  const reload = useCallback(async () => {
+  const reload = useCallback(async (background = false) => {
     if (!userId) {
       setNotifications([]);
       setLoading(false);
       return;
     }
-    setLoading(true);
+    
+    if (!background) setLoading(true);
     setError("");
     try {
       const list = await fetchNotifications(userId, max);
+      cachedNotifications[key] = { data: list, time: Date.now() };
       setNotifications(list);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Could not load notifications."
       );
     } finally {
-      setLoading(false);
+      if (!background) setLoading(false);
     }
-  }, [userId, max]);
+  }, [userId, max, key]);
 
   useEffect(() => {
-    void reload();
-  }, [reload]);
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+    
+    const cached = cachedNotifications[key];
+    if (cached && Date.now() - cached.time < CACHE_DURATION) {
+      setNotifications(cached.data);
+      setLoading(false);
+      void reload(true); // background update
+    } else {
+      void reload(false);
+    }
+  }, [userId, key, reload]);
 
   const markRead = useCallback(
     async (id: string) => {

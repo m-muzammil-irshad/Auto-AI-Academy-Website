@@ -15,14 +15,21 @@ export interface UseAssignmentsResult {
  * The hook re-fetches whenever the *content* changes, not when a new
  * array reference with identical contents is passed.
  */
+const cachedAssignments: Record<string, { data: Assignment[]; time: number }> = {};
+const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes
+
 export function useAssignments(
   courseIds: string[]
 ): UseAssignmentsResult {
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
   const key = [...courseIds].sort().join("|");
+  
+  const [assignments, setAssignments] = useState<Assignment[]>(() => 
+    key && cachedAssignments[key] ? cachedAssignments[key].data : []
+  );
+  const [loading, setLoading] = useState(() => 
+    key && key.length > 0 ? !cachedAssignments[key] : false
+  );
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -33,11 +40,32 @@ export function useAssignments(
       setError("");
       return;
     }
+    
+    const cached = cachedAssignments[key];
+    const isFresh = cached && Date.now() - cached.time < CACHE_DURATION;
+    
+    if (isFresh) {
+      setAssignments(cached.data);
+      setLoading(false);
+      // Fetch in background
+      fetchAssignmentsForCourses(ids).then((list) => {
+        if (!cancelled) {
+          cachedAssignments[key] = { data: list, time: Date.now() };
+          setAssignments(list);
+        }
+      }).catch(console.error);
+      return;
+    }
+
     setLoading(true);
     setError("");
+    
     fetchAssignmentsForCourses(ids)
       .then((list) => {
-        if (!cancelled) setAssignments(list);
+        if (!cancelled) {
+          cachedAssignments[key] = { data: list, time: Date.now() };
+          setAssignments(list);
+        }
       })
       .catch((err: unknown) => {
         if (!cancelled) {
@@ -51,6 +79,7 @@ export function useAssignments(
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+      
     return () => {
       cancelled = true;
     };

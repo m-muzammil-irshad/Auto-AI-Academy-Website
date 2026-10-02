@@ -6,10 +6,12 @@ import { FeaturedCourses } from "@/components/home/FeaturedCourses";
 import { ValueStrip } from "@/components/home/ValueStrip";
 import { LeaderboardTeaser } from "@/components/home/LeaderboardTeaser";
 import { FinalCTA } from "@/components/home/FinalCTA";
+import { HomeAuthRedirect } from "@/components/home/HomeAuthRedirect";
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+      <HomeAuthRedirect />
       <SiteHeader />
       <main className="flex-1">
         <Hero />

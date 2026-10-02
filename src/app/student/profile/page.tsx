@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import {
   updatePassword,
 } from "firebase/auth";
 import { useAuth } from "@/hooks/useAuth";
+import { motion } from "framer-motion";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -125,20 +126,26 @@ export default function StudentProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold sm:text-3xl">
+    <motion.div 
+      initial="hidden"
+      animate="show"
+      variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
+      className="mx-auto max-w-2xl space-y-6"
+    >
+      <motion.div variants={{ hidden: { opacity: 0, y: -20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
+        <h1 className="font-heading text-2xl font-semibold sm:text-3xl text-slate-900 dark:text-white">
           Profile
         </h1>
-        <p className="mt-1 text-slate-600">
+        <p className="mt-1 text-slate-600 dark:text-slate-400">
           Manage your account details and security.
         </p>
-      </div>
+      </motion.div>
 
-      <Card>
-        <CardHeader>
-          <h2 className="font-heading text-base font-semibold">Name</h2>
-        </CardHeader>
+      <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
+        <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+          <CardHeader>
+            <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">Name</h2>
+          </CardHeader>
         <CardBody>
           <form onSubmit={handleSaveName} className="space-y-3" noValidate>
             <Input
@@ -162,11 +169,13 @@ export default function StudentProfilePage() {
           </form>
         </CardBody>
       </Card>
+      </motion.div>
 
-      <Card>
-        <CardHeader>
-          <h2 className="font-heading text-base font-semibold">Email</h2>
-        </CardHeader>
+      <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
+        <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+          <CardHeader>
+            <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">Email</h2>
+          </CardHeader>
         <CardBody className="space-y-3">
           <Input
             label="Email address"
@@ -176,7 +185,7 @@ export default function StudentProfilePage() {
             hint="Email cannot be changed."
           />
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-600">Verification:</span>
+            <span className="text-sm text-slate-600 dark:text-slate-400">Verification:</span>
             {user.emailVerified ? (
               <Badge variant="success">Verified</Badge>
             ) : (
@@ -194,20 +203,22 @@ export default function StudentProfilePage() {
                 Resend verification email
               </Button>
               {resendNotice && (
-                <p className="text-sm text-slate-600">{resendNotice}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{resendNotice}</p>
               )}
             </>
           )}
         </CardBody>
-      </Card>
+        </Card>
+      </motion.div>
 
       {isPasswordProvider && (
-        <Card>
-          <CardHeader>
-            <h2 className="font-heading text-base font-semibold">
-              Change password
-            </h2>
-          </CardHeader>
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
+          <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+            <CardHeader>
+              <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
+                Change password
+              </h2>
+            </CardHeader>
           <CardBody>
             <form
               onSubmit={handleChangePassword}
@@ -258,21 +269,26 @@ export default function StudentProfilePage() {
             </form>
           </CardBody>
         </Card>
+        </motion.div>
       )}
 
-      <Card>
-        <CardBody className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-          <div>
-            <p className="text-sm font-medium text-slate-800">Sign out</p>
-            <p className="text-xs text-slate-500">
-              You’ll need to sign in again to access your courses.
-            </p>
-          </div>
-          <Button variant="secondary" onClick={handleSignOut}>
-            Sign out
-          </Button>
-        </CardBody>
-      </Card>
-    </div>
+      <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
+        <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+          <CardBody className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <p className="text-sm font-medium text-slate-800 dark:text-white">Sign out</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                You’ll need to sign in again to access your courses.
+              </p>
+            </div>
+            <Button variant="secondary" onClick={handleSignOut}>
+              Sign out
+            </Button>
+          </CardBody>
+        </Card>
+      </motion.div>
+    </motion.div>
   );
 }
+
+

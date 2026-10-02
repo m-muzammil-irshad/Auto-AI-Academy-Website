@@ -54,29 +54,29 @@ export function NotificationItem({ item, onClick }: NotificationItemProps) {
       type="button"
       onClick={() => onClick?.(item.id)}
       className={cn(
-        "flex w-full items-start gap-3 rounded-md px-3 py-3 text-left transition-colors",
-        item.read ? "hover:bg-slate-50" : "bg-accent-50/40 hover:bg-accent-50"
+        "flex w-full items-start gap-3 rounded-xl px-4 py-4 text-left transition-colors",
+        item.read ? "hover:bg-slate-50/50 dark:hover:bg-slate-800/50" : "bg-accent-50/40 hover:bg-accent-50 dark:bg-accent-900/20 dark:hover:bg-accent-900/40"
       )}
     >
       <span
         className={cn(
           "mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
           item.read
-            ? "bg-slate-100 text-slate-500"
-            : "bg-accent-100 text-accent-700"
+            ? "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+            : "bg-accent-100 text-accent-700 dark:bg-accent-900 dark:text-accent-300"
         )}
       >
         <TypeIcon type={item.type} />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-sm text-slate-800">{item.message}</span>
-        <span className="mt-0.5 block text-xs text-slate-500">
+        <span className="block text-sm text-slate-800 dark:text-white">{item.message}</span>
+        <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
           {relativeTime(item.createdAt)}
         </span>
       </span>
       {!item.read && (
         <span
-          className="mt-2 inline-block h-2 w-2 shrink-0 rounded-full bg-accent-600"
+          className="mt-2 inline-block h-2 w-2 shrink-0 rounded-full bg-accent-600 dark:bg-accent-500"
           aria-label="Unread"
         />
       )}

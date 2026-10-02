@@ -10,19 +10,19 @@ export interface StatCardProps {
 
 export function StatCard({ label, value, hint }: StatCardProps) {
   return (
-    <Card>
+    <Card className="transition-all hover:-translate-y-1 hover:shadow-md dark:hover:shadow-accent-500/5">
       <CardBody>
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+        <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
           {label}
         </p>
         {value === null ? (
           <Skeleton className="mt-2 h-8 w-16" />
         ) : (
-          <p className="mt-1 font-heading text-3xl font-semibold text-slate-900">
+          <p className="mt-1 font-heading text-3xl font-semibold text-slate-900 dark:text-white">
             {value}
           </p>
         )}
-        {hint && <p className="mt-1 text-xs text-slate-500">{hint}</p>}
+        {hint && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{hint}</p>}
       </CardBody>
     </Card>
   );

@@ -62,7 +62,7 @@ export function PruneSubmissions({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-slate-600 dark:text-slate-400">
         Permanently remove raw submission documents whose grade is already
         reflected in the student’s totals. Ungraded submissions are never
         touched. This keeps storage light on the free tier.
@@ -89,7 +89,7 @@ export function PruneSubmissions({
         </Button>
       </div>
 
-      <div className="rounded-md border border-slate-200 bg-slate-50/60 p-3 text-xs text-slate-600">
+      <div className="rounded-md border border-slate-200/50 dark:border-slate-800/50 bg-slate-50/60 dark:bg-slate-800/50 p-3 text-xs text-slate-600 dark:text-slate-400">
         {candidates.length === 0 ? (
           <span>
             Nothing to prune with the current setting.
@@ -124,12 +124,12 @@ export function PruneSubmissions({
         title="Prune old submissions?"
       >
         <div className="space-y-4">
-          <p className="text-sm text-slate-700">
+          <p className="text-sm text-slate-700 dark:text-slate-300">
             <strong>{candidates.length}</strong> submission document(s) will be
             permanently deleted. Student totals (monthly + all-time stars) are
             unaffected — they were already updated when each was graded.
           </p>
-          <p className="text-sm text-slate-700">
+          <p className="text-sm text-slate-700 dark:text-slate-300">
             Per-submission Drive links and notes will no longer be viewable in
             the admin grading screen.
           </p>

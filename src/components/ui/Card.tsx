@@ -9,7 +9,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-lg border border-slate-200 bg-white shadow-sm",
+        "rounded-2xl border border-slate-200/50 bg-white/50 shadow-sm dark:border-slate-800/50 dark:bg-slate-900/50 backdrop-blur-md",
         className
       )}
       {...rest}
@@ -26,7 +26,7 @@ export function CardHeader({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("border-b border-slate-200 px-5 py-4", className)}
+      className={cn("border-b border-slate-200/50 dark:border-slate-800/50 px-5 py-4", className)}
       {...rest}
     >
       {children}
@@ -53,7 +53,7 @@ export function CardFooter({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("border-t border-slate-200 px-5 py-3", className)}
+      className={cn("border-t border-slate-200/50 dark:border-slate-800/50 px-5 py-3", className)}
       {...rest}
     >
       {children}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Select } from "@/components/ui/Select";
@@ -127,17 +128,26 @@ export default function AdminSubmissionsPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold sm:text-3xl">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <h1 className="font-heading text-2xl font-semibold sm:text-3xl text-slate-900 dark:text-white">
           Submissions & Grading
         </h1>
-        <p className="mt-1 text-slate-600">
+        <p className="mt-1 text-slate-600 dark:text-slate-400">
           Review submissions and grade them on correctness, creativity, and
           timeliness.
         </p>
-      </div>
+      </motion.div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, delay: 0.1 }}
+        className="grid gap-3 sm:grid-cols-2"
+      >
         <Select
           label="Course"
           value={courseFilter}
@@ -150,7 +160,7 @@ export default function AdminSubmissionsPage() {
           onChange={(e) => setAssignmentFilter(e.target.value)}
           options={assignmentOptions}
         />
-      </div>
+      </motion.div>
 
       {error && (
         <EmptyState title="Could not load submissions" description={error} />
@@ -161,7 +171,7 @@ export default function AdminSubmissionsPage() {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="rounded-lg border border-slate-200 bg-white p-4"
+              className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4"
             >
               <Skeleton className="mb-2 h-5 w-1/3" />
               <Skeleton className="h-4 w-2/3" />
@@ -178,13 +188,20 @@ export default function AdminSubmissionsPage() {
           }
         />
       ) : (
-        <SubmissionTable
-          submissions={filtered}
-          courseById={courseById}
-          assignmentById={assignmentById}
-          onGrade={handleGrade}
-        />
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, delay: 0.1 }}
+        >
+          <SubmissionTable
+            submissions={filtered}
+            courseById={courseById}
+            assignmentById={assignmentById}
+            onGrade={handleGrade}
+          />
+        </motion.div>
       )}
     </div>
   );
 }
+
