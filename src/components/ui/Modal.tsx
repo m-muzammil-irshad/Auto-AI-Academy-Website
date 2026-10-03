@@ -50,7 +50,7 @@ export function Modal({
     >
       <div
         className={cn(
-          "w-full max-w-md rounded-2xl border border-slate-200/50 bg-white/80 p-6 shadow-2xl backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-900/80 transition-all",
+          "w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/50 bg-white/80 p-6 shadow-2xl backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-900/80 transition-all",
           className
         )}
       >
