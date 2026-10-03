@@ -141,6 +141,25 @@ export default function CourseDetailPage() {
             <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 leading-relaxed mb-10 text-lg whitespace-pre-wrap">
               {course.description}
             </div>
+
+            {course.outlineUrl && (
+              <div className="mb-10">
+                <h3 className="font-heading text-xl font-bold text-slate-900 dark:text-white mb-4">
+                  Explore More
+                </h3>
+                <a 
+                  href={course.outlineUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-medium transition-colors shadow-sm"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-accent-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  View Course Outline
+                </a>
+              </div>
+            )}
             
             <div className="flex flex-col sm:flex-row gap-4 border-t border-slate-200/50 dark:border-slate-800/50 pt-8 mt-8">
               {userIsEnrolled ? (

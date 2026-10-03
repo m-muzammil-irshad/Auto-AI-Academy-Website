@@ -15,6 +15,7 @@ import { GoogleButton } from "./GoogleButton";
 import { createUserProfile } from "@/lib/services/users";
 import { friendlyAuthError } from "@/lib/utils/authErrors";
 import { routeAfterAuth } from "@/lib/utils/authRedirect";
+import { PasswordStrengthMeter, evaluatePasswordStrength } from "./PasswordStrengthMeter";
 
 export function SignupForm() {
   const router = useRouter();
@@ -36,8 +37,13 @@ export function SignupForm() {
       setError("Please enter your full name.");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+    const strength = evaluatePasswordStrength(password);
+    if (strength === "weak") {
+      setError("Please choose a stronger password (medium or strong).");
       return;
     }
     if (password !== confirm) {
@@ -105,16 +111,18 @@ export function SignupForm() {
         required
         disabled={loading}
       />
-      <Input
-        label="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        autoComplete="new-password"
-        hint="At least 6 characters."
-        required
-        disabled={loading}
-      />
+      <div>
+        <Input
+          label="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="new-password"
+          required
+          disabled={loading}
+        />
+        <PasswordStrengthMeter password={password} />
+      </div>
       <Input
         label="Confirm password"
         type="password"

@@ -31,6 +31,7 @@ export function CourseForm({ course, onCancel, onSubmit }: CourseFormProps) {
   const [youtubeChannelUrl, setYoutubeChannelUrl] = useState(
     course?.youtubeChannelUrl ?? ""
   );
+  const [outlineUrl, setOutlineUrl] = useState(course?.outlineUrl ?? "");
   const [thumbnail, setThumbnail] = useState(course?.thumbnail ?? "");
   const [status, setStatus] = useState<EditableStatus>(
     (course?.status === "completed" ? "ongoing" : course?.status) ?? "soon"
@@ -61,6 +62,7 @@ export function CourseForm({ course, onCancel, onSubmit }: CourseFormProps) {
         description: description.trim(),
         thumbnail: thumbnail.trim(),
         youtubeChannelUrl: trimmedUrl,
+        outlineUrl: outlineUrl.trim(),
         status,
       });
     } catch (err) {
@@ -116,6 +118,16 @@ export function CourseForm({ course, onCancel, onSubmit }: CourseFormProps) {
         onChange={(e) => setThumbnail(e.target.value)}
         placeholder="https://..."
         hint="Paste a public image URL. Leave blank for a neutral placeholder."
+        disabled={loading}
+      />
+
+      <Input
+        label="Course Outline URL (optional)"
+        type="url"
+        value={outlineUrl}
+        onChange={(e) => setOutlineUrl(e.target.value)}
+        placeholder="https://..."
+        hint="Link to a Word document, PDF, or any other outline file."
         disabled={loading}
       />
 

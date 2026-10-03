@@ -3,11 +3,10 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  EmailAuthProvider,
-  reauthenticateWithCredential,
   sendEmailVerification,
-  updatePassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
+import { auth } from "@/lib/firebase/config";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
@@ -27,9 +26,6 @@ export default function StudentProfilePage() {
   const [nameError, setNameError] = useState("");
   const [nameSaved, setNameSaved] = useState(false);
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSaved, setPasswordSaved] = useState(false);
@@ -69,34 +65,16 @@ export default function StudentProfilePage() {
     }
   }
 
-  async function handleChangePassword(e: FormEvent) {
-    e.preventDefault();
+  async function handleSendResetLink() {
     setPasswordError("");
     setPasswordSaved(false);
-
-    if (newPassword.length < 6) {
-      setPasswordError("New password must be at least 6 characters.");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError("Passwords do not match.");
-      return;
-    }
 
     setSavingPassword(true);
     try {
       if (user!.email) {
-        const cred = EmailAuthProvider.credential(
-          user!.email,
-          currentPassword
-        );
-        await reauthenticateWithCredential(user!, cred);
+        await sendPasswordResetEmail(auth, user!.email);
+        setPasswordSaved(true);
       }
-      await updatePassword(user!, newPassword);
-      setPasswordSaved(true);
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
     } catch (err) {
       setPasswordError(friendlyAuthError(err));
     } finally {
@@ -220,36 +198,11 @@ export default function StudentProfilePage() {
               </h2>
             </CardHeader>
           <CardBody>
-            <form
-              onSubmit={handleChangePassword}
-              className="space-y-3"
-              noValidate
-            >
-              <Input
-                label="Current password"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                autoComplete="current-password"
-                disabled={savingPassword}
-              />
-              <Input
-                label="New password"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                autoComplete="new-password"
-                hint="At least 6 characters."
-                disabled={savingPassword}
-              />
-              <Input
-                label="Confirm new password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                autoComplete="new-password"
-                disabled={savingPassword}
-              />
+            <div className="space-y-4">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                For security reasons, click the button below to receive a password reset link at your registered email address.
+              </p>
+              
               {passwordError && (
                 <div
                   role="alert"
@@ -259,14 +212,22 @@ export default function StudentProfilePage() {
                 </div>
               )}
               {passwordSaved && (
-                <p className="text-sm text-green-700">Password updated.</p>
+                <div className="rounded-md bg-green-50 dark:bg-green-900/30 p-3 text-sm text-green-700 dark:text-green-400">
+                  Password reset link has been sent to your email. Please check your inbox and spam folder.
+                </div>
               )}
-              <div className="flex justify-end">
-                <Button type="submit" size="sm" loading={savingPassword}>
-                  Update password
+              <div className="flex justify-end pt-2">
+                <Button 
+                  type="button" 
+                  size="sm" 
+                  onClick={handleSendResetLink}
+                  loading={savingPassword}
+                  disabled={passwordSaved}
+                >
+                  Send reset link
                 </Button>
               </div>
-            </form>
+            </div>
           </CardBody>
         </Card>
         </motion.div>

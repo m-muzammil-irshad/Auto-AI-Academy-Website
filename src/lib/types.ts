@@ -30,6 +30,7 @@ export interface Course {
   description: string;
   thumbnail: string;
   youtubeChannelUrl: string;
+  outlineUrl?: string;
   status: CourseStatus;
   createdAt: Timestamp;
   completedAt: Timestamp | null;

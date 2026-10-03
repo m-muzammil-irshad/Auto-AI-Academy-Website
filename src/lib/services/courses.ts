@@ -16,6 +16,7 @@ export interface CourseInput {
   description: string;
   thumbnail: string;
   youtubeChannelUrl: string;
+  outlineUrl?: string;
   status: Extract<CourseStatus, "ongoing" | "soon">;
 }
 
@@ -26,6 +27,7 @@ function mapCourse(id: string, data: Record<string, unknown>): Course {
     description: (data.description as string) ?? "",
     thumbnail: (data.thumbnail as string) ?? "",
     youtubeChannelUrl: (data.youtubeChannelUrl as string) ?? "",
+    outlineUrl: (data.outlineUrl as string) ?? "",
     status: (data.status as CourseStatus) ?? "soon",
     createdAt: (data.createdAt as Timestamp) ?? Timestamp.now(),
     completedAt: (data.completedAt as Timestamp | null) ?? null,
@@ -49,6 +51,7 @@ export async function createCourse(input: CourseInput): Promise<string> {
     description: input.description.trim(),
     thumbnail: input.thumbnail.trim(),
     youtubeChannelUrl: input.youtubeChannelUrl.trim(),
+    outlineUrl: input.outlineUrl?.trim() ?? "",
     status: input.status,
     createdAt: serverTimestamp(),
     completedAt: null,
@@ -66,6 +69,9 @@ export async function updateCourse(
   if (input.thumbnail !== undefined) patch.thumbnail = input.thumbnail.trim();
   if (input.youtubeChannelUrl !== undefined) {
     patch.youtubeChannelUrl = input.youtubeChannelUrl.trim();
+  }
+  if (input.outlineUrl !== undefined) {
+    patch.outlineUrl = input.outlineUrl.trim();
   }
   if (input.status !== undefined) patch.status = input.status;
   if (Object.keys(patch).length === 0) return;
