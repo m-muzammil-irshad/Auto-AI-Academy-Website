@@ -19,7 +19,7 @@ const lexend = Lexend({
 
 export const metadata: Metadata = {
   title: {
-    default: `${SITE_NAME} | Learn Python, AI & Automation`,
+    default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
   description: "Join Auto AI Academy to learn Python, AI, and Automation for free. Complete courses, submit assignments, get AI help, and earn certificates.",
