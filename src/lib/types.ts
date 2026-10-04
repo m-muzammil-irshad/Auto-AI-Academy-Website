@@ -77,6 +77,7 @@ export interface Submission {
 export interface AppNotification {
   id: string;
   message: string;
+  link?: string;
   type: NotificationType;
   createdAt: Timestamp;
   read: boolean;

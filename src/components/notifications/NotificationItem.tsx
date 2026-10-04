@@ -48,11 +48,20 @@ export interface NotificationItemProps {
   onClick?: (id: string) => void;
 }
 
+import { useRouter } from "next/navigation";
+
 export function NotificationItem({ item, onClick }: NotificationItemProps) {
+  const router = useRouter();
+
   return (
     <button
       type="button"
-      onClick={() => onClick?.(item.id)}
+      onClick={() => {
+        onClick?.(item.id);
+        if (item.link) {
+          router.push(item.link);
+        }
+      }}
       className={cn(
         "flex w-full items-start gap-3 rounded-xl px-4 py-4 text-left transition-colors",
         item.read ? "hover:bg-slate-50/50 dark:hover:bg-slate-800/50" : "bg-accent-50/40 hover:bg-accent-50 dark:bg-accent-900/20 dark:hover:bg-accent-900/40"

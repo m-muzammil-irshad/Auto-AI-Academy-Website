@@ -11,6 +11,9 @@ import { courseDoc, coursesCol } from "@/lib/firebase/collections";
 import { coursesByNewest } from "@/lib/firebase/queries";
 import type { Course, CourseStatus } from "@/lib/types";
 
+import { fetchAllUsers } from "@/lib/services/users";
+import { pushNotification } from "@/lib/services/notifications";
+
 export interface CourseInput {
   title: string;
   description: string;
@@ -56,6 +59,23 @@ export async function createCourse(input: CourseInput): Promise<string> {
     createdAt: serverTimestamp(),
     completedAt: null,
   });
+
+  try {
+    const users = await fetchAllUsers();
+    await Promise.allSettled(
+      users.map((u) =>
+        pushNotification({
+          userId: u.uid,
+          message: `New Course Available! 🚀 "${input.title.trim()}" has just been added.`,
+          link: `/courses/${ref.id}`,
+          type: "general",
+        })
+      )
+    );
+  } catch (err) {
+    console.error("Failed to push notifications for new course", err);
+  }
+
   return ref.id;
 }
 
@@ -63,6 +83,7 @@ export async function updateCourse(
   id: string,
   input: Partial<CourseInput>
 ): Promise<void> {
+  const oldCourse = await fetchCourse(id);
   const patch: Record<string, unknown> = {};
   if (input.title !== undefined) patch.title = input.title.trim();
   if (input.description !== undefined) patch.description = input.description.trim();
@@ -76,6 +97,24 @@ export async function updateCourse(
   if (input.status !== undefined) patch.status = input.status;
   if (Object.keys(patch).length === 0) return;
   await updateDoc(courseDoc(id), patch);
+
+  if (oldCourse?.status === "soon" && input.status === "ongoing") {
+    try {
+      const users = await fetchAllUsers();
+      await Promise.allSettled(
+        users.map((u) =>
+          pushNotification({
+            userId: u.uid,
+            message: `Enrollment is now OPEN for "${patch.title ?? oldCourse.title}"! 🎉`,
+            link: `/courses/${id}`,
+            type: "general",
+          })
+        )
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
 }
 
 /** One-way action. Sets status to "completed" and stamps completedAt. */
@@ -84,6 +123,24 @@ export async function markCourseCompleted(id: string): Promise<void> {
     status: "completed",
     completedAt: serverTimestamp(),
   });
+  
+  try {
+    const oldCourse = await fetchCourse(id);
+    const { fetchEnrollmentsForCourse } = await import("@/lib/services/enrollments");
+    const enrollments = await fetchEnrollmentsForCourse(id);
+    await Promise.allSettled(
+      enrollments.map((e) =>
+        pushNotification({
+          userId: e.userId,
+          message: `The course "${oldCourse?.title ?? "A course"}" is now complete! 🎓`,
+          link: `/courses/${id}`,
+          type: "general",
+        })
+      )
+    );
+  } catch(err) {
+    console.error(err);
+  }
 }
 
 /** Raw delete. Cascade (enrollments → assignments → submissions) is orchestrated

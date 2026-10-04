@@ -90,6 +90,26 @@ export async function createAssignment(
     dueDate: input.dueDate,
     createdAt: serverTimestamp(),
   });
+
+  try {
+    const { fetchEnrollmentsForCourse } = await import("@/lib/services/enrollments");
+    const { pushNotification } = await import("@/lib/services/notifications");
+    const enrollments = await fetchEnrollmentsForCourse(input.courseId);
+    
+    await Promise.allSettled(
+      enrollments.map((e) =>
+        pushNotification({
+          userId: e.userId,
+          message: `New Assignment! 📝 "${input.title.trim()}" in ${course.title}.`,
+          link: `/student/assignments`,
+          type: "general",
+        })
+      )
+    );
+  } catch (err) {
+    console.error(err);
+  }
+
   return ref.id;
 }
 

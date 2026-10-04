@@ -1,4 +1,4 @@
-﻿import {
+import {
   QueryConstraint,
   Timestamp,
   addDoc,
@@ -22,6 +22,7 @@ function mapNotification(
   return {
     id,
     message: (data.message as string) ?? "",
+    link: data.link as string | undefined,
     type: (data.type as NotificationType) ?? "general",
     createdAt: (data.createdAt as Timestamp) ?? Timestamp.now(),
     read: !!data.read,
@@ -66,10 +67,12 @@ export async function markAllNotificationsRead(
 export async function pushNotification(params: {
   userId: string;
   message: string;
+  link?: string;
   type: NotificationType;
 }): Promise<void> {
   await addDoc(notificationsCol(params.userId), {
     message: params.message,
+    ...(params.link ? { link: params.link } : {}),
     type: params.type,
     createdAt: serverTimestamp(),
     read: false,

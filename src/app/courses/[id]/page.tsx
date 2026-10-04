@@ -117,7 +117,7 @@ export default function CourseDetailPage() {
                 width={1280}
                 height={720}
                 className="w-full h-auto object-contain max-h-[600px]"
-                unoptimized
+                priority={true}
               />
             </div>
           ) : (
@@ -174,14 +174,14 @@ export default function CourseDetailPage() {
                     </Button>
                   )}
                   {isSoon && (
-                    <Tooltip content="This course opens for enrollment soon — check back later.">
+                    <Tooltip position="left" content="This course opens for enrollment soon — check back later.">
                       <Button size="lg" variant="secondary" disabled className="w-full sm:w-auto px-8 cursor-not-allowed">
                         Coming Soon
                       </Button>
                     </Tooltip>
                   )}
                   {isCompleted && (
-                    <Tooltip content="This course is closed — no new enrollments.">
+                    <Tooltip position="left" content="This course is closed — no new enrollments.">
                       <Button size="lg" variant="secondary" disabled className="w-full sm:w-auto px-8 cursor-not-allowed">
                         Completed
                       </Button>

@@ -19,7 +19,6 @@ export function EnrolledCourseCard({ course }: EnrolledCourseCardProps) {
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover"
-            unoptimized
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent-100 to-accent-50 dark:from-accent-900/40 dark:to-accent-800/40">

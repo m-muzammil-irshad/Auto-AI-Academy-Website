@@ -164,6 +164,7 @@ export async function gradeSubmission(params: {
       userId: params.userId,
       type: "grading",
       message: `You were graded on "${params.assignmentTitle}" — ${params.grading.finalStars.toFixed(1)} ★`,
+      link: `/student/assignments`,
     });
   }
 }

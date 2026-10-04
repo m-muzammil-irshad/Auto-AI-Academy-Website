@@ -27,7 +27,6 @@ export function CourseCard({ course }: CourseCardProps) {
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
-              unoptimized
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent-500/20 to-purple-500/20 dark:from-accent-500/10 dark:to-purple-500/10">
