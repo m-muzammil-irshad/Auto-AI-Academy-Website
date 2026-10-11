@@ -34,6 +34,8 @@ export const ORGANIZATION_JSON_LD = {
   "@type": "EducationalOrganization",
   "@id": `${SITE_URL}/#organization`,
   name: "Auto AI Academy",
+  // Other ways people write the name, so search engines tie them to this site.
+  alternateName: ["AutoAI Academy", "Auto AI"],
   url: SITE_URL,
   logo: `${SITE_URL}/icon.png`,
   areaServed: [

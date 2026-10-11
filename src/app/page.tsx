@@ -11,7 +11,8 @@ import { FinalCTA } from "@/components/home/FinalCTA";
 import { HomeAuthRedirect } from "@/components/home/HomeAuthRedirect";
 import { DEFAULT_OG_IMAGE, ORGANIZATION_JSON_LD, SITE_URL, seoAlternates } from "@/lib/seo";
 
-const TITLE = "Free AI & Python Courses in Urdu/Hindi | Auto AI Academy";
+// Brand first, so a search for the academy's name matches the start of the title.
+const TITLE = "Auto AI Academy: Free AI & Python Courses in Urdu/Hindi";
 const DESCRIPTION =
   "Learn Artificial Intelligence, Python, and automation for free in Urdu/Hindi. Video lessons, hands-on assignments, AI support, and certificates for learners in Pakistan and India.";
 
@@ -39,6 +40,7 @@ export default function HomePage() {
         "@type": "WebSite",
         "@id": `${SITE_URL}/#website`,
         "name": "Auto AI Academy",
+        "alternateName": ORGANIZATION_JSON_LD.alternateName,
         "url": SITE_URL,
         "inLanguage": "en",
         "publisher": { "@id": ORGANIZATION_JSON_LD["@id"] },
