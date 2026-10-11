@@ -168,6 +168,17 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ---------------------------------------------------------------------
+    // blogPosts/{postId}
+    //   - Public read of published posts only; drafts are admin-only.
+    //     Public queries must therefore filter on status == "published".
+    //   - Admin-only write.
+    // ---------------------------------------------------------------------
+    match /blogPosts/{postId} {
+      allow read: if resource.data.status == "published" || isAdmin();
+      allow write: if isAdmin();
+    }
+
     // Default: deny anything not explicitly matched above.
   }
 }

@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { courseDoc, coursesCol } from "@/lib/firebase/collections";
 import { coursesByNewest } from "@/lib/firebase/queries";
-import type { Course, CourseStatus } from "@/lib/types";
+import type { Course, CourseLevel, CourseStatus } from "@/lib/types";
 
 import { fetchAllUsers } from "@/lib/services/users";
 import { pushNotification } from "@/lib/services/notifications";
@@ -20,6 +20,10 @@ export interface CourseInput {
   thumbnail: string;
   youtubeChannelUrl: string;
   outlineUrl?: string;
+  level?: CourseLevel | "";
+  duration?: string;
+  lessonCount?: number | null;
+  outcomes?: string[];
   status: Extract<CourseStatus, "ongoing" | "soon">;
 }
 
@@ -31,6 +35,10 @@ function mapCourse(id: string, data: Record<string, unknown>): Course {
     thumbnail: (data.thumbnail as string) ?? "",
     youtubeChannelUrl: (data.youtubeChannelUrl as string) ?? "",
     outlineUrl: (data.outlineUrl as string) ?? "",
+    level: (data.level as CourseLevel | "") ?? "",
+    duration: (data.duration as string) ?? "",
+    lessonCount: (data.lessonCount as number | null) ?? null,
+    outcomes: Array.isArray(data.outcomes) ? (data.outcomes as string[]) : [],
     status: (data.status as CourseStatus) ?? "soon",
     createdAt: (data.createdAt as Timestamp) ?? Timestamp.now(),
     completedAt: (data.completedAt as Timestamp | null) ?? null,
@@ -55,6 +63,10 @@ export async function createCourse(input: CourseInput): Promise<string> {
     thumbnail: input.thumbnail.trim(),
     youtubeChannelUrl: input.youtubeChannelUrl.trim(),
     outlineUrl: input.outlineUrl?.trim() ?? "",
+    level: input.level ?? "",
+    duration: input.duration?.trim() ?? "",
+    lessonCount: input.lessonCount ?? null,
+    outcomes: input.outcomes ?? [],
     status: input.status,
     createdAt: serverTimestamp(),
     completedAt: null,
@@ -94,6 +106,10 @@ export async function updateCourse(
   if (input.outlineUrl !== undefined) {
     patch.outlineUrl = input.outlineUrl.trim();
   }
+  if (input.level !== undefined) patch.level = input.level;
+  if (input.duration !== undefined) patch.duration = input.duration.trim();
+  if (input.lessonCount !== undefined) patch.lessonCount = input.lessonCount;
+  if (input.outcomes !== undefined) patch.outcomes = input.outcomes;
   if (input.status !== undefined) patch.status = input.status;
   if (Object.keys(patch).length === 0) return;
   await updateDoc(courseDoc(id), patch);

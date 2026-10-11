@@ -22,9 +22,19 @@ export const ADMIN_NAV = [
   { href: "/admin/courses", label: "Courses", icon: "book" },
   { href: "/admin/assignments", label: "Assignments", icon: "clipboard" },
   { href: "/admin/submissions", label: "Submissions", icon: "check" },
+  { href: "/admin/blog", label: "Blog", icon: "pen" },
   { href: "/admin/students", label: "Students", icon: "users" },
   { href: "/admin/settings", label: "Settings", icon: "settings" },
 ] as const;
+
+export const COURSE_LEVEL_LABELS: Record<
+  "beginner" | "intermediate" | "advanced",
+  string
+> = {
+  beginner: "Beginner",
+  intermediate: "Intermediate",
+  advanced: "Advanced",
+};
 
 export const COURSE_STATUS_LABELS: Record<
   "ongoing" | "soon" | "completed",

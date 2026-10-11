@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ADMIN_NAV } from "@/lib/constants";
 import { cn } from "@/lib/utils/cn";
 import { Spinner } from "@/components/ui/Spinner";
+import { DURATION, EASE } from "@/lib/motion";
 
 function NavIcon({ name }: { name: string }) {
   const common = {
@@ -43,6 +45,12 @@ function NavIcon({ name }: { name: string }) {
           <path d="M9 12l2 2 4-4M12 2a10 10 0 100 20 10 10 0 000-20z" />
         </svg>
       );
+    case "pen":
+      return (
+        <svg {...common}>
+          <path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" />
+        </svg>
+      );
     case "users":
       return (
         <svg {...common}>
@@ -69,6 +77,8 @@ export interface AdminSidebarProps {
 export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
   const [pendingHref, setPendingHref] = useState<string | null>(null);
+  // Desktop and mobile copies of the sidebar each animate their own highlight.
+  const highlightId = useId();
 
   useEffect(() => {
     setPendingHref(null);
@@ -92,17 +102,26 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
                 onNavigate?.();
               }}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+                "relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-150",
                 active
-                  ? "bg-accent-50 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  ? "text-accent-700 dark:text-accent-400"
+                  : "text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900/50"
               )}
             >
-              <NavIcon name={item.icon} />
-              {item.label}
-              {pendingHref === item.href && (
-                <Spinner className="ml-auto h-4 w-4 text-accent-500" />
+              {active && (
+                <motion.span
+                  layoutId={highlightId}
+                  transition={{ duration: DURATION.ui, ease: EASE }}
+                  className="absolute inset-0 rounded-xl bg-accent-50 dark:bg-accent-500/10"
+                />
               )}
+              <span className="relative flex flex-1 items-center gap-3">
+                <NavIcon name={item.icon} />
+                {item.label}
+                {pendingHref === item.href && (
+                  <Spinner className="ml-auto h-4 w-4 text-accent-500" />
+                )}
+              </span>
             </Link>
           );
         })}

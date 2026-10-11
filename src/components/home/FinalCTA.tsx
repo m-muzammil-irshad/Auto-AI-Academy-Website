@@ -3,20 +3,19 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
+import { fadeUp, viewportOnce } from "@/lib/motion";
 
 export function FinalCTA() {
   return (
     <section className="relative overflow-hidden bg-transparent transition-colors duration-300">
-      <div className="absolute inset-0 pointer-events-none opacity-50 dark:opacity-30 z-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[40rem] w-[40rem] rounded-full bg-blue-500/20 blur-[100px] mix-blend-multiply dark:mix-blend-screen" />
-      </div>
+      <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-500/10 blur-[100px]" />
 
       <div className="relative z-10 mx-auto max-w-4xl px-4 py-24 text-center sm:py-32">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.2 }}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
           className="rounded-3xl border border-white/20 bg-white/40 p-10 shadow-2xl backdrop-blur-xl dark:border-slate-700/30 dark:bg-slate-800/40 sm:p-16"
         >
           <h2 className="font-heading text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
@@ -27,7 +26,7 @@ export function FinalCTA() {
           </p>
           <div className="mt-10 flex justify-center">
             <Link href="/signup">
-              <Button size="lg" className="rounded-full px-10 py-6 text-lg font-bold shadow-xl shadow-accent-500/30 transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-accent-500/40">
+              <Button size="lg" className="rounded-full px-10 py-6 text-lg font-bold shadow-xl shadow-accent-500/30 hover:shadow-2xl hover:shadow-accent-500/30">
                 Create free account
               </Button>
             </Link>

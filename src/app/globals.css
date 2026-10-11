@@ -16,6 +16,168 @@
     @apply font-heading font-semibold text-slate-900;
   }
   *:focus-visible {
-    @apply outline-none ring-2 ring-accent-500 ring-offset-2 ring-offset-slate-50 rounded;
+    @apply outline-none ring-2 ring-accent-500 ring-offset-2 ring-offset-slate-50 rounded dark:ring-offset-slate-950;
+  }
+}
+
+@layer components {
+  /* The one card surface used across the site. */
+  .card-surface {
+    @apply rounded-2xl border border-slate-200/60 bg-white/70 shadow-sm backdrop-blur-md dark:border-slate-800/60 dark:bg-slate-900/60;
+  }
+  /* Quiet hover for clickable or highlighted cards: small lift, tinted border. */
+  .card-hover {
+    @apply transition duration-200 ease-smooth hover:-translate-y-1 hover:border-accent-500/40 hover:shadow-lg hover:shadow-accent-500/10 dark:hover:border-accent-400/40;
+  }
+
+  /* Loading placeholder with a soft sweep instead of a pulse. */
+  .skeleton {
+    @apply animate-shimmer rounded-md bg-slate-200/60 dark:bg-slate-800/60;
+    background-image: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.55) 50%, transparent 70%);
+    background-size: 200% 100%;
+    background-position: 100% 0;
+  }
+  .dark .skeleton {
+    background-image: linear-gradient(100deg, transparent 30%, rgb(148 163 184 / 0.12) 50%, transparent 70%);
+  }
+
+  /* Header link with an underline that slides in from the left. */
+  .nav-link {
+    @apply relative text-sm font-medium text-slate-600 transition-colors duration-150 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white;
+  }
+  .nav-link::after {
+    content: "";
+    @apply absolute -bottom-1.5 left-0 h-0.5 w-full origin-left scale-x-0 rounded-full bg-accent-500 transition-transform duration-200 ease-smooth;
+  }
+  .nav-link:hover::after,
+  .nav-link[aria-current="true"]::after {
+    @apply scale-x-100;
+  }
+  .nav-link[aria-current="true"] {
+    @apply text-slate-900 dark:text-white;
+  }
+}
+
+/*
+ * Blog article body. Sizes follow what established tutorial sites use:
+ * an 18px body at ~1.75 line height in a ~720px column (about 70 characters per line),
+ * with clearly larger section headings and 14px code.
+ */
+.article {
+  @apply text-[1.0625rem] leading-[1.75] text-slate-700 dark:text-slate-300 sm:text-lg sm:leading-[1.75];
+}
+.article > * + * {
+  margin-top: 1.5em;
+}
+.article h2 {
+  @apply font-heading text-2xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white sm:text-[1.875rem];
+  margin-top: 2.5em;
+  scroll-margin-top: 6rem;
+}
+.article h3 {
+  @apply font-heading text-xl font-semibold leading-snug text-slate-900 dark:text-white sm:text-[1.375rem];
+  margin-top: 2em;
+  scroll-margin-top: 6rem;
+}
+.article h2 + *,
+.article h3 + * {
+  margin-top: 0.75em;
+}
+.article strong {
+  @apply font-semibold text-slate-900 dark:text-white;
+}
+.article a {
+  @apply font-medium text-accent-600 underline decoration-accent-500/40 underline-offset-4 transition-colors duration-150 hover:decoration-accent-500 dark:text-accent-400;
+}
+.article ul,
+.article ol {
+  padding-left: 1.5em;
+}
+.article ul {
+  list-style: disc;
+}
+.article ol {
+  list-style: decimal;
+}
+.article li + li {
+  margin-top: 0.5em;
+}
+.article li::marker {
+  @apply text-slate-400 dark:text-slate-500;
+}
+.article blockquote {
+  @apply border-l-4 border-accent-500/60 pl-5 italic text-slate-600 dark:text-slate-400;
+}
+.article blockquote + blockquote {
+  margin-top: 1em;
+}
+.article :not(pre) > code {
+  @apply rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[0.875em] text-slate-800 dark:bg-slate-800 dark:text-slate-200;
+}
+.article .code-block {
+  @apply relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900;
+}
+.article pre {
+  @apply overflow-x-auto px-5 pb-5 pt-12 font-mono text-sm leading-[1.7] text-slate-100;
+  tab-size: 4;
+}
+.article .code-copy {
+  @apply absolute right-3 top-3 rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 font-body text-xs font-medium text-slate-300 transition-colors duration-150 hover:border-slate-500 hover:text-white;
+}
+.article .callout {
+  @apply rounded-xl border border-accent-200 bg-accent-50 px-5 py-4 text-[0.95em] dark:border-accent-500/30 dark:bg-accent-500/10;
+}
+.article .callout-warning {
+  @apply border-amber-200 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10;
+}
+.article .callout::before {
+  content: "Tip";
+  @apply mb-1 block text-xs font-bold uppercase tracking-wider text-accent-700 dark:text-accent-300;
+}
+.article .callout-warning::before {
+  content: "Watch out";
+  @apply text-amber-700 dark:text-amber-300;
+}
+.article .callout > * + *,
+.article .takeaways > * + * {
+  margin-top: 0.75em;
+}
+.article .takeaways {
+  @apply rounded-2xl border border-slate-200 bg-slate-50 px-6 py-6 dark:border-slate-800 dark:bg-slate-900;
+  margin-top: 3em;
+}
+.article .takeaways h2 {
+  @apply text-xl sm:text-2xl;
+  margin-top: 0;
+}
+.article img {
+  @apply w-full rounded-xl;
+}
+
+/* Admin editor: the same .article styles, plus editing affordances. */
+.article.ProseMirror {
+  @apply min-h-[28rem] outline-none ring-0;
+}
+.article.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply pointer-events-none float-left h-0 text-slate-400 dark:text-slate-500;
+}
+.article.ProseMirror img.ProseMirror-selectednode {
+  @apply outline outline-2 outline-offset-2 outline-accent-500;
+}
+.article.ProseMirror > pre {
+  @apply rounded-xl border border-slate-800 bg-slate-900 p-5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

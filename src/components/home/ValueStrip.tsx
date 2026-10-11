@@ -1,8 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { motion, Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { Layout, CheckCircle, Trophy, Award } from "lucide-react";
+import { fadeUp, stagger, viewportOnce } from "@/lib/motion";
 
 interface ValueItem {
   title: string;
@@ -38,34 +39,15 @@ const VALUES: ValueItem[] = [
   },
 ];
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15 },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 200, damping: 20 } },
-};
-
 export function ValueStrip() {
   return (
     <section id="why" className="relative bg-transparent transition-colors duration-300 py-24 sm:py-32 overflow-hidden">
-      {/* Background Orbs */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute -top-40 -right-40 h-[40rem] w-[40rem] rounded-full bg-accent-500/10 blur-[100px]" />
-        <div className="absolute -bottom-40 -left-40 h-[40rem] w-[40rem] rounded-full bg-blue-500/10 blur-[100px]" />
-      </div>
-
       <div className="relative z-10 mx-auto max-w-7xl px-4">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
           className="mb-16 text-center max-w-3xl mx-auto"
         >
           <span className="mb-4 inline-block font-heading text-sm font-bold tracking-widest text-accent-600 dark:text-accent-400 uppercase">
@@ -78,32 +60,30 @@ export function ValueStrip() {
             We provide an environment designed to help you actually finish what you start.
           </p>
         </motion.div>
-        
-        <motion.div 
-          variants={containerVariants}
+
+        <motion.div
+          variants={stagger}
           initial="hidden"
           whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={viewportOnce}
           className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"
         >
           {VALUES.map((v) => (
-            <motion.div
-              key={v.title}
-              variants={itemVariants}
-              className="group relative rounded-[2rem] border border-slate-200/60 bg-slate-50/80 p-8 backdrop-blur-md transition-all duration-500 hover:bg-white hover:shadow-2xl hover:shadow-accent-500/10 dark:border-slate-800/60 dark:bg-slate-900/80 dark:hover:bg-slate-900 dark:hover:shadow-accent-400/10 hover:-translate-y-2 overflow-hidden"
-            >
-              {/* Top Gradient Bar */}
-              <div className={`absolute top-0 left-0 w-full h-2 bg-gradient-to-r ${v.gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
-              
-              <div className={`mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${v.gradient} text-white shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}>
-                {v.icon}
+            <motion.div key={v.title} variants={fadeUp} className="group">
+              <div className="card-surface card-hover relative h-full overflow-hidden bg-white/80 p-8 dark:bg-slate-900/80">
+                {/* Accent line that fills on hover */}
+                <div className={`absolute top-0 left-0 h-1 w-full origin-left scale-x-0 bg-gradient-to-r ${v.gradient} transition-transform duration-300 ease-smooth group-hover:scale-x-100`} />
+
+                <div className={`mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${v.gradient} text-white shadow-lg`}>
+                  {v.icon}
+                </div>
+                <h3 className="font-heading text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                  {v.title}
+                </h3>
+                <p className="text-base leading-relaxed text-slate-600 dark:text-slate-400">
+                  {v.text}
+                </p>
               </div>
-              <h3 className="font-heading text-2xl font-bold text-slate-900 dark:text-white mb-3">
-                {v.title}
-              </h3>
-              <p className="text-base leading-relaxed text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
-                {v.text}
-              </p>
             </motion.div>
           ))}
         </motion.div>

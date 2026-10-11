@@ -12,6 +12,8 @@ type Message = {
   content: string;
 };
 
+const GREETED_KEY = "aaa-tutor-greeted";
+
 export function FloatingAITutor() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -33,10 +35,22 @@ export function FloatingAITutor() {
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Delay the speech bubble appearance slightly for a nice entrance effect
+  // Greet first-time visitors briefly, then stay out of the way on later visits
   useEffect(() => {
-    const timer = setTimeout(() => setShowSpeech(true), 1500);
-    return () => clearTimeout(timer);
+    try {
+      if (localStorage.getItem(GREETED_KEY)) return;
+    } catch {
+      return; // Storage unavailable: skip the greeting rather than repeat it every page.
+    }
+    const show = setTimeout(() => {
+      setShowSpeech(true);
+      localStorage.setItem(GREETED_KEY, "1");
+    }, 1500);
+    const hide = setTimeout(() => setShowSpeech(false), 7500);
+    return () => {
+      clearTimeout(show);
+      clearTimeout(hide);
+    };
   }, []);
 
   // Auto scroll to bottom of chat
@@ -184,7 +198,7 @@ export function FloatingAITutor() {
               initial={{ opacity: 0, scale: 0.8, x: 20 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.8, x: 10 }}
-              className="relative mb-6 rounded-2xl rounded-br-none bg-white px-4 py-3 shadow-lg dark:bg-slate-800"
+              className="relative mb-4 hidden rounded-2xl rounded-br-none bg-white px-4 py-3 shadow-lg dark:bg-slate-800 sm:block"
             >
               <p className="font-heading text-sm font-bold text-slate-900 dark:text-white">
                 Hi! <br />
@@ -199,9 +213,10 @@ export function FloatingAITutor() {
         {/* Mascot Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="group relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-slate-50 shadow-xl shadow-accent-500/20 transition-transform hover:scale-105 hover:shadow-accent-500/40 active:scale-95 dark:border-slate-900 dark:bg-slate-800 sm:h-24 sm:w-24"
+          aria-label="AI tutor chat"
+          className="group relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-slate-50 shadow-xl shadow-accent-500/20 transition-transform hover:scale-105 hover:shadow-accent-500/40 active:scale-95 dark:border-slate-900 dark:bg-slate-800 sm:h-16 sm:w-16"
         >
-          <TutorMascotSVG className="h-full w-full object-cover p-2 transition-transform group-hover:scale-110" />
+          <TutorMascotSVG className="h-full w-full object-cover p-1.5" />
         </button>
       </div>
     </div>

@@ -1,11 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/Button";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
 import { Avatar } from "@/components/ui/Avatar";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ordinal } from "@/lib/utils/format";
 import { Trophy } from "lucide-react";
+import { fadeUp, stagger, viewportOnce } from "@/lib/motion";
 
 const TEASER_LIMIT = 3;
 
@@ -14,12 +17,12 @@ export function LeaderboardTeaser() {
 
   if (loading) {
     return (
-      <section className="border-t border-slate-200/50 bg-slate-50 dark:border-slate-800/50 dark:bg-slate-950 transition-colors duration-300">
+      <section className="bg-transparent transition-colors duration-300">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:py-28">
-          <Skeleton className="mb-6 h-10 w-72 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+          <Skeleton className="mb-6 h-10 w-72 rounded-lg" />
           <div className="grid gap-6 sm:grid-cols-3">
             {[0, 1, 2].map((i) => (
-              <Skeleton key={i} className="h-24 bg-slate-200 dark:bg-slate-800 rounded-2xl" />
+              <Skeleton key={i} className="h-24 rounded-2xl" />
             ))}
           </div>
         </div>
@@ -27,57 +30,77 @@ export function LeaderboardTeaser() {
     );
   }
 
-  if (error || entries.length === 0) return null;
+  if (error) return null;
+
+  if (entries.length === 0) {
+    return (
+      <section className="relative bg-transparent transition-colors duration-300">
+        <div className="mx-auto max-w-3xl px-4 py-20 sm:py-28">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={viewportOnce}
+            className="card-surface flex flex-col items-center bg-white/80 p-10 text-center dark:bg-slate-900/80"
+          >
+            <Trophy className="h-10 w-10 text-yellow-400" />
+            <h2 className="mt-4 font-heading text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
+              The leaderboard is wide open
+            </h2>
+            <p className="mt-3 max-w-md text-slate-600 dark:text-slate-400">
+              Nobody has claimed the top spot yet. Submit your first assignment, earn stars, and put your name here.
+            </p>
+            <Link href="/signup" className="mt-6">
+              <Button className="rounded-full px-6">Be the first</Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative overflow-hidden bg-transparent text-slate-900 dark:text-white transition-colors duration-300">
-      <div className="absolute inset-0 pointer-events-none z-0 opacity-40">
-        <div className="absolute top-0 right-1/4 h-[40rem] w-[40rem] rounded-full bg-accent-600/20 blur-[120px] mix-blend-screen" />
-      </div>
-
       <div className="relative z-10 mx-auto max-w-6xl px-4 py-20 sm:py-28">
-        <div className="mb-12 max-w-2xl">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.2 }}
-          >
-            <h2 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-              <Trophy className="h-8 w-8 text-yellow-400" />
-              Top learners, all-time
-            </h2>
-            <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
-              Consistency adds up. Here’s who’s leading right now.
-            </p>
-          </motion.div>
-        </div>
-        
-        <ol className="grid gap-6 sm:grid-cols-3">
-          {entries.map((e, idx) => (
-            <motion.li
-              key={e.uid}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.2, delay: idx * 0.1 }}
-              className="group flex items-center gap-5 rounded-2xl border border-slate-200/50 bg-white/50 p-5 backdrop-blur-md transition-all hover:bg-white hover:border-accent-500/50 hover:shadow-lg hover:shadow-accent-500/20 dark:border-slate-700/50 dark:bg-slate-800/50 dark:hover:bg-slate-800"
-            >
-              <div className="relative">
-                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-accent-500 to-purple-500 opacity-0 blur transition duration-500 group-hover:opacity-50"></div>
-                <Avatar name={e.name} size="lg" className="relative border-2 border-slate-200 dark:border-slate-700 group-hover:border-accent-500 transition-colors" />
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-lg font-bold text-slate-800 dark:text-slate-100 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{e.name}</p>
-                <div className="flex items-center gap-2 mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  <span className="text-yellow-400">{e.totalStars.toFixed(1)} stars</span>
-                  <span>·</span>
-                  <span className="text-accent-400">{ordinal(e.rank)} place</span>
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+          className="mb-12 max-w-2xl"
+        >
+          <h2 className="flex items-center gap-3 font-heading text-3xl font-bold tracking-tight sm:text-4xl">
+            <Trophy className="h-8 w-8 text-yellow-400" />
+            Top learners, all-time
+          </h2>
+          <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
+            Consistency adds up. Here’s who’s leading right now.
+          </p>
+        </motion.div>
+
+        <motion.ol
+          variants={stagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+          className="grid gap-6 sm:grid-cols-3"
+        >
+          {entries.map((e) => (
+            <motion.li key={e.uid} variants={fadeUp}>
+              <div className="card-surface card-hover flex items-center gap-5 p-5">
+                <Avatar name={e.name} size="lg" className="border-2 border-slate-200 dark:border-slate-700" />
+                <div className="min-w-0">
+                  <p className="truncate text-lg font-bold text-slate-800 dark:text-slate-100">{e.name}</p>
+                  <div className="flex items-center gap-2 mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+                    <span className="text-yellow-500 dark:text-yellow-400">{e.totalStars.toFixed(1)} stars</span>
+                    <span>·</span>
+                    <span className="text-accent-600 dark:text-accent-400">{ordinal(e.rank)} place</span>
+                  </div>
                 </div>
               </div>
             </motion.li>
           ))}
-        </ol>
+        </motion.ol>
       </div>
     </section>
   );

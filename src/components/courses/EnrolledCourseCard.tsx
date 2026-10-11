@@ -1,14 +1,17 @@
 import Image from "next/image";
 import { Badge, courseStatusVariant } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { ProgressBar } from "@/components/ui/Progress";
 import { COURSE_STATUS_LABELS } from "@/lib/constants";
 import type { Course } from "@/lib/types";
 
 export interface EnrolledCourseCardProps {
   course: Course;
+  /** Assignments submitted out of the course total; hidden when the course has none. */
+  progress?: { submitted: number; total: number };
 }
 
-export function EnrolledCourseCard({ course }: EnrolledCourseCardProps) {
+export function EnrolledCourseCard({ course, progress }: EnrolledCourseCardProps) {
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-slate-200/50 bg-white shadow-sm dark:border-slate-800/50 dark:bg-slate-900/50 backdrop-blur-md transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-500/10 dark:hover:shadow-accent-500/5">
       <div className="relative aspect-video w-full bg-slate-100 dark:bg-slate-800/50">
@@ -42,6 +45,20 @@ export function EnrolledCourseCard({ course }: EnrolledCourseCardProps) {
         <p className="mb-5 line-clamp-3 flex-1 text-sm text-slate-600 dark:text-slate-400">
           {course.description}
         </p>
+        {progress && progress.total > 0 && (
+          <div className="mb-5">
+            <div className="mb-1.5 flex items-center justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+              <span>Assignments</span>
+              <span className="tabular-nums">
+                {progress.submitted} / {progress.total}
+              </span>
+            </div>
+            <ProgressBar
+              value={progress.submitted / progress.total}
+              label={`${course.title} assignments submitted`}
+            />
+          </div>
+        )}
         <a
           href={course.youtubeChannelUrl}
           target="_blank"

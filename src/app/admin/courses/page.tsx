@@ -155,7 +155,7 @@ export default function AdminCoursesPage() {
           setEditing(null);
         }}
         title={editing ? "Edit course" : "Add course"}
-        className="max-w-lg"
+        className="max-w-xl"
       >
         <CourseForm
           course={editing ?? undefined}

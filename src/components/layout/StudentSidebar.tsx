@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { STUDENT_NAV } from "@/lib/constants";
 import { cn } from "@/lib/utils/cn";
 import { WhatsAppButton } from "./WhatsAppButton";
 import { Spinner } from "@/components/ui/Spinner";
+import { DURATION, EASE } from "@/lib/motion";
 
 function NavIcon({ name }: { name: string }) {
   const common = {
@@ -76,6 +78,8 @@ export interface StudentSidebarProps {
 export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
   const pathname = usePathname();
   const [pendingHref, setPendingHref] = useState<string | null>(null);
+  // Desktop and mobile copies of the sidebar each animate their own highlight.
+  const highlightId = useId();
 
   useEffect(() => {
     setPendingHref(null);
@@ -99,17 +103,26 @@ export function StudentSidebar({ onNavigate }: StudentSidebarProps) {
                 onNavigate?.();
               }}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-150",
                 active
-                  ? "bg-accent-50 text-accent-700 dark:bg-accent-500/10 dark:text-accent-400"
+                  ? "text-accent-700 dark:text-accent-400"
                   : "text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900/50"
               )}
             >
-              <NavIcon name={item.icon} />
-              {item.label}
-              {pendingHref === item.href && (
-                <Spinner className="ml-auto h-4 w-4 text-accent-500" />
+              {active && (
+                <motion.span
+                  layoutId={highlightId}
+                  transition={{ duration: DURATION.ui, ease: EASE }}
+                  className="absolute inset-0 rounded-xl bg-accent-50 dark:bg-accent-500/10"
+                />
               )}
+              <span className="relative flex flex-1 items-center gap-3">
+                <NavIcon name={item.icon} />
+                {item.label}
+                {pendingHref === item.href && (
+                  <Spinner className="ml-auto h-4 w-4 text-accent-500" />
+                )}
+              </span>
             </Link>
           );
         })}

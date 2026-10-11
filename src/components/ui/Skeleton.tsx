@@ -5,10 +5,5 @@ export function Skeleton({
   className,
   ...rest
 }: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("animate-pulse rounded-md bg-slate-200/50 dark:bg-slate-800/50", className)}
-      {...rest}
-    />
-  );
+  return <div className={cn("skeleton", className)} {...rest} />;
 }

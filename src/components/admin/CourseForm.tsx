@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
-import type { Course, CourseStatus } from "@/lib/types";
+import { COURSE_LEVEL_LABELS } from "@/lib/constants";
+import type { Course, CourseLevel, CourseStatus } from "@/lib/types";
 import type { CourseInput } from "@/lib/services/courses";
 
 export interface CourseFormProps {
@@ -22,6 +23,11 @@ const STATUS_OPTIONS = [
   { value: "soon", label: "Coming Soon — visible, disabled" },
 ];
 
+const LEVEL_OPTIONS = [
+  { value: "", label: "Not set" },
+  ...Object.entries(COURSE_LEVEL_LABELS).map(([value, label]) => ({ value, label })),
+];
+
 export function CourseForm({ course, onCancel, onSubmit }: CourseFormProps) {
   const isEdit = !!course;
   const isCompleted = course?.status === "completed";
@@ -36,6 +42,13 @@ export function CourseForm({ course, onCancel, onSubmit }: CourseFormProps) {
   const [status, setStatus] = useState<EditableStatus>(
     (course?.status === "completed" ? "ongoing" : course?.status) ?? "soon"
   );
+  const [level, setLevel] = useState<CourseLevel | "">(course?.level ?? "");
+  const [duration, setDuration] = useState(course?.duration ?? "");
+  const [lessonCount, setLessonCount] = useState(
+    course?.lessonCount != null ? String(course.lessonCount) : ""
+  );
+  // One outcome per line in the textarea.
+  const [outcomes, setOutcomes] = useState((course?.outcomes ?? []).join("\n"));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -55,6 +68,12 @@ export function CourseForm({ course, onCancel, onSubmit }: CourseFormProps) {
       return;
     }
 
+    const lessons = lessonCount.trim() === "" ? null : Number(lessonCount);
+    if (lessons !== null && (!Number.isInteger(lessons) || lessons < 1)) {
+      setError("Number of lessons must be a whole number greater than zero.");
+      return;
+    }
+
     setLoading(true);
     try {
       await onSubmit({
@@ -63,6 +82,13 @@ export function CourseForm({ course, onCancel, onSubmit }: CourseFormProps) {
         thumbnail: thumbnail.trim(),
         youtubeChannelUrl: trimmedUrl,
         outlineUrl: outlineUrl.trim(),
+        level,
+        duration: duration.trim(),
+        lessonCount: lessons,
+        outcomes: outcomes
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean),
         status,
       });
     } catch (err) {
@@ -79,7 +105,7 @@ export function CourseForm({ course, onCancel, onSubmit }: CourseFormProps) {
       {error && (
         <div
           role="alert"
-          className="rounded-md bg-red-50 p-3 text-sm text-red-700"
+          className="animate-shake rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300"
         >
           {error}
         </div>
@@ -128,6 +154,42 @@ export function CourseForm({ course, onCancel, onSubmit }: CourseFormProps) {
         onChange={(e) => setOutlineUrl(e.target.value)}
         placeholder="https://..."
         hint="Link to a Word document, PDF, or any other outline file."
+        disabled={loading}
+      />
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Select
+          label="Level (optional)"
+          value={level}
+          onChange={(e) => setLevel(e.target.value as CourseLevel | "")}
+          options={LEVEL_OPTIONS}
+          disabled={loading}
+        />
+        <Input
+          label="Duration (optional)"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          placeholder="e.g. 6 weeks"
+          disabled={loading}
+        />
+        <Input
+          label="Lessons (optional)"
+          type="number"
+          min={1}
+          value={lessonCount}
+          onChange={(e) => setLessonCount(e.target.value)}
+          placeholder="e.g. 24"
+          disabled={loading}
+        />
+      </div>
+
+      <Textarea
+        label="What students will learn (optional)"
+        value={outcomes}
+        onChange={(e) => setOutcomes(e.target.value)}
+        rows={4}
+        placeholder={"Write Python programs from scratch\nAutomate everyday tasks"}
+        hint="One point per line. Shown as a checklist on the course page."
         disabled={loading}
       />
 

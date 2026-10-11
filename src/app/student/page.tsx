@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion, Variants } from "framer-motion";
+import { Star, Trophy } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEnrollments } from "@/hooks/useEnrollments";
 import { useAssignments } from "@/hooks/useAssignments";
@@ -128,7 +129,9 @@ export default function StudentDashboardPage() {
           variants={itemVariant}
           className="lg:col-span-1 lg:row-span-1 flex flex-col justify-center items-center rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 p-6 shadow-sm transition-all hover:shadow-md hover:border-yellow-500/50 group"
         >
-          <span className="text-4xl drop-shadow-sm group-hover:rotate-12 transition-transform duration-300 inline-block">🏆</span>
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-50 dark:bg-yellow-500/10 text-yellow-500 group-hover:scale-110 transition-transform">
+            <Trophy className="h-6 w-6" aria-hidden="true" />
+          </div>
           {loading ? (
             <Skeleton className="mt-3 h-8 w-16" />
           ) : (
@@ -147,7 +150,7 @@ export default function StudentDashboardPage() {
           className="lg:col-span-1 lg:row-span-1 flex flex-col justify-center items-start rounded-3xl bg-slate-900 dark:bg-slate-950 border border-slate-800 p-6 shadow-lg text-white transition-all hover:shadow-xl hover:shadow-accent-500/10 group overflow-hidden relative"
         >
           <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
-            <span className="text-8xl">⭐</span>
+            <Star className="h-24 w-24 fill-current text-yellow-400" aria-hidden="true" />
           </div>
           <p className="text-xs font-medium uppercase tracking-wide text-slate-400 z-10">Latest Grade</p>
           {loading ? (

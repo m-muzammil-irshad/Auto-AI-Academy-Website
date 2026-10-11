@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useCourses } from "@/hooks/useCourses";
 import { useEnrollments } from "@/hooks/useEnrollments";
+import { useAssignments } from "@/hooks/useAssignments";
+import { useSubmissions } from "@/hooks/useSubmissions";
 import { StudentCourseCard } from "@/components/courses/StudentCourseCard";
 import { EnrolledCourseCard } from "@/components/courses/EnrolledCourseCard";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -20,6 +22,8 @@ export default function StudentCoursesPage() {
     error: enrollmentsError,
     enroll,
   } = useEnrollments(user?.uid);
+  const { assignments } = useAssignments(courseIds);
+  const { submissions } = useSubmissions(user?.uid);
 
   const loading = coursesLoading || enrollmentsLoading;
   const error = coursesError || enrollmentsError;
@@ -27,6 +31,16 @@ export default function StudentCoursesPage() {
   const enrolledSet = new Set(courseIds);
   const enrolledCourses = courses.filter((c) => enrolledSet.has(c.id));
   const catalogCourses = courses.filter((c) => !enrolledSet.has(c.id));
+
+  // Submitted vs total assignments for each enrolled course.
+  const submittedIds = new Set(submissions.map((s) => s.assignmentId));
+  const progressByCourse = new Map<string, { submitted: number; total: number }>();
+  for (const a of assignments) {
+    const entry = progressByCourse.get(a.courseId) ?? { submitted: 0, total: 0 };
+    entry.total += 1;
+    if (submittedIds.has(a.id)) entry.submitted += 1;
+    progressByCourse.set(a.courseId, entry);
+  }
 
   return (
     <div className="mx-auto max-w-6xl space-y-12">
@@ -71,7 +85,7 @@ export default function StudentCoursesPage() {
           >
             {enrolledCourses.map((c) => (
               <motion.div key={c.id} variants={{ hidden: { opacity: 0, scale: 0.95 }, show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
-                <EnrolledCourseCard course={c} />
+                <EnrolledCourseCard course={c} progress={progressByCourse.get(c.id)} />
               </motion.div>
             ))}
           </motion.div>

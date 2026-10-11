@@ -2,6 +2,7 @@ import { Timestamp } from "firebase/firestore";
 
 export type UserRole = "student" | "admin";
 export type CourseStatus = "ongoing" | "soon" | "completed";
+export type CourseLevel = "beginner" | "intermediate" | "advanced";
 export type NotificationType =
   | "grading"
   | "new_assignment"
@@ -31,6 +32,11 @@ export interface Course {
   thumbnail: string;
   youtubeChannelUrl: string;
   outlineUrl?: string;
+  /** Optional catalog details; empty values are simply not shown. */
+  level: CourseLevel | "";
+  duration: string;
+  lessonCount: number | null;
+  outcomes: string[];
   status: CourseStatus;
   createdAt: Timestamp;
   completedAt: Timestamp | null;

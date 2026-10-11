@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Badge, courseStatusVariant } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { CourseMeta } from "@/components/courses/CourseMeta";
 import { COURSE_STATUS_LABELS } from "@/lib/constants";
 import type { Course } from "@/lib/types";
 
@@ -67,6 +68,7 @@ export function StudentCourseCard({
         <p className="mb-5 line-clamp-3 flex-1 text-sm text-slate-600 dark:text-slate-400">
           {course.description}
         </p>
+        <CourseMeta course={course} className="mb-5" />
 
         {error && (
           <p className="mb-3 text-xs text-red-600">{error}</p>

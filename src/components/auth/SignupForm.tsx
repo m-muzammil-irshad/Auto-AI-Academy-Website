@@ -88,7 +88,7 @@ export function SignupForm() {
       {error && (
         <div
           role="alert"
-          className="rounded-md bg-red-50 p-3 text-sm text-red-700"
+          className="animate-shake rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300"
         >
           {error}
         </div>

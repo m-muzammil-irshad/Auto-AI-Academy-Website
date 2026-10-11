@@ -12,6 +12,7 @@ export const COLLECTIONS = {
   ASSIGNMENTS: "assignments",
   SUBMISSIONS: "submissions",
   NOTIFICATIONS: "notifications",
+  BLOG_POSTS: "blogPosts",
 } as const;
 
 export const usersCol = () => collection(db, COLLECTIONS.USERS);
@@ -32,6 +33,9 @@ export const assignmentDoc = (id: string) =>
 export const submissionsCol = () => collection(db, COLLECTIONS.SUBMISSIONS);
 export const submissionDoc = (id: string) =>
   doc(db, COLLECTIONS.SUBMISSIONS, id);
+
+export const blogPostsCol = () => collection(db, COLLECTIONS.BLOG_POSTS);
+export const blogPostDoc = (id: string) => doc(db, COLLECTIONS.BLOG_POSTS, id);
 
 /** Deterministic ID — enforces one submission per student per assignment at the rules layer. */
 export const submissionId = (assignmentId: string, userId: string) =>

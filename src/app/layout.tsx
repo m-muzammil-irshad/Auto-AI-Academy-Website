@@ -54,6 +54,8 @@ export const metadata: Metadata = {
 };
 
 import { FloatingAITutor } from "@/components/layout/FloatingAITutor";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import NextTopLoader from 'nextjs-toploader';
 
 export default function RootLayout({
   children,
@@ -63,6 +65,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${lexend.variable}`} suppressHydrationWarning>
       <body className="min-h-screen font-body transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
+        <NextTopLoader color="#0ea5e9" showSpinner={false} />
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AuthProvider>
             {children}

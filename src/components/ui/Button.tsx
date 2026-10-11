@@ -16,7 +16,7 @@ export interface ButtonProps
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent-600/90 hover:bg-accent-600 backdrop-blur-md text-white shadow-sm hover:shadow-accent-500/25 disabled:bg-accent-600/50 dark:bg-accent-500/90 dark:hover:bg-accent-500 dark:disabled:bg-accent-500/50 transition-all",
+    "bg-accent-600/90 hover:bg-accent-600 backdrop-blur-md text-white shadow-sm hover:shadow-accent-500/25 disabled:bg-accent-600/50 dark:bg-accent-500/90 dark:hover:bg-accent-500 dark:disabled:bg-accent-500/50",
   secondary:
     "bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-slate-900 dark:text-white border border-slate-300/50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50",
   danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-600/50 dark:bg-red-500 dark:hover:bg-red-600",
@@ -40,7 +40,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-colors disabled:cursor-not-allowed",
+          "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition duration-150 ease-smooth active:scale-[0.98] disabled:cursor-not-allowed disabled:active:scale-100",
           variants[variant],
           sizes[size],
           className
