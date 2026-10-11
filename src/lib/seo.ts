@@ -37,7 +37,7 @@ export const ORGANIZATION_JSON_LD = {
   // Other ways people write the name, so search engines tie them to this site.
   alternateName: ["AutoAI Academy", "Auto AI"],
   url: SITE_URL,
-  logo: `${SITE_URL}/icon.png`,
+  logo: `${SITE_URL}/logo.png`,
   areaServed: [
     { "@type": "Country", name: "Pakistan" },
     { "@type": "Country", name: "India" },
