@@ -4,6 +4,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SITE_NAME } from "@/lib/constants";
 import { SITE_URL } from "@/lib/seo";
+import { SITE_KEYWORDS } from "@/lib/seoKeywords";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,21 +27,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: "Learn Python, Artificial Intelligence, and automation for free with Auto AI Academy. Video lessons, assignments, AI support, and certificates for learners in Pakistan and India.",
-  keywords: [
-    "Auto AI Academy",
-    "free AI course",
-    "free Python course",
-    "Python course in Urdu",
-    "Python course in Hindi",
-    "AI course in Urdu",
-    "AI course Pakistan",
-    "AI course India",
-    "learn automation",
-    "n8n course Urdu Hindi",
-    "prompt engineering course",
-    "free online course with certificate",
-    "Muzammil Irshad",
-  ],
+  keywords: [...SITE_KEYWORDS, "Muzammil Irshad"],
   openGraph: {
     title: "Auto AI Academy | Learn Python & AI",
     description: "Learn Python, AI, and automation completely free, with assignments and certificates.",

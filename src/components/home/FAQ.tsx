@@ -4,33 +4,8 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { DURATION, EASE, fadeUp, viewportOnce } from "@/lib/motion";
+import { FAQS } from "@/lib/faqs";
 
-const FAQS = [
-  {
-    q: "Are the courses really free?",
-    a: "Yes. Every course on Auto AI Academy is 100% free — there is nothing to pay and no credit card is required to sign up.",
-  },
-  {
-    q: "Where do I watch the lessons?",
-    a: "Lessons are published as video tutorials on our official YouTube channels. Once you enroll, your course page links you straight to them.",
-  },
-  {
-    q: "How do I submit assignments?",
-    a: "Upload your work to Google Drive and paste the share link on the assignment page. It only takes a moment.",
-  },
-  {
-    q: "How is my work graded?",
-    a: "Each submission is scored on correctness, creativity, and timeliness. Those scores become the stars that decide your place on the leaderboard.",
-  },
-  {
-    q: "How do I earn a certificate?",
-    a: "When a course is marked completed and you have submitted at least 80% of its assignments, you can request your certificate from the Certificates page.",
-  },
-  {
-    q: "What if I get stuck?",
-    a: "The AI assistant is available around the clock from the chat button on every page, and you can reach our support team on WhatsApp.",
-  },
-];
 
 export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);

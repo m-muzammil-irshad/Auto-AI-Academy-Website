@@ -1,17 +1,19 @@
 import { Metadata } from "next";
 import { CoursesCatalog } from "@/components/courses/CoursesCatalog";
 import { getPublicCourses, summarize } from "@/lib/coursesPublic";
+import { SITE_KEYWORDS } from "@/lib/seoKeywords";
 import { DEFAULT_OG_IMAGE, ORGANIZATION_JSON_LD, absoluteUrl, seoAlternates } from "@/lib/seo";
 
 const DESCRIPTION =
-  "Free online courses in Python, Artificial Intelligence, and automation, with assignments and certificates. Learn from Pakistan or India at your own pace.";
+  "Free Python, AI, and n8n automation courses in Urdu/Hindi, with assignments and certificates. Learn online from Pakistan or India at your own pace.";
 
 export const metadata: Metadata = {
-  title: "Free Online Courses: Python, AI & Automation",
+  title: "Free Python, AI & n8n Courses in Urdu/Hindi",
   description: DESCRIPTION,
+  keywords: SITE_KEYWORDS,
   alternates: seoAlternates("/courses"),
   openGraph: {
-    title: "Free Online Courses: Python, AI & Automation | Auto AI Academy",
+    title: "Free Python, AI & n8n Courses in Urdu/Hindi | Auto AI Academy",
     description: DESCRIPTION,
     url: "/courses",
     images: [DEFAULT_OG_IMAGE],

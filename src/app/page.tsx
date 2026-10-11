@@ -9,6 +9,7 @@ import { LeaderboardTeaser } from "@/components/home/LeaderboardTeaser";
 import { FAQ } from "@/components/home/FAQ";
 import { FinalCTA } from "@/components/home/FinalCTA";
 import { HomeAuthRedirect } from "@/components/home/HomeAuthRedirect";
+import { FAQS } from "@/lib/faqs";
 import { DEFAULT_OG_IMAGE, ORGANIZATION_JSON_LD, SITE_URL, seoAlternates } from "@/lib/seo";
 
 // Brand first, so a search for the academy's name matches the start of the title.
@@ -44,6 +45,15 @@ export default function HomePage() {
         "url": SITE_URL,
         "inLanguage": "en",
         "publisher": { "@id": ORGANIZATION_JSON_LD["@id"] },
+      },
+      // The FAQ answers are collapsed on the page, so publish them here in full.
+      {
+        "@type": "FAQPage",
+        "mainEntity": FAQS.map((item) => ({
+          "@type": "Question",
+          "name": item.q,
+          "acceptedAnswer": { "@type": "Answer", "text": item.a },
+        })),
       },
     ],
   };

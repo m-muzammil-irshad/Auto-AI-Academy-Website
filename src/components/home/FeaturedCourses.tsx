@@ -34,7 +34,7 @@ export function FeaturedCourses() {
               Featured <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 to-purple-600 dark:from-accent-400 dark:to-purple-400">Programs</span>
             </h2>
             <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
-              Hand-crafted courses designed to take you from absolute beginner to industry-ready expert.
+              Free Python and n8n automation courses in Urdu/Hindi, designed to take you from absolute beginner to job-ready.
             </p>
           </div>
           <Link href="/courses" className="shrink-0">

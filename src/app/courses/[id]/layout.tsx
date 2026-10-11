@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { getPublicCourse, summarize } from "@/lib/coursesPublic";
+import { courseKeywords, courseSeoDescription, courseSeoTitle } from "@/lib/seoKeywords";
 import { DEFAULT_OG_IMAGE, ORGANIZATION_JSON_LD, absoluteUrl, seoAlternates } from "@/lib/seo";
 
 interface Props {
@@ -14,13 +15,15 @@ export async function generateMetadata({ params }: Pick<Props, "params">): Promi
   if (!course) return { title: "Course" };
 
   const path = `/courses/${course.id}`;
-  const description = summarize(course.description);
+  const title = courseSeoTitle(course.title);
+  const description = courseSeoDescription(summarize(course.description, 110));
   return {
-    title: course.title,
+    title,
     description,
+    keywords: courseKeywords(course.title),
     alternates: seoAlternates(path),
     openGraph: {
-      title: course.title,
+      title,
       description,
       url: path,
       type: "website",
@@ -40,6 +43,8 @@ export default async function CourseLayout({ params, children }: Props) {
     "url": absoluteUrl(`/courses/${course.id}`),
     ...(course.thumbnail ? { "image": course.thumbnail } : {}),
     ...(course.level ? { "educationalLevel": course.level } : {}),
+    "inLanguage": ["ur", "hi"],
+    "keywords": courseKeywords(course.title).join(", "),
     "isAccessibleForFree": true,
     "provider": ORGANIZATION_JSON_LD,
     "offers": {
