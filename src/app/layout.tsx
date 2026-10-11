@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Lexend } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
+import { SITE_NAME } from "@/lib/constants";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
@@ -18,26 +19,32 @@ const lexend = Lexend({
 });
 
 export const metadata: Metadata = {
+  // Makes relative canonical, Open Graph and share-image URLs absolute.
+  metadataBase: new URL(SITE_URL),
   title: {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
-  description: "Join Auto AI Academy to learn Python, AI, and Automation for free. Complete courses, submit assignments, get AI help, and earn certificates.",
+  description: "Learn Python, Artificial Intelligence, and automation for free with Auto AI Academy. Video lessons, assignments, AI support, and certificates for learners in Pakistan and India.",
   keywords: [
-    "Auto AI Academy", 
-    "Python course", 
-    "Python course Pakistan", 
-    "Free AI courses", 
-    "Programming in Urdu", 
-    "Learn Automation", 
-    "Online Coding Courses",
+    "Auto AI Academy",
+    "free AI course",
+    "free Python course",
+    "Python course in Urdu",
+    "Python course in Hindi",
+    "AI course in Urdu",
+    "AI course Pakistan",
+    "AI course India",
+    "learn automation",
+    "n8n course Urdu Hindi",
+    "prompt engineering course",
+    "free online course with certificate",
     "Muzammil Irshad",
-    "Best Python Course"
   ],
   openGraph: {
     title: "Auto AI Academy | Learn Python & AI",
-    description: "Premium platform for practical tech education. Learn Python, AI, and automation completely free.",
-    url: "https://auto-ai-academy-website.vercel.app/",
+    description: "Learn Python, AI, and automation completely free, with assignments and certificates.",
+    url: "/",
     siteName: "Auto AI Academy",
     locale: "en_US",
     type: "website",
@@ -45,7 +52,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Auto AI Academy | Learn Python & AI",
-    description: "Premium platform for practical tech education. Learn Python, AI, and automation completely free.",
+    description: "Learn Python, AI, and automation completely free, with assignments and certificates.",
   },
   robots: {
     index: true,

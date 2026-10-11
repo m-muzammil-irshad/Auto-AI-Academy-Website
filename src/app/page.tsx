@@ -9,24 +9,41 @@ import { LeaderboardTeaser } from "@/components/home/LeaderboardTeaser";
 import { FAQ } from "@/components/home/FAQ";
 import { FinalCTA } from "@/components/home/FinalCTA";
 import { HomeAuthRedirect } from "@/components/home/HomeAuthRedirect";
+import { DEFAULT_OG_IMAGE, ORGANIZATION_JSON_LD, SITE_URL, seoAlternates } from "@/lib/seo";
+
+const TITLE = "Free AI & Python Courses in Urdu/Hindi | Auto AI Academy";
+const DESCRIPTION =
+  "Learn Artificial Intelligence, Python, and automation for free in Urdu/Hindi. Video lessons, hands-on assignments, AI support, and certificates for learners in Pakistan and India.";
 
 export const metadata: Metadata = {
-  title: "Auto AI Academy | Best Free AI & Python Courses Online",
-  description: "Join Auto AI Academy to learn Artificial Intelligence, Python, and Automation. Get 100% free courses with verified certificates, hands-on projects, and AI support.",
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: seoAlternates("/"),
   openGraph: {
-    title: "Auto AI Academy | Best Free AI & Python Courses Online",
-    description: "Join Auto AI Academy to learn Artificial Intelligence, Python, and Automation. Get 100% free courses with verified certificates, hands-on projects, and AI support.",
-  }
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/",
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 export default function HomePage() {
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "name": "Auto AI Academy",
-    "url": "https://auto-ai-academy-website.vercel.app/",
-    "description": "Join Auto AI Academy to learn Artificial Intelligence, Python, and Automation. Get 100% free courses with verified certificates, hands-on projects, and AI support.",
-    "sameAs": []
+    "@graph": [
+      {
+        ...ORGANIZATION_JSON_LD,
+        "description": DESCRIPTION,
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        "name": "Auto AI Academy",
+        "url": SITE_URL,
+        "inLanguage": "en",
+        "publisher": { "@id": ORGANIZATION_JSON_LD["@id"] },
+      },
+    ],
   };
 
   return (

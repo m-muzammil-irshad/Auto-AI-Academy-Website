@@ -54,7 +54,7 @@ export function Hero() {
               variants={fadeUp}
               className="mt-6 max-w-lg text-lg text-slate-600 dark:text-slate-300 md:text-xl leading-relaxed"
             >
-              Join Pakistan&apos;s premier platform for AI, programming, and automation. Watch tutorials, submit assignments, get AI feedback, and earn certificates.
+              Free AI, programming, and automation courses in Urdu/Hindi for learners across Pakistan and India. Watch tutorials, submit assignments, get AI feedback, and earn certificates.
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-10 flex flex-wrap items-center gap-4">

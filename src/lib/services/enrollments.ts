@@ -48,11 +48,12 @@ export async function enrollInCourse(
   userId: string,
   courseId: string
 ): Promise<void> {
-  const id = enrollmentIdFor(userId, courseId);
-  const ref = enrollmentDoc(id);
-  const existing = await getDoc(ref);
-  if (existing.exists()) return;
-  await setDoc(ref, {
+  // Check through the student's own enrollment list rather than reading the
+  // document directly: the security rules cannot authorise a read of a
+  // document that does not exist yet, so a direct read fails for new enrollments.
+  const existing = await fetchEnrollmentsForUser(userId);
+  if (existing.some((e) => e.courseId === courseId)) return;
+  await setDoc(enrollmentDoc(enrollmentIdFor(userId, courseId)), {
     userId,
     courseId,
     enrolledAt: serverTimestamp(),

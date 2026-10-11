@@ -57,6 +57,9 @@ export default function VerifyEmailPage() {
     try {
       await user.reload();
       if (user.emailVerified) {
+        // Refresh the sign-in token too: the security rules read the verified
+        // flag from the token, which otherwise stays stale for up to an hour.
+        await user.getIdToken(true);
         router.replace(
           profile?.role === "admin"
             ? "/admin"

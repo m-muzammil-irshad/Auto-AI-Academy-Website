@@ -13,8 +13,7 @@ import { CodeCopyHandler, ReadingProgress, ShareButtons } from "@/components/blo
 import { isoDate, prepareArticle, readingTime } from "@/lib/blog";
 import { getPublishedPost, getPublishedPosts } from "@/lib/blogPublic";
 import { SITE_NAME } from "@/lib/constants";
-
-const SITE_URL = "https://auto-ai-academy-website.vercel.app";
+import { ORGANIZATION_JSON_LD, absoluteUrl, seoAlternates } from "@/lib/seo";
 
 // Posts come from the database; serve a cached page for up to a minute.
 // Keep in sync with BLOG_REVALIDATE_SECONDS in lib/blogPublic.ts.
@@ -29,11 +28,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: "Post Not Found" };
 
   return {
-    title: `${post.title} | Auto AI Academy Blog`,
+    title: post.title,
     description: post.excerpt,
+    alternates: seoAlternates(`/blog/${post.slug}`),
     openGraph: {
       title: post.title,
       description: post.excerpt,
+      url: `/blog/${post.slug}`,
       type: "article",
       publishedTime: isoDate(post.date),
       authors: [post.author],
@@ -50,7 +51,7 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   const { html, toc } = prepareArticle(post.content);
-  const url = `${SITE_URL}/blog/${post.slug}`;
+  const url = absoluteUrl(`/blog/${post.slug}`);
 
   // Same-category posts first, then the rest, newest order preserved.
   const others = (await getPublishedPosts()).filter((p) => p.slug !== post.slug);
@@ -59,18 +60,33 @@ export default async function BlogPostPage({ params }: Props) {
     ...others.filter((p) => p.category !== post.category),
   ].slice(0, 3);
 
-  // Schema for blog post (Article)
+  // Schema for the article and its breadcrumb trail
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": post.title,
-    "description": post.excerpt,
-    "image": post.coverImage,
-    "author": {
-      "@type": "Person",
-      "name": post.author
-    },
-    "datePublished": isoDate(post.date),
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "headline": post.title,
+        "description": post.excerpt,
+        "image": post.coverImage,
+        "author": {
+          "@type": "Person",
+          "name": post.author
+        },
+        "publisher": ORGANIZATION_JSON_LD,
+        "datePublished": isoDate(post.date),
+        "mainEntityOfPage": url,
+        "articleSection": post.category,
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": absoluteUrl("/") },
+          { "@type": "ListItem", "position": 2, "name": "Blog", "item": absoluteUrl("/blog") },
+          { "@type": "ListItem", "position": 3, "name": post.title, "item": url },
+        ],
+      },
+    ],
   };
 
   return (

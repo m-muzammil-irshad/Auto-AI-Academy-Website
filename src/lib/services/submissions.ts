@@ -64,17 +64,17 @@ function mapSubmission(
  * "one submission per student per assignment" with a single exists() check.
  */
 export async function submitAssignment(input: SubmitInput): Promise<void> {
-  const id = submissionId(input.assignmentId, input.userId);
-  const ref = submissionDoc(id);
-
-  const existing = await getDoc(ref);
-  if (existing.exists()) {
+  // Check through the student's own submissions rather than reading the
+  // document directly: the security rules cannot authorise a read of a
+  // document that does not exist yet, so a direct read fails for a first submission.
+  const existing = await fetchSubmissionsForUser(input.userId);
+  if (existing.some((s) => s.assignmentId === input.assignmentId)) {
     throw new Error(
       "You have already submitted this assignment."
     );
   }
 
-  await setDoc(ref, {
+  await setDoc(submissionDoc(submissionId(input.assignmentId, input.userId)), {
     assignmentId: input.assignmentId,
     userId: input.userId,
     studentName: input.studentName,
