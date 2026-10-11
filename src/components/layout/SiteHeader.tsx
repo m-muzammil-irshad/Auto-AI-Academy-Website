@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/Button";
-import { SITE_NAME } from "@/lib/constants";
+import { Brand } from "@/components/layout/Brand";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils/cn";
 import { DURATION, EASE } from "@/lib/motion";
@@ -77,12 +77,7 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link
-          href="/"
-          className="font-heading text-lg font-semibold text-slate-900 dark:text-white"
-        >
-          {SITE_NAME}
-        </Link>
+        <Brand />
 
         <nav className="hidden items-center gap-6 md:flex">
           {NAV_LINKS.map((link) => (
