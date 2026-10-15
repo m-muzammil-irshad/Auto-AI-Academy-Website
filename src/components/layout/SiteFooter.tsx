@@ -85,8 +85,17 @@ export function SiteFooter() {
           </ul>
         </nav>
       </div>
-      <div className="border-t border-slate-200/50 py-6 text-center text-sm text-slate-500 dark:border-slate-800/50">
-        © {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 border-t border-slate-200/50 px-4 py-6 text-sm text-slate-500 dark:border-slate-800/50 sm:flex-row">
+        <span>© {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</span>
+        {/* Static pages in /public; Google's app verification looks for the privacy link on the home page. */}
+        <nav aria-label="Legal" className="flex items-center gap-6">
+          <a href="/privacy.html" className={linkClass}>
+            Privacy Policy
+          </a>
+          <a href="/terms.html" className={linkClass}>
+            Terms of Service
+          </a>
+        </nav>
       </div>
     </footer>
   );
