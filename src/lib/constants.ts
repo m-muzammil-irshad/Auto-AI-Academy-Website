@@ -6,6 +6,7 @@ export const SITE_DESCRIPTION =
 
 export const WHATSAPP_NUMBER = "923292540897";
 export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
+export const YOUTUBE_URL = "https://youtube.com/@AutoAIAcademy";
 
 export const STUDENT_NAV = [
   { href: "/student", label: "Dashboard", icon: "home" },
