@@ -71,7 +71,7 @@ export function GoogleButton({
         size="lg"
         onClick={handleClick}
         loading={loading}
-        className="w-full neu-btn rounded-full font-semibold"
+        className="w-full rounded-lg font-medium"
       >
         {!loading && <GoogleIcon />}
         {label}

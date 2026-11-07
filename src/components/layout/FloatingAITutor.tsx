@@ -318,50 +318,50 @@ export function FloatingAITutor() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className={cn(
-              "mb-3 flex flex-col overflow-hidden rounded-3xl neu-flat-lg transition-all duration-300",
+              "mb-3 flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl transition-all duration-200",
               isExpanded
                 ? "w-[calc(100vw-1.5rem)] sm:w-[680px] md:w-[780px] lg:w-[840px] max-w-4xl h-[min(620px,calc(100dvh-6.5rem))]"
                 : "w-[calc(100vw-1.5rem)] sm:w-96 h-[min(510px,calc(100dvh-6.5rem))]"
             )}
           >
-            {/* Pinned Top Header */}
-            <div className="flex shrink-0 items-center justify-between border-b border-black/5 dark:border-white/5 px-4 py-3 sm:px-5 sm:py-3.5 bg-inherit select-none">
+            {/* Top Header */}
+            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 dark:border-slate-800/80 px-4 py-3 sm:px-5 sm:py-3.5 bg-inherit select-none">
               <div className="flex items-center gap-2.5">
-                <div className="neu-pressed relative h-9 w-9 overflow-hidden rounded-full p-0.5">
-                  <TutorMascotSVG className="h-full w-full object-cover p-1" />
+                <div className="relative h-8 w-8 overflow-hidden rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5">
+                  <TutorMascotSVG className="h-full w-full object-cover p-0.5" />
                 </div>
                 <div>
-                  <h3 className="font-heading text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <h3 className="font-heading text-sm font-medium text-slate-900 dark:text-white flex items-center gap-1.5">
                     {isAdmin ? "Admin AI Co-Pilot" : user ? "AI Study Tutor" : "Academy Assistant"}
                   </h3>
                   {isAdmin ? (
-                    <span className="text-[10px] text-amber-500 font-semibold flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500 inline-block animate-pulse" />
-                      ⚡ Executive Admin Mode
+                    <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500 inline-block" />
+                      Admin mode
                     </span>
                   ) : user ? (
-                    <span className="text-[10px] text-emerald-500 font-semibold flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
-                      🎓 Student Tutor Mode
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />
+                      Study tutor
                     </span>
                   ) : (
-                    <span className="text-[10px] text-emerald-500 font-semibold flex items-center gap-1">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />
                       Online
                     </span>
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
                 {/* Reset / New Chat */}
                 <button
                   type="button"
                   onClick={resetChat}
                   aria-label="New chat"
                   title="Start fresh conversation"
-                  className="neu-pressed-sm rounded-full p-1.5 text-slate-400 transition-colors hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} className="h-4 w-4">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                 </button>
@@ -371,14 +371,14 @@ export function FloatingAITutor() {
                   onClick={() => setIsExpanded(!isExpanded)}
                   aria-label={isExpanded ? "Restore normal size" : "Expand chat window"}
                   title={isExpanded ? "Restore normal size" : "Expand chat window"}
-                  className="neu-pressed-sm rounded-full p-1.5 text-slate-400 transition-colors hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                 >
                   {isExpanded ? (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} className="h-4 w-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M14 4h6m-6 0v6m6-6l-7 7M10 4H4m0 0v6m0-6l7 7" />
                     </svg>
                   ) : (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} className="h-4 w-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 3h6m0 0v6m0-6L14 10M9 21H3m0 0v-6m0 6l7-7M21 15v6m0 0h-6m6 0l-7-7M3 9V3m0 0h6M3 3l7 7" />
                     </svg>
                   )}
@@ -389,13 +389,13 @@ export function FloatingAITutor() {
                   onClick={() => setIsOpen(false)}
                   aria-label="Close chat"
                   title="Close chat"
-                  className="neu-pressed-sm rounded-full p-1.5 text-slate-400 transition-colors hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  className="rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                 >
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth={2}
+                    strokeWidth={1.75}
                     className="h-4 w-4"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -420,11 +420,11 @@ export function FloatingAITutor() {
                   >
                     <div
                       className={cn(
-                        "break-words rounded-2xl p-3 text-sm transition-all",
+                        "break-words rounded-xl p-3 text-sm transition-colors",
                         isExpanded ? "max-w-[90%]" : "max-w-[85%]",
                         msg.role === "user"
-                          ? "rounded-tr-sm neu-btn-primary"
-                          : "rounded-tl-sm neu-pressed-sm text-slate-800 dark:text-slate-200"
+                          ? "rounded-tr-sm bg-indigo-600 text-white"
+                          : "rounded-tl-sm bg-slate-100 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border border-slate-200/50 dark:border-slate-700/40"
                       )}
                     >
                       {msg.role === "user" ? (
@@ -528,19 +528,17 @@ export function FloatingAITutor() {
         <AnimatePresence>
           {!isOpen && showSpeech && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.8, x: 20 }}
+              initial={{ opacity: 0, scale: 0.9, x: 10 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.8, x: 10 }}
-              className="relative mb-4 hidden rounded-2xl rounded-br-none neu-flat px-4 py-3 sm:block"
+              exit={{ opacity: 0, scale: 0.9, x: 10 }}
+              className="relative mb-3 hidden rounded-xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md px-3.5 py-2.5 sm:block"
             >
-              <p className="font-heading text-sm font-bold text-slate-900 dark:text-white">
-                Salam {studentFirstName || (isAdmin ? "Admin" : "there")}! <br />
-                <span className={isAdmin ? "text-amber-500" : "text-accent-500"}>
-                  {isAdmin ? "Admin AI Co-Pilot ⚡" : user ? "Need study help? 📚" : "Need help? 🚀"}
+              <p className="font-heading text-xs font-medium text-slate-900 dark:text-white">
+                Salam {studentFirstName || (isAdmin ? "Admin" : "there")} <br />
+                <span className={isAdmin ? "text-amber-600 dark:text-amber-400" : "text-indigo-600 dark:text-indigo-400"}>
+                  {isAdmin ? "Admin AI assistant" : user ? "Need help with assignments?" : "Have questions about courses?"}
                 </span>
               </p>
-              {/* Little triangle for the speech bubble */}
-              <div className="absolute -bottom-2 right-0 h-4 w-4 border-l-8 border-t-8 border-transparent border-t-[#e8ecf4] dark:border-t-[#10131d]" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -550,11 +548,11 @@ export function FloatingAITutor() {
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isAdmin ? "Admin AI Co-Pilot" : "AI tutor chat"}
           className={cn(
-            "neu-btn group relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full transition-transform hover:scale-105 active:scale-95 sm:h-16 sm:w-16",
-            isAdmin && "ring-2 ring-amber-500/50"
+            "relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center overflow-hidden rounded-full border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/80 active:scale-95",
+            isAdmin && "ring-2 ring-amber-500/40"
           )}
         >
-          <TutorMascotSVG className="h-full w-full object-cover p-1.5" />
+          <TutorMascotSVG className="h-full w-full object-cover p-1" />
         </button>
       </div>
     </div>

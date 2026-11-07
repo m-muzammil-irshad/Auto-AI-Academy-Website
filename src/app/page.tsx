@@ -75,7 +75,7 @@ export default async function HomePage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] text-slate-800 dark:text-slate-100 transition-colors duration-300">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 transition-colors duration-150">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

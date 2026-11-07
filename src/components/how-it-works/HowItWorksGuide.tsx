@@ -89,13 +89,13 @@ export function HowItWorksGuide() {
           animate="show"
           className="mx-auto max-w-3xl text-center mb-16 sm:mb-24"
         >
-          <div className="mb-4 neu-pressed-sm inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent-600 dark:text-accent-400">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Interactive Learning Blueprint</span>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-slate-200/80 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
+            <span>Learning blueprint</span>
           </div>
 
-          <h1 className="font-heading text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
-            Four Steps to <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 via-purple-600 to-pink-600 dark:from-accent-400 dark:via-purple-400 dark:to-pink-400">Mastery.</span>
+          <h1 className="font-heading text-4xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
+            Four steps to mastery
           </h1>
 
           <p className="mt-6 text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -108,11 +108,11 @@ export function HowItWorksGuide() {
               <button
                 key={s.id}
                 onClick={() => scrollToStep(s.id)}
-                className="neu-btn px-4 py-2.5 rounded-2xl flex items-center gap-2.5 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-accent-600 dark:hover:text-accent-400 transition-all cursor-pointer group"
+                className="rounded-lg border border-slate-200/80 bg-white px-4 py-2 flex items-center gap-2.5 text-xs sm:text-sm font-medium text-slate-700 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:border-slate-700 transition-colors cursor-pointer group"
               >
-                <div className={`h-6 w-6 rounded-lg bg-gradient-to-br ${s.color} flex items-center justify-center text-white text-[11px] font-black shadow-sm`}>
+                <span className="font-mono text-xs text-slate-500 dark:text-slate-400">
                   {s.stepNum}
-                </div>
+                </span>
                 <span>{s.title}</span>
                 <ChevronDown className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 group-hover:translate-y-0.5 transition-all" />
               </button>
@@ -132,16 +132,13 @@ export function HowItWorksGuide() {
               viewport={viewportOnce}
               className="lg:col-span-6 space-y-6"
             >
-              <div className="inline-flex items-center gap-2 neu-pressed-sm px-3.5 py-1.5 rounded-full text-xs font-bold text-blue-600 dark:text-blue-400">
-                <MousePointerClick className="h-4 w-4" />
-                <span>STEP 01</span>
+              <div className="inline-flex items-center gap-2 rounded-md border border-slate-200/80 bg-slate-50 px-2.5 py-1 text-xs font-mono text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
+                <MousePointerClick className="h-3.5 w-3.5 text-accent-500" />
+                <span>01</span>
               </div>
 
-              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
-                Enroll in a Click. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-400 dark:to-cyan-300">
-                  Zero Paywalls, Zero Hassle.
-                </span>
+              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-slate-900 dark:text-white leading-tight">
+                Enroll in a click. Zero paywalls, zero hassle.
               </h2>
 
               <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -435,16 +432,13 @@ export function HowItWorksGuide() {
               viewport={viewportOnce}
               className="lg:col-span-5 space-y-6 order-1 lg:order-2"
             >
-              <div className="inline-flex items-center gap-2 neu-pressed-sm px-3.5 py-1.5 rounded-full text-xs font-bold text-purple-600 dark:text-purple-400">
-                <PlayCircle className="h-4 w-4" />
-                <span>STEP 02</span>
+              <div className="inline-flex items-center gap-2 rounded-md border border-slate-200/80 bg-slate-50 px-2.5 py-1 text-xs font-mono text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
+                <PlayCircle className="h-3.5 w-3.5 text-accent-500" />
+                <span>02</span>
               </div>
 
-              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
-                Learn & Practice. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500 dark:from-purple-400 dark:to-pink-300">
-                  Bite-Sized Urdu Tutorials.
-                </span>
+              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-slate-900 dark:text-white leading-tight">
+                Learn and practice with bite-sized Urdu tutorials.
               </h2>
 
               <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -506,16 +500,13 @@ export function HowItWorksGuide() {
               viewport={viewportOnce}
               className="lg:col-span-6 space-y-6"
             >
-              <div className="inline-flex items-center gap-2 neu-pressed-sm px-3.5 py-1.5 rounded-full text-xs font-bold text-accent-600 dark:text-accent-400">
-                <UploadCloud className="h-4 w-4" />
-                <span>STEP 03</span>
+              <div className="inline-flex items-center gap-2 rounded-md border border-slate-200/80 bg-slate-50 px-2.5 py-1 text-xs font-mono text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
+                <UploadCloud className="h-3.5 w-3.5 text-accent-500" />
+                <span>03</span>
               </div>
 
-              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
-                Submit Assignments. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 to-indigo-500 dark:from-accent-400 dark:to-indigo-300">
-                  Rigorous 5-Star Peer & Mentor Rubric.
-                </span>
+              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-slate-900 dark:text-white leading-tight">
+                Submit assignments. Rigorous 5-star peer and mentor rubric.
               </h2>
 
               <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -821,16 +812,13 @@ export function HowItWorksGuide() {
               viewport={viewportOnce}
               className="lg:col-span-5 space-y-6 order-1 lg:order-2"
             >
-              <div className="inline-flex items-center gap-2 neu-pressed-sm px-3.5 py-1.5 rounded-full text-xs font-bold text-amber-600 dark:text-amber-400">
-                <Trophy className="h-4 w-4" />
-                <span>STEP 04</span>
+              <div className="inline-flex items-center gap-2 rounded-md border border-slate-200/80 bg-slate-50 px-2.5 py-1 text-xs font-mono text-slate-700 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300">
+                <Trophy className="h-3.5 w-3.5 text-accent-500" />
+                <span>04</span>
               </div>
 
-              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
-                Rank & Certify. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-400 dark:to-orange-400">
-                  Global Leaderboard & Credentials.
-                </span>
+              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-slate-900 dark:text-white leading-tight">
+                Rank and certify. Global leaderboard and verified credentials.
               </h2>
 
               <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -1029,8 +1017,8 @@ export function HowItWorksGuide() {
           className="neu-flat-lg rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden"
         >
           <div className="relative z-10 max-w-2xl mx-auto space-y-6">
-            <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
-              Ready to Start Your Journey to <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 to-purple-600 dark:from-accent-400 dark:to-purple-400">Mastery?</span>
+            <h2 className="font-heading text-3xl sm:text-4xl font-semibold text-slate-900 dark:text-white">
+              Ready to start your journey?
             </h2>
             <p className="text-base text-slate-600 dark:text-slate-400">
               Join thousands of learners building real AI agents and automation systems today. No fees, no hurdles.
@@ -1038,15 +1026,15 @@ export function HowItWorksGuide() {
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
               <Link
                 href="/courses"
-                className="neu-btn px-6 py-3.5 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-accent-600 to-purple-600 hover:opacity-95 shadow-lg shadow-accent-500/20"
+                className="rounded-lg bg-slate-900 px-6 py-3 text-sm font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white transition-colors"
               >
-                Explore All Free Courses
+                Explore free courses
               </Link>
               <Link
                 href="/signup"
-                className="neu-btn px-6 py-3.5 rounded-2xl font-bold text-sm text-slate-800 dark:text-slate-200 hover:text-accent-600 dark:hover:text-accent-400"
+                className="rounded-lg border border-slate-200/80 bg-white px-6 py-3 text-sm font-medium text-slate-800 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 transition-colors"
               >
-                Create Student Account
+                Create student account
               </Link>
             </div>
           </div>

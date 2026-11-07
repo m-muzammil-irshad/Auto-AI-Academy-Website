@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { DURATION, EASE, fadeUp, viewportOnce } from "@/lib/motion";
 import { FAQS } from "@/lib/faqs";
 
@@ -10,24 +10,23 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="relative bg-transparent py-24 sm:py-32">
+    <section id="faq" className="relative bg-transparent py-20 sm:py-24">
       <div className="mx-auto max-w-3xl px-4">
         <motion.div
           variants={fadeUp}
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
-          className="mb-14 text-center"
+          className="mb-12 text-center"
         >
-          <div className="mb-4 neu-pressed-sm inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent-600 dark:text-accent-400">
-            <HelpCircle className="h-4 w-4" />
-            <span>Got Questions?</span>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-lg border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 px-3 py-1 text-xs text-slate-600 dark:text-slate-400">
+            <span>Frequently asked questions</span>
           </div>
-          <h2 className="font-heading text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-            Frequently <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 to-purple-600 dark:from-accent-400 dark:to-purple-400">Answered</span>
+          <h2 className="font-heading text-3xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+            Questions and answers
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400">
-            Everything you need to know about our free curriculum, certificates, and community.
+          <p className="mt-3 text-base text-slate-600 dark:text-slate-400">
+            Common questions regarding our curriculum, assignments, and certificates.
           </p>
         </motion.div>
 
@@ -36,14 +35,14 @@ export function FAQ() {
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
-          className="space-y-4"
+          className="space-y-3"
         >
           {FAQS.map((item, i) => {
             const isOpen = open === i;
             return (
               <div
                 key={item.q}
-                className="neu-flat rounded-2xl overflow-hidden transition-all duration-300"
+                className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/50 overflow-hidden transition-colors"
               >
                 <h3>
                   <button
@@ -51,17 +50,15 @@ export function FAQ() {
                     onClick={() => setOpen(isOpen ? null : i)}
                     aria-expanded={isOpen}
                     aria-controls={`faq-panel-${i}`}
-                    className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left font-heading text-base sm:text-lg font-bold text-slate-900 transition-colors duration-150 hover:text-accent-600 dark:text-white dark:hover:text-accent-400"
+                    className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left font-heading text-base font-medium text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                   >
                     <span>{item.q}</span>
-                    <div className="neu-pressed-sm h-8 w-8 rounded-full flex items-center justify-center shrink-0">
-                      <ChevronDown
-                        aria-hidden="true"
-                        className={`h-4 w-4 text-slate-500 dark:text-slate-400 transition-transform duration-300 ease-smooth ${
-                          isOpen ? "rotate-180 text-accent-600 dark:text-accent-400" : ""
-                        }`}
-                      />
-                    </div>
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 shrink-0 ${
+                        isOpen ? "rotate-180" : ""
+                      }`}
+                    />
                   </button>
                 </h3>
                 <AnimatePresence initial={false}>
@@ -74,10 +71,8 @@ export function FAQ() {
                       transition={{ duration: DURATION.ui, ease: EASE }}
                       className="overflow-hidden"
                     >
-                      <div className="neu-pressed-sm rounded-xl p-5 mx-6 mb-5">
-                        <p className="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-300">
-                          {item.a}
-                        </p>
+                      <div className="px-6 pb-5 pt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                        {item.a}
                       </div>
                     </motion.div>
                   )}
@@ -90,4 +85,3 @@ export function FAQ() {
     </section>
   );
 }
-

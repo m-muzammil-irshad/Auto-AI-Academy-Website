@@ -153,8 +153,8 @@ export function BlogEditorForm({ post }: BlogEditorFormProps) {
         </div>
 
         {/* Post settings */}
-        <aside className="space-y-5 xl:sticky xl:top-24 xl:self-start">
-          <div className="neu-flat rounded-3xl space-y-4 p-6">
+        <aside className="space-y-5 xl:sticky xl:top-20 xl:self-start">
+          <div className="rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/50 space-y-4 p-5 sm:p-6">
             <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">Post details</h2>
             <Textarea
               label="Summary"
@@ -190,7 +190,7 @@ export function BlogEditorForm({ post }: BlogEditorFormProps) {
             />
           </div>
 
-          <div className="neu-flat rounded-3xl space-y-4 p-6">
+          <div className="rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/50 space-y-4 p-5 sm:p-6">
             <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">Cover image</h2>
             <Input
               label="Image address"
@@ -202,10 +202,10 @@ export function BlogEditorForm({ post }: BlogEditorFormProps) {
               disabled={busy}
             />
             {isHttpsUrl(coverImage) && (
-              <div className="neu-pressed-sm rounded-2xl p-1 overflow-hidden">
+              <div className="rounded-lg border border-slate-200/80 dark:border-slate-800 p-1 overflow-hidden">
                 {/* Plain <img>: this is only a preview of whatever address was pasted. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={coverImage.trim()} alt="Cover preview" className="aspect-video w-full rounded-xl object-cover" />
+                <img src={coverImage.trim()} alt="Cover preview" className="aspect-video w-full rounded-md object-cover" />
               </div>
             )}
           </div>

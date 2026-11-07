@@ -14,12 +14,12 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   return (
     <RoleGuard required="admin">
-      <div className="flex min-h-screen bg-[#e8ecf4] dark:bg-[#10131d] transition-colors">
-        <aside className="hidden w-64 shrink-0 border-r border-white/60 dark:border-white/5 bg-[#e8ecf4] dark:bg-[#10131d] shadow-[4px_0_20px_rgba(163,177,198,0.25)] dark:shadow-[4px_0_25px_rgba(0,0,0,0.85)] md:block">
-          <div className="flex h-16 items-center border-b border-black/5 dark:border-white/5 px-6">
+      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 transition-colors duration-150">
+        <aside className="hidden w-64 shrink-0 border-r border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/40 md:block">
+          <div className="flex h-16 items-center border-b border-slate-100 dark:border-slate-800/80 px-6">
             <Link
               href="/admin"
-              className="font-heading text-lg font-bold text-slate-900 dark:text-white"
+              className="font-heading text-base font-medium text-slate-900 dark:text-white"
             >
               {SITE_NAME} · Admin
             </Link>
@@ -28,11 +28,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </aside>
 
         <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)}>
-          <div className="flex h-16 items-center border-b border-black/5 dark:border-white/5 px-6">
+          <div className="flex h-16 items-center border-b border-slate-100 dark:border-slate-800/80 px-6">
             <Link
               href="/admin"
               onClick={() => setMobileOpen(false)}
-              className="font-heading text-lg font-bold text-slate-900 dark:text-white"
+              className="font-heading text-base font-medium text-slate-900 dark:text-white"
             >
               {SITE_NAME} · Admin
             </Link>
@@ -41,34 +41,36 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </MobileNav>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/60 dark:border-white/5 bg-[#e8ecf4]/95 dark:bg-[#10131d]/95 backdrop-blur-md shadow-[0_4px_20px_rgba(163,177,198,0.25)] dark:shadow-[0_4px_25px_rgba(0,0,0,0.85)] px-6">
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6">
             <button
               type="button"
               aria-label="Open menu"
               onClick={() => setMobileOpen(true)}
-              className="neu-btn inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-700 dark:text-slate-300 md:hidden"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 md:hidden"
             >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth={2}
+                strokeWidth={1.75}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="h-5 w-5"
+                className="h-4 w-4"
                 aria-hidden="true"
               >
                 <path d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
             <div className="hidden md:block" />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <ThemeToggle />
               <UserMenu profileHref="/admin/settings" />
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+          <main className="flex-1 p-6 sm:p-8">
+            <div className="mx-auto max-w-6xl">{children}</div>
+          </main>
         </div>
       </div>
     </RoleGuard>

@@ -79,11 +79,11 @@ export function SubmissionForm({
   // Deadline passed → locked, no form (unless eligible for catch-up in a completed course).
   if (deadlinePassed && !isCatchUpEligible) {
     return (
-      <div className="rounded-2xl neu-pressed-sm p-5">
-        <p className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
+      <div className="rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 p-4">
+        <p className="font-heading text-sm font-medium text-slate-800 dark:text-white">
           Deadline passed
         </p>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-1 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
           This assignment is no longer accepting submissions. It closed on{" "}
           {formatDateTime(assignment.dueDate)}.
         </p>
@@ -124,17 +124,17 @@ export function SubmissionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-2xl neu-pressed-sm p-5"
+      className="space-y-4 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 p-4"
       noValidate
     >
-      <p className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
+      <p className="font-heading text-sm font-medium text-slate-800 dark:text-white">
         Submit assignment
       </p>
 
       {deadlinePassed && isCatchUpEligible && (
-        <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3.5 text-xs text-blue-700 dark:text-blue-300">
-          <p className="font-semibold flex items-center gap-1.5 mb-1">
-            🎓 Catch-Up Window Open for Certificate
+        <div className="rounded-lg border border-indigo-500/20 bg-indigo-50/50 dark:bg-indigo-950/20 p-3 text-xs text-indigo-700 dark:text-indigo-300">
+          <p className="font-medium mb-1">
+            Catch-up window open for certificate
           </p>
           <p className="text-slate-600 dark:text-slate-400">
             This course is marked as completed, but you can submit this assignment to reach the 80% submission threshold required for your official certificate. (Note: Late catch-up submissions do not affect the completed cohort leaderboard).
@@ -185,8 +185,8 @@ export function SubmissionForm({
         disabled={loading}
       />
 
-      <Button type="submit" loading={loading} className="w-full sm:w-auto neu-btn-primary rounded-full font-bold px-8">
-        Submit
+      <Button type="submit" loading={loading} className="w-full sm:w-auto rounded-lg font-medium px-6">
+        Submit assignment
       </Button>
     </form>
   );

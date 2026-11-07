@@ -63,7 +63,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${lexend.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen font-body transition-colors duration-300 bg-[#e8ecf4] text-slate-800 dark:bg-[#10131d] dark:text-slate-100">
+      <body className="min-h-screen font-body transition-colors duration-150 bg-slate-50 text-slate-900 dark:bg-[#090c15] dark:text-slate-100">
         <NextTopLoader color="#0ea5e9" showSpinner={false} />
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />

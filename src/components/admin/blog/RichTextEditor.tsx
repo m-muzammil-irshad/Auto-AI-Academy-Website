@@ -16,6 +16,7 @@ import {
   List,
   ListChecks,
   ListOrdered,
+  MousePointerClick,
   Quote,
   Redo2,
   TriangleAlert,
@@ -62,6 +63,55 @@ const Takeaways = Node.create({
   },
 });
 
+/** Call-to-action button. Matches <div class="article-btn-wrap"><a href="..." class="article-btn">Text</a></div> */
+const CtaButton = Node.create({
+  name: "ctaButton",
+  group: "block",
+  atom: true,
+  draggable: true,
+  selectable: true,
+  addAttributes() {
+    return {
+      href: {
+        default: "#",
+        parseHTML: (el) => {
+          const anchor = el.tagName.toLowerCase() === "a" ? el : el.querySelector("a");
+          return anchor?.getAttribute("href") || "#";
+        },
+      },
+      text: {
+        default: "Click here",
+        parseHTML: (el) => {
+          const anchor = el.tagName.toLowerCase() === "a" ? el : el.querySelector("a");
+          return anchor?.textContent?.trim() || el.textContent?.trim() || "Click here";
+        },
+      },
+    };
+  },
+  parseHTML() {
+    return [
+      { tag: "div.article-btn-wrap" },
+      { tag: "a.article-btn" },
+    ];
+  },
+  renderHTML({ node, HTMLAttributes }) {
+    return [
+      "div",
+      { class: "article-btn-wrap" },
+      [
+        "a",
+        mergeAttributes(HTMLAttributes, {
+          href: node.attrs.href,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          class: "article-btn",
+        }),
+        node.attrs.text || "Click here",
+      ],
+    ];
+  },
+});
+
 /** Adds https:// when the author types a bare address such as "example.com". */
 function normalizeUrl(raw: string): string {
   const url = raw.trim();
@@ -95,11 +145,11 @@ function ToolbarButton({
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       className={cn(
-        "inline-flex h-9 items-center justify-center rounded-xl text-sm font-medium transition-all duration-150 disabled:opacity-40",
-        wide ? "px-3" : "w-9",
+        "inline-flex h-8 items-center justify-center rounded-lg text-xs font-medium transition-colors disabled:opacity-40",
+        wide ? "px-2.5" : "w-8",
         active
-          ? "neu-btn text-accent-600 dark:text-accent-400 font-bold shadow-sm"
-          : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+          ? "border border-slate-200/80 bg-slate-100 text-slate-900 font-medium dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/60 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800/50"
       )}
     >
       {children}
@@ -107,19 +157,31 @@ function ToolbarButton({
   );
 }
 
-const Divider = () => <span aria-hidden="true" className="mx-1 h-6 w-px bg-black/10 dark:bg-white/10" />;
+const Divider = () => <span aria-hidden="true" className="mx-1 h-5 w-px bg-slate-200 dark:bg-slate-800" />;
 
-type Panel = "link" | "image" | null;
+type Panel = "link" | "image" | "button" | null;
 
 function Toolbar({ editor }: { editor: Editor }) {
   const [panel, setPanel] = useState<Panel>(null);
   const [url, setUrl] = useState("");
   const [alt, setAlt] = useState("");
+  const [btnText, setBtnText] = useState("");
 
   const openPanel = (next: Exclude<Panel, null>) => {
-    setUrl(next === "link" ? (editor.getAttributes("link").href as string | undefined) ?? "" : "");
-    setAlt("");
-    setPanel(panel === next ? null : next);
+    if (panel === next) {
+      setPanel(null);
+      return;
+    }
+    if (next === "link") {
+      setUrl((editor.getAttributes("link").href as string | undefined) ?? "");
+    } else if (next === "button") {
+      setUrl("");
+      setBtnText("");
+    } else {
+      setUrl("");
+      setAlt("");
+    }
+    setPanel(next);
   };
 
   const submitPanel = (e: FormEvent) => {
@@ -135,15 +197,21 @@ function Toolbar({ editor }: { editor: Editor }) {
       }
     } else if (panel === "image") {
       editor.chain().focus().setImage({ src: href, alt: alt.trim() }).run();
+    } else if (panel === "button") {
+      const text = btnText.trim() || "Click here";
+      editor.chain().focus().insertContent({
+        type: "ctaButton",
+        attrs: { href, text },
+      }).run();
     }
     setPanel(null);
   };
 
   const inputClass =
-    "h-9 min-w-0 flex-1 rounded-xl neu-pressed-sm px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-slate-100 border-none";
+    "h-8 min-w-0 flex-1 rounded-lg border border-slate-200/80 bg-white px-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-600";
 
   return (
-    <div className="sticky top-16 z-20 border-b border-black/5 dark:border-white/5 bg-[#e8ecf4]/90 dark:bg-[#151926]/90 backdrop-blur-md">
+    <div className="sticky top-14 z-20 rounded-t-xl border-b border-slate-200/80 bg-white/95 dark:border-slate-800 dark:bg-[#0f1422]/95 backdrop-blur-md shadow-xs">
       <div className="flex flex-wrap items-center gap-1 p-2">
         {/* Text type: the three sizes an article is built from */}
         <ToolbarButton label="Normal text" wide active={editor.isActive("paragraph")} onClick={() => editor.chain().focus().setParagraph().run()}>
@@ -170,6 +238,9 @@ function Toolbar({ editor }: { editor: Editor }) {
             <Unlink className="h-4 w-4" />
           </ToolbarButton>
         )}
+        <ToolbarButton label="Insert button" active={panel === "button"} onClick={() => openPanel("button")}>
+          <MousePointerClick className="h-4 w-4" />
+        </ToolbarButton>
         <Divider />
         <ToolbarButton label="Bullet list" active={editor.isActive("bulletList")} onClick={() => editor.chain().focus().toggleBulletList().run()}>
           <List className="h-4 w-4" />
@@ -206,30 +277,59 @@ function Toolbar({ editor }: { editor: Editor }) {
       </div>
 
       {panel && (
-        <form onSubmit={submitPanel} className="flex flex-wrap items-center gap-2 border-t border-black/5 dark:border-white/5 p-2.5">
-          <input
-            autoFocus
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder={panel === "link" ? "Paste or type a link, e.g. https://example.com" : "Paste the image address (https://...)"}
-            aria-label={panel === "link" ? "Link address" : "Image address"}
-            className={inputClass}
-          />
-          {panel === "image" && (
-            <input
-              type="text"
-              value={alt}
-              onChange={(e) => setAlt(e.target.value)}
-              placeholder="Describe the image (for screen readers)"
-              aria-label="Image description"
-              className={inputClass}
-            />
+        <form onSubmit={submitPanel} className="flex flex-wrap items-center gap-2 border-t border-slate-200/80 dark:border-slate-800 p-2.5">
+          {panel === "button" ? (
+            <>
+              <input
+                autoFocus
+                type="text"
+                value={btnText}
+                onChange={(e) => setBtnText(e.target.value)}
+                placeholder="Button text (e.g. Enroll in Free Course)"
+                aria-label="Button text"
+                required
+                className={inputClass}
+              />
+              <input
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="Button link address (e.g. https://... or /courses)"
+                aria-label="Button link address"
+                required
+                className={inputClass}
+              />
+              <button type="submit" className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white">
+                Insert button
+              </button>
+            </>
+          ) : (
+            <>
+              <input
+                autoFocus
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder={panel === "link" ? "Paste or type a link, e.g. https://example.com" : "Paste the image address (https://...)"}
+                aria-label={panel === "link" ? "Link address" : "Image address"}
+                className={inputClass}
+              />
+              {panel === "image" && (
+                <input
+                  type="text"
+                  value={alt}
+                  onChange={(e) => setAlt(e.target.value)}
+                  placeholder="Describe the image (for screen readers)"
+                  aria-label="Image description"
+                  className={inputClass}
+                />
+              )}
+              <button type="submit" className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white">
+                {panel === "link" ? "Apply link" : "Insert image"}
+              </button>
+            </>
           )}
-          <button type="submit" className="h-9 rounded-xl neu-btn-primary px-4 text-sm font-bold text-white">
-            {panel === "link" ? "Apply link" : "Insert image"}
-          </button>
-          <button type="button" onClick={() => setPanel(null)} className="h-9 rounded-xl neu-btn px-3 text-sm font-medium text-slate-600 dark:text-slate-300">
+          <button type="button" onClick={() => setPanel(null)} className="h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800">
             Cancel
           </button>
         </form>
@@ -264,6 +364,7 @@ export function RichTextEditor({ initialContent, onChange }: RichTextEditorProps
       Placeholder.configure({ placeholder: "Start writing your article…" }),
       Callout,
       Takeaways,
+      CtaButton,
     ],
     content: initialContent,
     editorProps: { attributes: { class: "article" } },
@@ -271,7 +372,7 @@ export function RichTextEditor({ initialContent, onChange }: RichTextEditorProps
   });
 
   return (
-    <div className="rounded-3xl neu-flat overflow-hidden">
+    <div className="rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900/50">
       {editor && <Toolbar editor={editor} />}
       <div className="px-5 py-6 sm:px-8 sm:py-8">
         <EditorContent editor={editor} />

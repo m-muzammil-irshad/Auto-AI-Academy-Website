@@ -2,39 +2,35 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { fadeUp, viewportOnce } from "@/lib/motion";
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden bg-transparent transition-colors duration-300 py-20 sm:py-28">
-      {/* Soft ambient back light */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-500/10 blur-[120px]" />
-
+    <section className="relative bg-transparent transition-colors duration-200 py-16 sm:py-24">
       <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
         <motion.div
           variants={fadeUp}
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
-          className="neu-flat-lg rounded-3xl p-10 sm:p-16 relative overflow-hidden"
+          className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-8 sm:p-14 shadow-sm"
         >
-          <div className="mb-4 neu-pressed-sm inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent-600 dark:text-accent-400">
-            <Sparkles className="h-4 w-4" />
-            <span>Join Hundreds of Active Learners</span>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-lg border border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 px-3 py-1 text-xs text-slate-600 dark:text-slate-400">
+            <span>Get started</span>
           </div>
-          <h2 className="font-heading text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl max-w-2xl mx-auto leading-tight">
-            Ready to start <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 via-indigo-500 to-purple-600 dark:from-accent-400 dark:via-indigo-300 dark:to-purple-400">learning?</span>
+          <h2 className="font-heading text-3xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-4xl max-w-xl mx-auto">
+            Ready to begin learning?
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-            Create your free account today and dive into your first Python or AI course in under 60 seconds. No credit card required.
+          <p className="mx-auto mt-4 max-w-lg text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+            Create an account to start your first course, submit practical assignments, and earn verified certificates. Completely free.
           </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link href="/signup">
-              <Button size="lg" className="neu-btn-primary rounded-full px-10 py-5 text-lg font-bold inline-flex items-center gap-3">
-                <span>Create Free Account</span>
-                <ArrowRight className="h-5 w-5" />
+              <Button size="lg" className="rounded-lg px-6 py-3 text-sm font-medium shadow-sm inline-flex items-center gap-2">
+                <span>Create free account</span>
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
@@ -43,4 +39,3 @@ export function FinalCTA() {
     </section>
   );
 }
-

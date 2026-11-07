@@ -6,7 +6,7 @@ import { Spinner } from "@/components/ui/Spinner";
 
 export default function Loading() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] transition-colors duration-300">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 transition-colors duration-150">
       <SiteHeader />
       <main className="flex-1 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">

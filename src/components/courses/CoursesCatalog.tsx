@@ -38,37 +38,34 @@ export function CoursesCatalog({ initialCourses }: { initialCourses?: Course[] }
   }, [courses, query, status]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] transition-colors duration-300 relative overflow-x-clip">
-      {/* Background glow */}
-      <div className="pointer-events-none absolute right-1/4 top-[-10rem] z-0 h-[30rem] w-[30rem] rounded-full bg-accent-500/10 blur-[100px]" />
-
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 transition-colors duration-150">
       <SiteHeader />
 
-      <main className="flex-1 relative z-10">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
-          <motion.div variants={fadeUp} initial="hidden" animate="show" className="mb-10 max-w-2xl">
-            <h1 className="font-heading text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-              All <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 to-purple-600 dark:from-accent-400 dark:to-purple-400">Courses</span>
+      <main className="flex-1">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+          <motion.div variants={fadeUp} initial="hidden" animate="show" className="mb-8 max-w-2xl">
+            <h1 className="font-heading text-3xl font-medium tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+              All courses
             </h1>
-            <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
-              Browse our complete catalog of programming, AI, and automation courses. Sign up to enroll and start submitting assignments.
+            <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-400">
+              Browse our complete catalog of programming, AI, and automation courses. Enroll to access lesson video players and assignments.
             </p>
           </motion.div>
 
           {/* Search and status filter */}
-          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative w-full sm:max-w-xs">
-              <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
               <input
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search courses"
                 aria-label="Search courses"
-                className="block w-full rounded-full neu-pressed-sm py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 transition-colors duration-150 focus:outline-none dark:text-slate-100 dark:placeholder:text-slate-500 border-none"
+                className="block w-full rounded-lg border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900/60 py-1.5 pl-8 pr-3 text-sm text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:text-slate-100 dark:placeholder:text-slate-500"
               />
             </div>
-            <div className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-full neu-pressed-sm">
+            <div className="flex items-center gap-1.5 overflow-x-auto p-1 rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900">
               {FILTERS.map((filter) => {
                 const active = status === filter.value;
                 return (
@@ -77,13 +74,13 @@ export function CoursesCatalog({ initialCourses }: { initialCourses?: Course[] }
                     type="button"
                     onClick={() => setStatus(filter.value)}
                     aria-pressed={active}
-                    className={`relative whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
+                    className={`whitespace-nowrap rounded-md px-3 py-1 text-xs transition-colors ${
                       active
-                        ? "neu-btn text-accent-600 dark:text-accent-400 font-bold shadow-sm"
-                        : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                        ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
-                    <span className="relative">{filter.label}</span>
+                    <span>{filter.label}</span>
                   </button>
                 );
               })}

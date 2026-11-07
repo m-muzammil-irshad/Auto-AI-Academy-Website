@@ -19,7 +19,6 @@ const NAV_LINKS = [
   { href: "/#why", label: "Why us", section: "why" },
 ];
 
-/** Tracks which home-page section is under the header, and whether the page has scrolled. */
 function useHeaderState(onHome: boolean) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -39,7 +38,7 @@ function useHeaderState(onHome: boolean) {
     const sections = NAV_LINKS.flatMap((l) => (l.section ? [l.section] : []))
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => !!el);
-    // A section is "active" while it crosses a thin band just below the header.
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -70,16 +69,16 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 w-full transition-all duration-300",
+        "sticky top-0 z-30 w-full transition-colors duration-150",
         scrolled
-          ? "bg-[#e8ecf4]/95 dark:bg-[#10131d]/95 backdrop-blur-md shadow-[0_4px_20px_rgba(163,177,198,0.35)] dark:shadow-[0_4px_25px_rgba(0,0,0,0.85)] border-b border-white/60 dark:border-white/5"
+          ? "bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-sm"
           : "bg-transparent border-b border-transparent"
       )}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Brand />
 
-        <nav className="hidden items-center gap-2 md:flex p-1.5 rounded-full neu-pressed-sm">
+        <nav className="hidden items-center gap-1 md:flex">
           {NAV_LINKS.map((link) => {
             const active = isActive(link);
             return (
@@ -88,10 +87,10 @@ export function SiteHeader() {
                 href={link.href}
                 aria-current={active ? "true" : undefined}
                 className={cn(
-                  "relative text-sm font-medium px-4 py-1.5 rounded-full transition-all duration-200",
+                  "text-sm px-3 py-1.5 rounded-md transition-colors",
                   active
-                    ? "neu-btn text-accent-600 dark:text-accent-400 font-bold shadow-sm"
-                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                    ? "text-slate-900 dark:text-white font-medium bg-slate-100 dark:bg-slate-800/60"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 )}
               >
                 {link.label}
@@ -100,47 +99,48 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-4 md:flex">
           <ThemeToggle />
           {signedIn ? (
             <Link href={portalHref}>
-              <Button size="sm" className="neu-btn-primary rounded-full px-5 py-2 font-semibold">
-                Go to dashboard
+              <Button size="sm" className="rounded-lg px-4 py-2 text-sm font-medium">
+                Dashboard
               </Button>
             </Link>
           ) : (
             <>
-              <Link href="/login">
-                <Button variant="ghost" size="sm" className="neu-btn rounded-full px-4 py-2 font-medium text-slate-700 dark:text-slate-200">
-                  Log in
-                </Button>
+              <Link
+                href="/login"
+                className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              >
+                Log in
               </Link>
               <Link href="/signup">
-                <Button size="sm" className="neu-btn-primary rounded-full px-5 py-2 font-semibold">
-                  Get Started
+                <Button size="sm" className="rounded-lg px-4 py-2 text-sm font-medium">
+                  Get started
                 </Button>
               </Link>
             </>
           )}
         </div>
 
-        <div className="flex items-center gap-3 md:hidden">
+        <div className="flex items-center gap-2 md:hidden">
           <ThemeToggle />
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
-            className="neu-btn inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-700 transition-colors duration-150 dark:text-slate-200"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <svg
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth={2}
+              strokeWidth={1.75}
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-5 w-5"
+              className="h-4 w-4"
               aria-hidden="true"
             >
               {mobileOpen ? (
@@ -160,41 +160,41 @@ export function SiteHeader() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: DURATION.ui, ease: EASE }}
-            className="overflow-hidden border-t border-white/60 dark:border-white/5 bg-[#e8ecf4] dark:bg-[#10131d] shadow-2xl md:hidden"
+            className="overflow-hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-lg md:hidden"
           >
-            <nav className="mx-auto flex max-w-6xl flex-col gap-1.5 px-4 py-4">
+            <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
-                    "rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-150",
+                    "rounded-lg px-3 py-2 text-sm transition-colors",
                     isActive(link)
-                      ? "neu-pressed-sm text-accent-600 dark:text-accent-400 font-bold"
-                      : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                      ? "text-slate-900 dark:text-white font-medium bg-slate-100 dark:bg-slate-800"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
                   {link.label}
                 </Link>
               ))}
-              <div className="mt-3 flex flex-col gap-2.5 border-t border-black/5 dark:border-white/5 pt-3">
+              <div className="mt-3 flex flex-col gap-2 border-t border-slate-100 dark:border-slate-800 pt-3">
                 {signedIn ? (
                   <Link href={portalHref} onClick={() => setMobileOpen(false)}>
-                    <Button size="md" className="w-full neu-btn-primary rounded-full font-semibold">
-                      Go to dashboard
+                    <Button size="md" className="w-full rounded-lg font-medium">
+                      Dashboard
                     </Button>
                   </Link>
                 ) : (
                   <>
                     <Link href="/login" onClick={() => setMobileOpen(false)}>
-                      <Button variant="secondary" size="md" className="w-full neu-btn rounded-full font-medium text-slate-700 dark:text-slate-200">
+                      <Button variant="secondary" size="md" className="w-full rounded-lg font-medium">
                         Log in
                       </Button>
                     </Link>
                     <Link href="/signup" onClick={() => setMobileOpen(false)}>
-                      <Button size="md" className="w-full neu-btn-primary rounded-full font-semibold">
-                        Get Started
+                      <Button size="md" className="w-full rounded-lg font-medium">
+                        Get started
                       </Button>
                     </Link>
                   </>

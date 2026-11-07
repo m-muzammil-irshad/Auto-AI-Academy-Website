@@ -27,7 +27,7 @@ export function WhatsAppButton({ className = "", message }: WhatsAppButtonProps)
       rel="noopener noreferrer"
       aria-label="Join WhatsApp Community"
       title="Join WhatsApp Community"
-      className={`inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-[#20bd5a] ${className}`}
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#25D366] text-white shadow-sm transition-colors duration-150 hover:bg-[#20bd5a] ${className}`}
     >
       <svg
         viewBox="0 0 24 24"

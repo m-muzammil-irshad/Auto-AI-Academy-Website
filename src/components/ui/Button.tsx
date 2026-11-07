@@ -16,19 +16,19 @@ export interface ButtonProps
 
 const variants: Record<Variant, string> = {
   primary:
-    "neu-btn-primary text-white font-semibold disabled:opacity-50 active:scale-[0.98]",
+    "bg-indigo-600 text-white hover:bg-indigo-500 border border-indigo-500/20 shadow-sm disabled:opacity-50 active:scale-[0.98]",
   secondary:
-    "neu-btn text-slate-800 dark:text-slate-100 font-medium disabled:opacity-50 active:scale-[0.98]",
+    "bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 border border-slate-200/80 dark:border-slate-800 shadow-sm disabled:opacity-50 active:scale-[0.98]",
   danger:
-    "neu-btn-danger text-white font-semibold disabled:opacity-50 active:scale-[0.98]",
+    "bg-red-600 text-white hover:bg-red-500 border border-red-500/20 shadow-sm disabled:opacity-50 active:scale-[0.98]",
   ghost:
-    "bg-transparent text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 hover:neu-pressed-sm active:scale-[0.98] disabled:opacity-50",
+    "bg-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 disabled:opacity-50 active:scale-[0.98]",
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-8 px-3 text-sm",
-  md: "h-10 px-4 text-sm",
-  lg: "h-12 px-6 text-base",
+  sm: "h-8 px-3 text-xs rounded-lg",
+  md: "h-9 px-4 text-sm rounded-lg",
+  lg: "h-11 px-5 text-sm rounded-lg",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -41,14 +41,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition duration-150 ease-smooth active:scale-[0.98] disabled:cursor-not-allowed disabled:active:scale-100",
+          "inline-flex items-center justify-center gap-2 font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
           variants[variant],
           sizes[size],
           className
         )}
         {...rest}
       >
-        {loading && <Spinner className="h-4 w-4" />}
+        {loading && <Spinner className="h-3.5 w-3.5" />}
         {children}
       </button>
     );

@@ -69,12 +69,7 @@ export default function HowItWorksPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] transition-colors duration-300 relative overflow-x-clip">
-      {/* Background radial ambient glow */}
-      <div className="pointer-events-none absolute right-1/4 top-[-10rem] z-0 h-[32rem] w-[32rem] rounded-full bg-accent-500/10 blur-[120px]" />
-      <div className="pointer-events-none absolute left-1/4 top-[40rem] z-0 h-[28rem] w-[28rem] rounded-full bg-purple-500/10 blur-[120px]" />
-      <div className="pointer-events-none absolute right-1/3 top-[80rem] z-0 h-[30rem] w-[30rem] rounded-full bg-amber-500/10 blur-[130px]" />
-
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 transition-colors duration-150">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -82,7 +77,7 @@ export default function HowItWorksPage() {
 
       <SiteHeader />
 
-      <main className="flex-1 relative z-10">
+      <main className="flex-1">
         <HowItWorksGuide />
       </main>
 

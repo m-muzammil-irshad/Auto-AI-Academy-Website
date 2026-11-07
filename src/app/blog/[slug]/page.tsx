@@ -96,7 +96,7 @@ export default async function BlogPostPage({ params }: Props) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] transition-colors duration-300">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 transition-colors duration-150">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -113,10 +113,10 @@ export default async function BlogPostPage({ params }: Props) {
               Blog
             </Link>
             <ChevronRight className="h-4 w-4" aria-hidden="true" />
-            <span className="font-semibold text-accent-600 dark:text-accent-400">{post.category}</span>
+            <span className="font-medium text-indigo-600 dark:text-indigo-400">{post.category}</span>
           </nav>
 
-          <h1 className="font-heading text-[2rem] font-extrabold leading-[1.15] tracking-tight text-slate-900 dark:text-white sm:text-[2.5rem] md:text-5xl md:leading-[1.1]">
+          <h1 className="font-heading text-2xl font-medium leading-[1.2] tracking-tight text-slate-900 dark:text-white sm:text-3xl md:text-4xl">
             {post.title}
           </h1>
 

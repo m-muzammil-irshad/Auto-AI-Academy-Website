@@ -20,16 +20,16 @@ export function ThemeToggle() {
       aria-label="Toggle dark/light theme"
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="neu-btn relative flex h-10 w-10 items-center justify-center rounded-full text-slate-700 transition-all duration-200 hover:text-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-500 dark:text-slate-300 dark:hover:text-accent-400"
+      className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
     >
       <Sun
-        className={`h-5 w-5 transition-all duration-300 text-amber-500 ${
-          isDark ? "rotate-90 scale-0 opacity-0 absolute" : "rotate-0 scale-100 opacity-100"
+        className={`h-4 w-4 text-slate-600 dark:text-slate-300 transition-transform ${
+          isDark ? "scale-0 opacity-0 absolute" : "scale-100 opacity-100"
         }`}
       />
       <Moon
-        className={`h-5 w-5 transition-all duration-300 text-indigo-400 ${
-          isDark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0 absolute"
+        className={`h-4 w-4 text-slate-600 dark:text-slate-300 transition-transform ${
+          isDark ? "scale-100 opacity-100" : "scale-0 opacity-0 absolute"
         }`}
       />
       <span className="sr-only">Toggle theme</span>

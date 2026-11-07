@@ -7,10 +7,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { notificationsCol } from "@/lib/firebase/collections";
 
 export interface NotificationBellProps {
-  href: string;
+  href?: string;
 }
 
-export function NotificationBell({ href }: NotificationBellProps) {
+export function NotificationBell({ href = "/student/notifications" }: NotificationBellProps = {}) {
   const { user } = useAuth();
   const [unread, setUnread] = useState(0);
 
@@ -32,16 +32,16 @@ export function NotificationBell({ href }: NotificationBellProps) {
     <Link
       href={href}
       aria-label="Notifications"
-      className="relative inline-flex h-9 w-9 items-center justify-center rounded-full neu-btn text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 transition-transform active:scale-95"
+      className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors"
     >
       <svg
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth={2}
+        strokeWidth={1.75}
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-5 w-5"
+        className="h-4 w-4"
         aria-hidden="true"
       >
         <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" />

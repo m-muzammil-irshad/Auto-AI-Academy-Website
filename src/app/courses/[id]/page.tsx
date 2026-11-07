@@ -80,18 +80,17 @@ export default function CourseDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] transition-colors duration-300">
+      <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 transition-colors duration-150">
         <SiteHeader />
-        <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-12 sm:py-20">
-          {/* Same outline as the loaded course so the page doesn't jump */}
-          <div className="neu-flat overflow-hidden rounded-3xl p-6 sm:p-8">
-            <Skeleton className="aspect-video w-full rounded-2xl" />
+        <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-12 sm:py-16">
+          <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-6 shadow-sm">
+            <Skeleton className="aspect-video w-full rounded-lg" />
             <div className="p-4 sm:p-6">
-              <Skeleton className="mb-6 h-10 w-2/3" />
-              <Skeleton className="mb-3 h-5 w-full" />
-              <Skeleton className="mb-3 h-5 w-full" />
-              <Skeleton className="mb-10 h-5 w-3/5" />
-              <Skeleton className="h-12 w-40 rounded-full" />
+              <Skeleton className="mb-6 h-8 w-2/3" />
+              <Skeleton className="mb-3 h-4 w-full" />
+              <Skeleton className="mb-3 h-4 w-full" />
+              <Skeleton className="mb-8 h-4 w-3/5" />
+              <Skeleton className="h-10 w-36 rounded-lg" />
             </div>
           </div>
         </main>
@@ -102,7 +101,7 @@ export default function CourseDetailPage() {
 
   if (error || !course) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] transition-colors duration-300">
+      <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 transition-colors duration-150">
         <SiteHeader />
         <main className="flex-1 flex items-center justify-center p-4">
           <EmptyState title="Course Not Found" description={error || "The course you are looking for does not exist."} />
@@ -118,12 +117,10 @@ export default function CourseDetailPage() {
   const userIsEnrolled = user && isEnrolled(id);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] relative overflow-x-clip transition-colors duration-300">
-      <div className="pointer-events-none absolute left-1/4 top-[-10rem] z-0 h-[30rem] w-[30rem] rounded-full bg-accent-500/10 blur-[100px]" />
-
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 transition-colors duration-150">
       <SiteHeader />
 
-      <main className="flex-1 relative z-10 mx-auto w-full max-w-6xl px-4 py-12 sm:py-20">
+      <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-10 sm:py-16">
         <motion.div
           variants={stagger}
           initial="hidden"
@@ -131,9 +128,9 @@ export default function CourseDetailPage() {
           className="grid items-start gap-8 lg:grid-cols-3"
         >
           {/* Course content */}
-          <motion.article variants={fadeUp} className="neu-flat overflow-hidden rounded-3xl p-4 sm:p-6 lg:col-span-2">
+          <motion.article variants={fadeUp} className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-4 sm:p-6 shadow-sm lg:col-span-2">
             {course.thumbnail ? (
-              <div className="w-full relative neu-pressed-sm rounded-2xl p-2 overflow-hidden flex justify-center">
+              <div className="w-full relative rounded-lg overflow-hidden flex justify-center bg-slate-100 dark:bg-slate-950">
                 <Image
                   src={course.thumbnail}
                   alt={course.title}
@@ -142,36 +139,36 @@ export default function CourseDetailPage() {
                   placeholder="blur"
                   blurDataURL={SHIMMER_BLUR_16_9}
                   sizes="(max-width: 1024px) 100vw, 850px"
-                  className="w-full h-auto object-contain max-h-[600px] rounded-xl"
+                  className="w-full h-auto object-contain max-h-[500px]"
                   priority={true}
                 />
               </div>
             ) : (
-              <div className="w-full relative aspect-video flex items-center justify-center neu-pressed-sm rounded-2xl p-4">
-                <span className="font-heading text-3xl font-bold text-accent-700/50 dark:text-accent-400/50">
+              <div className="w-full relative aspect-video flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-900">
+                <span className="font-heading text-xl font-medium text-slate-500 dark:text-slate-400">
                   Auto AI Academy
                 </span>
               </div>
             )}
 
-            <div className="pt-8 sm:pt-10">
-              <h1 className="mb-6 font-heading text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
+            <div className="pt-6 sm:pt-8">
+              <h1 className="mb-4 font-heading text-2xl sm:text-3xl font-medium text-slate-900 dark:text-white">
                 {course.title}
               </h1>
 
-              <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 leading-relaxed text-lg whitespace-pre-wrap">
+              <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 leading-relaxed text-sm sm:text-base whitespace-pre-wrap">
                 {course.description}
               </div>
 
               {course.outcomes.length > 0 && (
-                <div className="mt-10">
-                  <h2 className="font-heading text-xl font-bold text-slate-900 dark:text-white mb-4">
+                <div className="mt-8">
+                  <h2 className="font-heading text-lg font-medium text-slate-900 dark:text-white mb-3">
                     What you&apos;ll learn
                   </h2>
-                  <ul className="grid gap-3 sm:grid-cols-2">
+                  <ul className="grid gap-2.5 sm:grid-cols-2">
                     {course.outcomes.map((outcome) => (
-                      <li key={outcome} className="flex items-start gap-3 text-slate-600 dark:text-slate-300">
-                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" aria-hidden="true" />
+                      <li key={outcome} className="flex items-start gap-2.5 text-sm text-slate-600 dark:text-slate-300">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" aria-hidden="true" />
                         {outcome}
                       </li>
                     ))}
@@ -180,39 +177,39 @@ export default function CourseDetailPage() {
               )}
 
               {course.outlineUrl && (
-                <div className="mt-10">
-                  <h2 className="font-heading text-xl font-bold text-slate-900 dark:text-white mb-4">
-                    Explore More
+                <div className="mt-8">
+                  <h2 className="font-heading text-lg font-medium text-slate-900 dark:text-white mb-3">
+                    Course outline
                   </h2>
                   <a
                     href={course.outlineUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full neu-btn text-slate-900 dark:text-white font-semibold transition-all duration-150"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200/90 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs font-medium text-slate-800 dark:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
                   >
-                    <FileText className="h-5 w-5 text-accent-500" aria-hidden="true" />
-                    View Course Outline
+                    <FileText className="h-4 w-4 text-indigo-500" aria-hidden="true" />
+                    View document outline
                   </a>
                 </div>
               )}
             </div>
           </motion.article>
 
-          {/* Enrollment card stays in view while the description scrolls */}
-          <motion.aside variants={fadeUp} className="neu-flat rounded-3xl p-6 sm:p-8 lg:sticky lg:top-24">
+          {/* Enrollment sidebar card */}
+          <motion.aside variants={fadeUp} className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-6 shadow-sm lg:sticky lg:top-24">
             <div className="flex items-center justify-between gap-4">
-              <p className="font-heading text-3xl font-bold text-slate-900 dark:text-white">Free</p>
-              <Badge variant={courseStatusVariant(course.status)} className="w-fit px-3 py-1 text-sm neu-flat border-none shadow-sm font-bold">
+              <p className="font-heading text-2xl font-medium text-slate-900 dark:text-white">Free</p>
+              <Badge variant={courseStatusVariant(course.status)}>
                 {COURSE_STATUS_LABELS[course.status]}
               </Badge>
             </div>
 
-            <CourseMeta course={course} className="mt-4 text-sm" />
+            <CourseMeta course={course} className="mt-3 text-xs" />
 
-            <ul className="mt-6 space-y-3 border-t border-black/5 dark:border-white/5 pt-6">
+            <ul className="mt-5 space-y-2.5 border-t border-slate-100 dark:border-slate-800/80 pt-5">
               {INCLUDED.map((item) => (
-                <li key={item.text} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
-                  <item.icon className="mt-0.5 h-5 w-5 shrink-0 text-accent-500" aria-hidden="true" />
+                <li key={item.text} className="flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-400">
+                  <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500" aria-hidden="true" />
                   {item.text}
                 </li>
               ))}

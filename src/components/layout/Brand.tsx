@@ -19,8 +19,8 @@ export function Brand({ href = "/", className }: { href?: string; className?: st
         className
       )}
     >
-      <span className="shrink-0 rounded-full shadow-sm shadow-blue-500/30 dark:shadow-blue-400/40">
-        {brandMarkSvg(32, id)}
+      <span className="shrink-0">
+        {brandMarkSvg(30, id)}
       </span>
       {SITE_NAME}
     </Link>
