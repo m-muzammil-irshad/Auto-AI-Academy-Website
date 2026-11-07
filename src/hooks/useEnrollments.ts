@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   enrollInCourse,
   fetchEnrollmentsForUser,
@@ -83,9 +83,14 @@ export function useEnrollments(
     [enrollments]
   );
 
+  const courseIds = useMemo(
+    () => enrollments.map((e) => e.courseId),
+    [enrollments]
+  );
+
   return {
     enrollments,
-    courseIds: enrollments.map((e) => e.courseId),
+    courseIds,
     loading,
     error,
     enroll,

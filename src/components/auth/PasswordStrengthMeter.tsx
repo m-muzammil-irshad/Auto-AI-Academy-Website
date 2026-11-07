@@ -48,13 +48,13 @@ export function PasswordStrengthMeter({ password, strength: propStrength }: Prop
   const colors = getColors();
 
   return (
-    <div className="mt-2 space-y-1">
-      <div className="flex gap-1 h-1.5 w-full">
-        <motion.div initial={false} animate={{ backgroundColor: colors[0] }} className="h-full flex-1 rounded-full bg-slate-200 dark:bg-slate-700 transition-colors" />
-        <motion.div initial={false} animate={{ backgroundColor: colors[1] }} className="h-full flex-1 rounded-full bg-slate-200 dark:bg-slate-700 transition-colors" />
-        <motion.div initial={false} animate={{ backgroundColor: colors[2] }} className="h-full flex-1 rounded-full bg-slate-200 dark:bg-slate-700 transition-colors" />
+    <div className="mt-2.5 space-y-1.5">
+      <div className="flex gap-1.5 h-2.5 w-full p-0.5 neu-pressed-sm rounded-full">
+        <motion.div initial={false} animate={{ backgroundColor: colors[0] }} className="h-full flex-1 rounded-full transition-colors" />
+        <motion.div initial={false} animate={{ backgroundColor: colors[1] }} className="h-full flex-1 rounded-full transition-colors" />
+        <motion.div initial={false} animate={{ backgroundColor: colors[2] }} className="h-full flex-1 rounded-full transition-colors" />
       </div>
-      <p className={`text-xs ${strength === "weak" ? "text-red-500" : strength === "medium" ? "text-yellow-600 dark:text-yellow-500" : "text-green-600 dark:text-green-500"}`}>
+      <p className={`text-xs font-medium ${strength === "weak" ? "text-red-500" : strength === "medium" ? "text-amber-500" : "text-emerald-500"}`}>
         {getLabel()}
       </p>
     </div>

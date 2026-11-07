@@ -22,7 +22,7 @@ export function ProgressBar({ value, label, className }: ProgressBarProps) {
       aria-valuenow={percent}
       aria-valuemin={0}
       aria-valuemax={100}
-      className={cn("h-2 w-full overflow-hidden rounded-full bg-slate-200/70 dark:bg-slate-800", className)}
+      className={cn("h-3 w-full overflow-hidden rounded-full neu-pressed-sm p-0.5", className)}
     >
       <motion.div
         initial={{ width: 0 }}

@@ -132,9 +132,9 @@ function GridSkeleton({ count }: { count: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="rounded-2xl border border-slate-200/50 bg-white/50 p-4 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-900/50"
+          className="neu-flat rounded-3xl p-4"
         >
-          <Skeleton className="mb-4 aspect-video w-full" />
+          <Skeleton className="mb-4 aspect-video w-full rounded-2xl" />
           <Skeleton className="mb-2 h-5 w-3/4" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="mt-2 h-4 w-5/6" />

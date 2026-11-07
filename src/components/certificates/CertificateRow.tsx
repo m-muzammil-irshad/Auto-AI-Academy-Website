@@ -27,7 +27,7 @@ export function CertificateRow({ status }: CertificateRowProps) {
   return (
     <>
       <motion.div variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
-        <Card className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1 dark:hover:shadow-accent-500/5">
+        <Card className="neu-flat-interactive transition-all duration-300">
           <CardBody className="flex flex-col gap-4 sm:flex-row sm:items-center">
             {totalAssignments > 0 && (
               <ProgressRing
@@ -55,12 +55,12 @@ export function CertificateRow({ status }: CertificateRowProps) {
 
           <div className="shrink-0">
             {eligible ? (
-              <Button onClick={() => setModalOpen(true)}>
+              <Button className="rounded-full font-bold" onClick={() => setModalOpen(true)}>
                 Get Certificate
               </Button>
             ) : (
               <Tooltip content={reason ?? "Not eligible yet."}>
-                <Button variant="secondary" disabled>
+                <Button variant="secondary" className="rounded-full font-medium" disabled>
                   Get Certificate
                 </Button>
               </Tooltip>

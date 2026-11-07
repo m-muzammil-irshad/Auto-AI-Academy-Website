@@ -18,10 +18,12 @@ export interface SubmissionFormProps {
   assignment: Assignment;
   studentName: string;
   existingSubmission: Submission | null;
+  isCatchUpEligible?: boolean;
   onSubmit: (input: {
     driveLink: string;
     description: string;
     isLate: boolean;
+    isCatchUp?: boolean;
   }) => Promise<void>;
 }
 
@@ -29,6 +31,7 @@ export function SubmissionForm({
   assignment,
   studentName,
   existingSubmission,
+  isCatchUpEligible = false,
   onSubmit,
 }: SubmissionFormProps) {
   const [driveLink, setDriveLink] = useState("");
@@ -44,7 +47,7 @@ export function SubmissionForm({
   // Already submitted → status card, no form.
   if (existingSubmission) {
     return (
-      <div className="rounded-xl border border-slate-200/50 bg-slate-50/60 p-4 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-900/50">
+      <div className="rounded-2xl neu-pressed-sm p-5">
         <div className="mb-2 flex items-center justify-between">
           <p className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
             Submitted
@@ -73,10 +76,10 @@ export function SubmissionForm({
     );
   }
 
-  // Deadline passed → locked, no form.
-  if (deadlinePassed) {
+  // Deadline passed → locked, no form (unless eligible for catch-up in a completed course).
+  if (deadlinePassed && !isCatchUpEligible) {
     return (
-      <div className="rounded-xl border border-slate-200/50 bg-slate-50/60 p-4 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-900/50">
+      <div className="rounded-2xl neu-pressed-sm p-5">
         <p className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
           Deadline passed
         </p>
@@ -106,7 +109,8 @@ export function SubmissionForm({
       await onSubmit({
         driveLink: driveLink.trim(),
         description: description.trim(),
-        isLate: false,
+        isLate: deadlinePassed,
+        isCatchUp: deadlinePassed && isCatchUpEligible,
       });
     } catch (err) {
       setError(
@@ -120,17 +124,28 @@ export function SubmissionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-xl border border-slate-200/50 bg-slate-50/40 p-4 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-900/50"
+      className="space-y-4 rounded-2xl neu-pressed-sm p-5"
       noValidate
     >
       <p className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
         Submit assignment
       </p>
 
+      {deadlinePassed && isCatchUpEligible && (
+        <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3.5 text-xs text-blue-700 dark:text-blue-300">
+          <p className="font-semibold flex items-center gap-1.5 mb-1">
+            🎓 Catch-Up Window Open for Certificate
+          </p>
+          <p className="text-slate-600 dark:text-slate-400">
+            This course is marked as completed, but you can submit this assignment to reach the 80% submission threshold required for your official certificate. (Note: Late catch-up submissions do not affect the completed cohort leaderboard).
+          </p>
+        </div>
+      )}
+
       {error && (
         <div
           role="alert"
-          className="rounded-md bg-red-50 p-3 text-sm text-red-700"
+          className="animate-shake rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-red-600 dark:text-red-400"
         >
           {error}
         </div>
@@ -170,7 +185,7 @@ export function SubmissionForm({
         disabled={loading}
       />
 
-      <Button type="submit" loading={loading} className="w-full sm:w-auto">
+      <Button type="submit" loading={loading} className="w-full sm:w-auto neu-btn-primary rounded-full font-bold px-8">
         Submit
       </Button>
     </form>

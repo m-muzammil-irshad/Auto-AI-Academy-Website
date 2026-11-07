@@ -58,6 +58,13 @@ function NavIcon({ name }: { name: string }) {
           <path d="M2 20a7 7 0 0114 0M16 11a3 3 0 100-6M22 20a7 7 0 00-4-6.32" />
         </svg>
       );
+    case "mail":
+      return (
+        <svg {...common}>
+          <rect width="20" height="16" x="2" y="4" rx="2" />
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+      );
     case "settings":
       return (
         <svg {...common}>
@@ -102,19 +109,12 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
                 onNavigate?.();
               }}
               className={cn(
-                "relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-150",
+                "relative flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-200",
                 active
-                  ? "text-accent-700 dark:text-accent-400"
-                  : "text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-900/50"
+                  ? "neu-btn text-accent-600 dark:text-accent-400 font-bold shadow-sm"
+                  : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
               )}
             >
-              {active && (
-                <motion.span
-                  layoutId={highlightId}
-                  transition={{ duration: DURATION.ui, ease: EASE }}
-                  className="absolute inset-0 rounded-xl bg-accent-50 dark:bg-accent-500/10"
-                />
-              )}
               <span className="relative flex flex-1 items-center gap-3">
                 <NavIcon name={item.icon} />
                 {item.label}
@@ -126,7 +126,7 @@ export function AdminSidebar({ onNavigate }: AdminSidebarProps) {
           );
         })}
       </nav>
-      <div className="border-t border-slate-200/50 dark:border-slate-800/50 p-4">
+      <div className="border-t border-black/5 dark:border-white/5 p-4">
         <p className="text-xs text-slate-500 dark:text-slate-400">
           Admin Panel · Auto AI Academy
         </p>

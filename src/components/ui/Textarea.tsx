@@ -29,11 +29,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           id={textareaId}
           rows={rest.rows ?? 4}
           className={cn(
-            "block w-full rounded-md border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 transition-colors dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500",
+            "block w-full rounded-xl neu-pressed-sm px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition-all dark:text-slate-100 dark:placeholder:text-slate-500",
             error
-              ? "border-red-500 focus:border-red-500 dark:border-red-600 dark:focus:border-red-600"
-              : "border-slate-300 focus:border-accent-500 dark:border-slate-700 dark:focus:border-accent-500",
-            "disabled:cursor-not-allowed disabled:bg-slate-50 dark:disabled:bg-slate-900",
+              ? "border border-red-500 focus:border-red-500 dark:border-red-600 dark:focus:border-red-600"
+              : "border border-transparent focus:border-accent-500",
+            "disabled:cursor-not-allowed disabled:opacity-60",
             className
           )}
           aria-invalid={!!error}

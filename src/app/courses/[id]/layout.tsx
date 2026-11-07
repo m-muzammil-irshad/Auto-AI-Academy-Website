@@ -1,7 +1,14 @@
 import { Metadata } from "next";
-import { getPublicCourse, summarize } from "@/lib/coursesPublic";
+import { getPublicCourse, getPublicCourses, summarize } from "@/lib/coursesPublic";
 import { courseKeywords, courseSeoDescription, courseSeoTitle } from "@/lib/seoKeywords";
 import { DEFAULT_OG_IMAGE, ORGANIZATION_JSON_LD, absoluteUrl, seoAlternates } from "@/lib/seo";
+
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const courses = await getPublicCourses();
+  return courses.map((c) => ({ id: c.id }));
+}
 
 interface Props {
   params: { id: string };

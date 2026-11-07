@@ -14,7 +14,24 @@ export interface UseLeaderboardResult {
 }
 
 const cachedLeaderboard: Record<string, { data: LeaderboardEntry[]; time: number }> = {};
-const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes
+const CACHE_DURATION = 1000 * 60 * 10; // 10 minutes
+
+function getInitialLeaderboard(key: string): LeaderboardEntry[] {
+  if (cachedLeaderboard[key]) return cachedLeaderboard[key].data;
+  if (typeof window !== "undefined") {
+    try {
+      const stored = sessionStorage.getItem(`aaa_leaderboard_${key}`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        cachedLeaderboard[key] = { data: parsed, time: Date.now() };
+        return parsed;
+      }
+    } catch {
+      // ignore
+    }
+  }
+  return [];
+}
 
 export function useLeaderboard(
   mode: LeaderboardMode,
@@ -23,35 +40,40 @@ export function useLeaderboard(
   const key = `${mode}-${max || "all"}`;
   
   const [entries, setEntries] = useState<LeaderboardEntry[]>(() => 
-    cachedLeaderboard[key] ? cachedLeaderboard[key].data : []
+    getInitialLeaderboard(key)
   );
-  const [loading, setLoading] = useState(() => !cachedLeaderboard[key]);
+  const [loading, setLoading] = useState(() => getInitialLeaderboard(key).length === 0);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
-    
+    const now = Date.now();
     const cached = cachedLeaderboard[key];
-    if (cached && Date.now() - cached.time < CACHE_DURATION) {
+
+    if (cached && now - cached.time < CACHE_DURATION) {
       setEntries(cached.data);
       setLoading(false);
-      // Fetch in background
-      fetchLeaderboard(mode, max).then((list) => {
-        if (!cancelled) {
-          cachedLeaderboard[key] = { data: list, time: Date.now() };
-          setEntries(list);
-        }
-      }).catch(console.error);
-      return;
+      if (now - cached.time < 1000 * 60 * 2) {
+        return; // completely fresh
+      }
     }
 
-    setLoading(true);
+    if (entries.length === 0) {
+      setLoading(true);
+    }
     setError("");
     
     fetchLeaderboard(mode, max)
       .then((list) => {
         if (!cancelled) {
           cachedLeaderboard[key] = { data: list, time: Date.now() };
+          if (typeof window !== "undefined") {
+            try {
+              sessionStorage.setItem(`aaa_leaderboard_${key}`, JSON.stringify(list));
+            } catch {
+              // ignore
+            }
+          }
           setEntries(list);
         }
       })
@@ -69,6 +91,7 @@ export function useLeaderboard(
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, max, key]);
 
   return { entries, loading, error };

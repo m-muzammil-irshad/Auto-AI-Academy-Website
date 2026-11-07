@@ -2,7 +2,8 @@
 
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useSiteSettings, buildWhatsAppUrl } from "@/hooks/useSiteSettings";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface WhatsAppModalProps {
   open: boolean;
@@ -20,30 +21,35 @@ export function WhatsAppModal({
   onClose,
   courseTitle,
 }: WhatsAppModalProps) {
-  const { whatsappUrl } = useSiteSettings();
+  const { settings } = useSiteSettings();
+  const { user, profile } = useAuth();
+
+  const studentName = profile?.name || user?.displayName || "";
+  const certMessage = `Hello! My name is ${studentName || "[My Name]"}. I have successfully completed the course "${courseTitle}" at Auto AI Academy. Please issue my certificate.`;
+  const certWhatsappUrl = buildWhatsAppUrl(settings.whatsappNumber, certMessage);
 
   return (
     <Modal open={open} onClose={onClose} title="You’re eligible! 🎉">
       <div className="space-y-4">
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-slate-700 dark:text-slate-300">
           Congratulations — you’ve completed the requirements for{" "}
-          <strong>{courseTitle}</strong>.
+          <strong className="text-slate-900 dark:text-white">{courseTitle}</strong>.
         </p>
-        <p className="text-sm text-slate-700">
+        <p className="text-sm text-slate-700 dark:text-slate-300">
           Contact the admin on WhatsApp to receive your certificate.
         </p>
 
         <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-end">
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={onClose} className="rounded-full">
             Close
           </Button>
           <a
-            href={whatsappUrl}
+            href={certWhatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={onClose}
           >
-            <Button className="w-full justify-center bg-green-600 hover:bg-green-700 sm:w-auto">
+            <Button className="w-full justify-center rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md transition-transform hover:scale-105 active:scale-95 sm:w-auto">
               <svg
                 viewBox="0 0 24 24"
                 fill="currentColor"

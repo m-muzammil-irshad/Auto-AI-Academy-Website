@@ -88,7 +88,7 @@ export function SignupForm() {
       {error && (
         <div
           role="alert"
-          className="animate-shake rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300"
+          className="animate-shake rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-red-600 dark:text-red-400"
         >
           {error}
         </div>
@@ -133,15 +133,15 @@ export function SignupForm() {
         disabled={loading}
       />
 
-      <Button type="submit" size="lg" loading={loading} className="w-full">
+      <Button type="submit" size="lg" loading={loading} className="w-full neu-btn-primary rounded-full font-bold">
         Create account
       </Button>
 
       <div className="relative my-4 text-center">
         <div className="absolute inset-0 flex items-center" aria-hidden="true">
-          <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+          <div className="w-full border-t border-black/5 dark:border-white/10" />
         </div>
-        <span className="relative bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-3 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <span className="relative bg-[#e8ecf4] dark:bg-[#151926] px-3 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
           or
         </span>
       </div>

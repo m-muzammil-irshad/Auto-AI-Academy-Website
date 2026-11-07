@@ -105,9 +105,9 @@ export default function StudentDashboardPage() {
         {/* ENROLLED COURSES CARD */}
         <motion.div 
           variants={itemVariant}
-          className="lg:col-span-1 lg:row-span-1 flex flex-col justify-center items-center rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 p-6 shadow-sm transition-all hover:shadow-md hover:border-blue-500/50 group"
+          className="lg:col-span-1 lg:row-span-1 flex flex-col justify-center items-center rounded-3xl neu-flat-interactive p-6 group"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full neu-pressed text-blue-500 group-hover:scale-110 transition-transform">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
@@ -119,7 +119,7 @@ export default function StudentDashboardPage() {
               {enrollments.length}
             </h3>
           )}
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mt-1">
             Enrolled Courses
           </p>
         </motion.div>
@@ -127,9 +127,9 @@ export default function StudentDashboardPage() {
         {/* LEADERBOARD RANK CARD */}
         <motion.div 
           variants={itemVariant}
-          className="lg:col-span-1 lg:row-span-1 flex flex-col justify-center items-center rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 p-6 shadow-sm transition-all hover:shadow-md hover:border-yellow-500/50 group"
+          className="lg:col-span-1 lg:row-span-1 flex flex-col justify-center items-center rounded-3xl neu-flat-interactive p-6 group"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-50 dark:bg-yellow-500/10 text-yellow-500 group-hover:scale-110 transition-transform">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full neu-pressed text-amber-500 group-hover:scale-110 transition-transform">
             <Trophy className="h-6 w-6" aria-hidden="true" />
           </div>
           {loading ? (
@@ -139,7 +139,7 @@ export default function StudentDashboardPage() {
               {myRank ? `#${myRank.rank}` : "—"}
             </h3>
           )}
-          <p className="text-xs font-medium uppercase tracking-wider text-yellow-500 mt-1">
+          <p className="text-xs font-bold uppercase tracking-wider text-amber-500 mt-1">
             Global Rank
           </p>
         </motion.div>
@@ -147,21 +147,21 @@ export default function StudentDashboardPage() {
         {/* LATEST GRADE CARD */}
         <motion.div 
           variants={itemVariant}
-          className="lg:col-span-1 lg:row-span-1 flex flex-col justify-center items-start rounded-3xl bg-slate-900 dark:bg-slate-950 border border-slate-800 p-6 shadow-lg text-white transition-all hover:shadow-xl hover:shadow-accent-500/10 group overflow-hidden relative"
+          className="lg:col-span-1 lg:row-span-1 flex flex-col justify-center items-start rounded-3xl neu-flat-interactive p-6 group overflow-hidden relative"
         >
           <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
-            <Star className="h-24 w-24 fill-current text-yellow-400" aria-hidden="true" />
+            <Star className="h-24 w-24 fill-current text-amber-400" aria-hidden="true" />
           </div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400 z-10">Latest Grade</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 z-10">Latest Grade</p>
           {loading ? (
-             <Skeleton className="mt-2 h-8 w-16 bg-slate-800" />
+             <Skeleton className="mt-2 h-8 w-16" />
           ) : (
-            <h3 className="mt-2 font-heading text-3xl font-bold text-accent-400 z-10">
+            <h3 className="mt-2 font-heading text-3xl font-bold text-accent-600 dark:text-accent-400 z-10">
               {latestGraded ? `${latestGraded.grading!.finalStars.toFixed(1)} ★` : "—"}
             </h3>
           )}
           {latestGraded?.gradedAt && (
-             <p className="mt-2 text-xs text-slate-500 z-10">
+             <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 z-10">
                {formatDate(latestGraded.gradedAt)}
              </p>
           )}
@@ -170,15 +170,15 @@ export default function StudentDashboardPage() {
         {/* PENDING ASSIGNMENTS CARD */}
         <motion.div 
           variants={itemVariant}
-          className="lg:col-span-1 lg:row-span-1 flex flex-col justify-center items-start rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 p-6 shadow-sm transition-all hover:shadow-md hover:border-red-500/30 group"
+          className="lg:col-span-1 lg:row-span-1 flex flex-col justify-center items-start rounded-3xl neu-flat-interactive p-6 group"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 dark:bg-red-500/10 text-red-500 group-hover:scale-110 transition-transform">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full neu-pressed text-red-500 group-hover:scale-110 transition-transform">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">Tasks Due</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Tasks Due</p>
           </div>
           {loading ? (
              <Skeleton className="mt-4 h-8 w-12" />
@@ -195,20 +195,20 @@ export default function StudentDashboardPage() {
         {/* RECENT NOTIFICATIONS (Spans 2 cols, 2 rows) */}
         <motion.div 
           variants={itemVariant}
-          className="lg:col-span-2 lg:row-span-2 flex flex-col rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 p-6 shadow-sm"
+          className="lg:col-span-2 lg:row-span-2 flex flex-col rounded-3xl neu-flat p-6"
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-heading text-lg font-semibold text-slate-900 dark:text-white">
+            <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white">
               Recent Notifications
             </h2>
             <Link
               href="/student/notifications"
-              className="text-sm font-medium text-accent-600 hover:text-accent-700 dark:text-accent-400"
+              className="text-sm font-semibold text-accent-600 hover:text-accent-700 dark:text-accent-400"
             >
               View all
             </Link>
           </div>
-          <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700">
+          <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
             {notifLoading ? (
               <div className="space-y-4">
                 <Skeleton className="h-12 w-full rounded-xl" />
@@ -229,24 +229,24 @@ export default function StudentDashboardPage() {
         {/* SHORTCUTS (Spans 2 cols, 1 row) */}
         <motion.div 
           variants={itemVariant}
-          className="lg:col-span-2 lg:row-span-1 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 p-6 shadow-sm"
+          className="lg:col-span-2 lg:row-span-1 rounded-3xl neu-flat p-6"
         >
-          <h2 className="font-heading text-lg font-semibold text-slate-900 dark:text-white mb-4">
+          <h2 className="font-heading text-lg font-bold text-slate-900 dark:text-white mb-4">
             Quick Actions
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Link href="/student/courses" className="block">
-              <div className="flex h-full items-center justify-center rounded-2xl bg-white dark:bg-slate-900 p-4 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm border border-slate-200/50 dark:border-slate-700/50 transition-all hover:-translate-y-1 hover:border-accent-500/50 hover:text-accent-600 hover:shadow-md">
+              <div className="flex h-full items-center justify-center rounded-2xl neu-btn p-4 text-sm font-semibold text-slate-700 dark:text-slate-200">
                 My Courses
               </div>
             </Link>
             <Link href="/student/assignments" className="block">
-              <div className="flex h-full items-center justify-center rounded-2xl bg-white dark:bg-slate-900 p-4 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm border border-slate-200/50 dark:border-slate-700/50 transition-all hover:-translate-y-1 hover:border-accent-500/50 hover:text-accent-600 hover:shadow-md">
+              <div className="flex h-full items-center justify-center rounded-2xl neu-btn p-4 text-sm font-semibold text-slate-700 dark:text-slate-200">
                 Assignments
               </div>
             </Link>
             <Link href="/student/leaderboard" className="block">
-              <div className="flex h-full items-center justify-center rounded-2xl bg-white dark:bg-slate-900 p-4 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm border border-slate-200/50 dark:border-slate-700/50 transition-all hover:-translate-y-1 hover:border-accent-500/50 hover:text-accent-600 hover:shadow-md">
+              <div className="flex h-full items-center justify-center rounded-2xl neu-btn p-4 text-sm font-semibold text-slate-700 dark:text-slate-200">
                 Leaderboard
               </div>
             </Link>

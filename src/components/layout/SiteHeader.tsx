@@ -70,56 +70,68 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 w-full border-b bg-white/70 dark:bg-slate-950/70 backdrop-blur-md transition-[box-shadow,border-color] duration-300",
+        "sticky top-0 z-30 w-full transition-all duration-300",
         scrolled
-          ? "border-slate-200/80 shadow-sm shadow-slate-900/5 dark:border-slate-800/80 dark:shadow-black/20"
-          : "border-transparent"
+          ? "bg-[#e8ecf4]/95 dark:bg-[#10131d]/95 backdrop-blur-md shadow-[0_4px_20px_rgba(163,177,198,0.35)] dark:shadow-[0_4px_25px_rgba(0,0,0,0.85)] border-b border-white/60 dark:border-white/5"
+          : "bg-transparent border-b border-transparent"
       )}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Brand />
 
-        <nav className="hidden items-center gap-6 md:flex">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={isActive(link) ? "true" : undefined}
-              className="nav-link"
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav className="hidden items-center gap-2 md:flex p-1.5 rounded-full neu-pressed-sm">
+          {NAV_LINKS.map((link) => {
+            const active = isActive(link);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={active ? "true" : undefined}
+                className={cn(
+                  "relative text-sm font-medium px-4 py-1.5 rounded-full transition-all duration-200",
+                  active
+                    ? "neu-btn text-accent-600 dark:text-accent-400 font-bold shadow-sm"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
           {signedIn ? (
             <Link href={portalHref}>
-              <Button size="sm" className="rounded-full">Go to dashboard</Button>
+              <Button size="sm" className="neu-btn-primary rounded-full px-5 py-2 font-semibold">
+                Go to dashboard
+              </Button>
             </Link>
           ) : (
             <>
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="rounded-full dark:text-slate-300 dark:hover:text-white">
+                <Button variant="ghost" size="sm" className="neu-btn rounded-full px-4 py-2 font-medium text-slate-700 dark:text-slate-200">
                   Log in
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button size="sm" className="rounded-full shadow-md hover:shadow-lg hover:shadow-accent-500/25 dark:shadow-accent-500/20">Get Started</Button>
+                <Button size="sm" className="neu-btn-primary rounded-full px-5 py-2 font-semibold">
+                  Get Started
+                </Button>
               </Link>
             </>
           )}
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-3 md:hidden">
           <ThemeToggle />
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-700 transition-colors duration-150 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="neu-btn inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-700 transition-colors duration-150 dark:text-slate-200"
           >
             <svg
               viewBox="0 0 24 24"
@@ -148,40 +160,40 @@ export function SiteHeader() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: DURATION.ui, ease: EASE }}
-            className="overflow-hidden border-t border-slate-200/50 bg-white dark:border-slate-800/50 dark:bg-slate-950 md:hidden"
+            className="overflow-hidden border-t border-white/60 dark:border-white/5 bg-[#e8ecf4] dark:bg-[#10131d] shadow-2xl md:hidden"
           >
-            <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3">
+            <nav className="mx-auto flex max-w-6xl flex-col gap-1.5 px-4 py-4">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
-                    "rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-150 hover:bg-slate-50 dark:hover:bg-slate-800/50 dark:hover:text-white",
+                    "rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-150",
                     isActive(link)
-                      ? "text-accent-600 dark:text-accent-400"
-                      : "text-slate-700 dark:text-slate-300"
+                      ? "neu-pressed-sm text-accent-600 dark:text-accent-400 font-bold"
+                      : "text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
                   {link.label}
                 </Link>
               ))}
-              <div className="mt-2 flex flex-col gap-2 border-t border-slate-200/50 pt-3 dark:border-slate-800/50">
+              <div className="mt-3 flex flex-col gap-2.5 border-t border-black/5 dark:border-white/5 pt-3">
                 {signedIn ? (
                   <Link href={portalHref} onClick={() => setMobileOpen(false)}>
-                    <Button size="md" className="w-full rounded-full">
+                    <Button size="md" className="w-full neu-btn-primary rounded-full font-semibold">
                       Go to dashboard
                     </Button>
                   </Link>
                 ) : (
                   <>
                     <Link href="/login" onClick={() => setMobileOpen(false)}>
-                      <Button variant="secondary" size="md" className="w-full rounded-full">
+                      <Button variant="secondary" size="md" className="w-full neu-btn rounded-full font-medium text-slate-700 dark:text-slate-200">
                         Log in
                       </Button>
                     </Link>
                     <Link href="/signup" onClick={() => setMobileOpen(false)}>
-                      <Button size="md" className="w-full rounded-full">
+                      <Button size="md" className="w-full neu-btn-primary rounded-full font-semibold">
                         Get Started
                       </Button>
                     </Link>

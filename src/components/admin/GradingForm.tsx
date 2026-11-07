@@ -26,22 +26,24 @@ function CriterionSlider({
 }: CriterionSliderProps) {
   return (
     <div>
-      <div className="mb-1 flex items-center justify-between">
-        <label className="text-sm font-medium text-slate-700">{label}</label>
-        <span className="text-sm font-semibold tabular-nums text-slate-900">
+      <div className="mb-1.5 flex items-center justify-between">
+        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>
+        <span className="text-sm font-semibold tabular-nums text-slate-900 dark:text-white">
           {value.toFixed(1)} / {CRITERIA_MAX}
         </span>
       </div>
-      <input
-        type="range"
-        min={0}
-        max={CRITERIA_MAX}
-        step={0.5}
-        value={value}
-        onChange={(e) => onChange(clampScore(Number(e.target.value)))}
-        disabled={disabled}
-        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-accent-600 disabled:cursor-not-allowed disabled:opacity-60"
-      />
+      <div className="neu-pressed-sm rounded-full p-1">
+        <input
+          type="range"
+          min={0}
+          max={CRITERIA_MAX}
+          step={0.5}
+          value={value}
+          onChange={(e) => onChange(clampScore(Number(e.target.value)))}
+          disabled={disabled}
+          className="block h-2 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-accent-500 disabled:cursor-not-allowed disabled:opacity-60"
+        />
+      </div>
     </div>
   );
 }
@@ -78,18 +80,18 @@ export function GradingForm({ submission, onSave }: GradingFormProps) {
   }
 
   return (
-    <div className="space-y-4 rounded-md border border-slate-200 bg-slate-50/60 p-4">
+    <div className="space-y-4 rounded-3xl neu-pressed-sm p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="font-heading text-sm font-semibold text-slate-800">
+        <p className="font-heading text-sm font-bold text-slate-900 dark:text-white">
           {existing ? "Update grade" : "Grade submission"}
         </p>
-        <Badge variant="success">{finalStars.toFixed(1)} ★ final</Badge>
+        <Badge variant="success" className="neu-flat border-none shadow-sm">{finalStars.toFixed(1)} ★ final</Badge>
       </div>
 
       {error && (
         <div
           role="alert"
-          className="rounded-md bg-red-50 p-3 text-sm text-red-700"
+          className="animate-shake rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-red-600 dark:text-red-400"
         >
           {error}
         </div>
@@ -117,7 +119,7 @@ export function GradingForm({ submission, onSave }: GradingFormProps) {
       </div>
 
       <div className="flex justify-end pt-1">
-        <Button onClick={handleSave} loading={loading} size="sm">
+        <Button onClick={handleSave} loading={loading} size="sm" className="neu-btn-primary rounded-full font-bold">
           {existing ? "Save changes" : "Save grade"}
         </Button>
       </div>

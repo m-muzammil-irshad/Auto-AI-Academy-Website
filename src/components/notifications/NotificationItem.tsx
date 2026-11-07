@@ -63,16 +63,18 @@ export function NotificationItem({ item, onClick }: NotificationItemProps) {
         }
       }}
       className={cn(
-        "flex w-full items-start gap-3 rounded-xl px-4 py-4 text-left transition-colors",
-        item.read ? "hover:bg-slate-50/50 dark:hover:bg-slate-800/50" : "bg-accent-50/40 hover:bg-accent-50 dark:bg-accent-900/20 dark:hover:bg-accent-900/40"
+        "flex w-full items-start gap-3 rounded-2xl px-4 py-3.5 text-left transition-all duration-200",
+        item.read
+          ? "hover:bg-black/[0.03] dark:hover:bg-white/[0.03]"
+          : "neu-pressed-sm my-1"
       )}
     >
       <span
         className={cn(
-          "mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
+          "mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs",
           item.read
-            ? "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
-            : "bg-accent-100 text-accent-700 dark:bg-accent-900 dark:text-accent-300"
+            ? "neu-pressed-sm text-slate-500 dark:text-slate-400"
+            : "neu-flat text-accent-600 dark:text-accent-400 font-bold"
         )}
       >
         <TypeIcon type={item.type} />

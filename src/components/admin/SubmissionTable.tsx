@@ -42,7 +42,7 @@ export function SubmissionTable({
           <motion.li
             variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}
             key={s.id}
-            className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md shadow-sm transition-all duration-300 hover:shadow-md dark:hover:shadow-accent-500/5"
+            className="rounded-3xl neu-flat transition-all duration-300 overflow-hidden"
           >
             <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex min-w-0 items-start gap-3">
@@ -61,19 +61,19 @@ export function SubmissionTable({
                 </div>
               </div>
 
-              <div className="flex shrink-0 flex-wrap items-center gap-2">
+              <div className="flex shrink-0 flex-wrap items-center gap-2.5">
                 {graded ? (
-                  <Badge variant="success">
+                  <Badge variant="success" className="neu-flat border-none shadow-sm font-bold">
                     {s.grading!.finalStars.toFixed(1)} ★
                   </Badge>
                 ) : (
-                  <Badge variant="warning">Not graded</Badge>
+                  <Badge variant="warning" className="neu-flat border-none shadow-sm font-bold">Not graded</Badge>
                 )}
                 <a
                   href={s.driveLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs font-medium text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300"
+                  className="neu-btn text-xs font-semibold px-3.5 py-1.5 rounded-full text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300"
                 >
                   Open link ↗
                 </a>
@@ -81,10 +81,10 @@ export function SubmissionTable({
                   type="button"
                   onClick={() => setOpenId(isOpen ? null : s.id)}
                   className={cn(
-                    "rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                    "rounded-full px-4 py-1.5 text-xs font-bold transition-all",
                     isOpen
-                      ? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
-                      : "bg-accent-600 dark:bg-accent-500 text-white hover:bg-accent-700 dark:hover:bg-accent-400"
+                      ? "neu-btn text-slate-700 dark:text-slate-300"
+                      : "neu-btn-primary text-white"
                   )}
                 >
                   {isOpen ? "Close" : graded ? "Update grade" : "Grade"}
@@ -93,7 +93,7 @@ export function SubmissionTable({
             </div>
 
             {s.description && (
-              <div className="border-t border-slate-100/50 dark:border-slate-800/50 px-4 py-2">
+              <div className="border-t border-black/5 dark:border-white/5 px-4 py-2">
                 <p className="whitespace-pre-wrap text-xs text-slate-600 dark:text-slate-400">
                   {s.description}
                 </p>
@@ -101,7 +101,7 @@ export function SubmissionTable({
             )}
 
             {isOpen && (
-              <div className="border-t border-slate-100/50 dark:border-slate-800/50 p-4">
+              <div className="border-t border-black/5 dark:border-white/5 p-4">
                 <GradingForm
                   submission={s}
                   onSave={async (g) => {

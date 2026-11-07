@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { courseDoc, coursesCol } from "@/lib/firebase/collections";
 import { coursesByNewest } from "@/lib/firebase/queries";
-import type { Course, CourseLevel, CourseStatus } from "@/lib/types";
+import type { Course, CourseLevel, CourseStatus, Lesson } from "@/lib/types";
 
 import { fetchAllUsers } from "@/lib/services/users";
 import { pushNotification } from "@/lib/services/notifications";
@@ -24,7 +24,8 @@ export interface CourseInput {
   duration?: string;
   lessonCount?: number | null;
   outcomes?: string[];
-  status: Extract<CourseStatus, "ongoing" | "soon">;
+  lessons?: Lesson[];
+  status: CourseStatus;
 }
 
 function mapCourse(id: string, data: Record<string, unknown>): Course {
@@ -39,21 +40,35 @@ function mapCourse(id: string, data: Record<string, unknown>): Course {
     duration: (data.duration as string) ?? "",
     lessonCount: (data.lessonCount as number | null) ?? null,
     outcomes: Array.isArray(data.outcomes) ? (data.outcomes as string[]) : [],
+    lessons: Array.isArray(data.lessons) ? (data.lessons as Lesson[]) : [],
     status: (data.status as CourseStatus) ?? "soon",
     createdAt: (data.createdAt as Timestamp) ?? Timestamp.now(),
     completedAt: (data.completedAt as Timestamp | null) ?? null,
   };
 }
 
+const singleCourseCache: Record<string, { course: Course; time: number }> = {};
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
 export async function fetchCourses(max?: number): Promise<Course[]> {
   const snap = await getDocs(coursesByNewest(max));
-  return snap.docs.map((d) => mapCourse(d.id, d.data()));
+  const list = snap.docs.map((d) => mapCourse(d.id, d.data()));
+  for (const c of list) {
+    singleCourseCache[c.id] = { course: c, time: Date.now() };
+  }
+  return list;
 }
 
 export async function fetchCourse(id: string): Promise<Course | null> {
+  const cached = singleCourseCache[id];
+  if (cached && Date.now() - cached.time < CACHE_TTL) {
+    return cached.course;
+  }
   const snap = await getDoc(courseDoc(id));
   if (!snap.exists()) return null;
-  return mapCourse(snap.id, snap.data());
+  const course = mapCourse(snap.id, snap.data());
+  singleCourseCache[id] = { course, time: Date.now() };
+  return course;
 }
 
 export async function createCourse(input: CourseInput): Promise<string> {
@@ -67,6 +82,7 @@ export async function createCourse(input: CourseInput): Promise<string> {
     duration: input.duration?.trim() ?? "",
     lessonCount: input.lessonCount ?? null,
     outcomes: input.outcomes ?? [],
+    lessons: input.lessons ?? [],
     status: input.status,
     createdAt: serverTimestamp(),
     completedAt: null,
@@ -84,6 +100,15 @@ export async function createCourse(input: CourseInput): Promise<string> {
         })
       )
     );
+
+    // Trigger automated lifecycle email to all registered students
+    if (typeof window !== "undefined") {
+      fetch("/api/notifications/lifecycle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "new_course_published", courseId: ref.id }),
+      }).catch((err) => console.error("New course email trigger error:", err));
+    }
   } catch (err) {
     console.error("Failed to push notifications for new course", err);
   }
@@ -110,9 +135,11 @@ export async function updateCourse(
   if (input.duration !== undefined) patch.duration = input.duration.trim();
   if (input.lessonCount !== undefined) patch.lessonCount = input.lessonCount;
   if (input.outcomes !== undefined) patch.outcomes = input.outcomes;
+  if (input.lessons !== undefined) patch.lessons = input.lessons;
   if (input.status !== undefined) patch.status = input.status;
   if (Object.keys(patch).length === 0) return;
   await updateDoc(courseDoc(id), patch);
+  delete singleCourseCache[id];
 
   if (oldCourse?.status === "soon" && input.status === "ongoing") {
     try {
@@ -127,6 +154,15 @@ export async function updateCourse(
           })
         )
       );
+
+      // Trigger automated lifecycle email for course going ongoing
+      if (typeof window !== "undefined") {
+        fetch("/api/notifications/lifecycle", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ event: "course_status_ongoing", courseId: id }),
+        }).catch((err) => console.error("Course ongoing email trigger error:", err));
+      }
     } catch (err) {
       console.error(err);
     }
@@ -135,6 +171,7 @@ export async function updateCourse(
 
 /** One-way action. Sets status to "completed" and stamps completedAt. */
 export async function markCourseCompleted(id: string): Promise<void> {
+  delete singleCourseCache[id];
   await updateDoc(courseDoc(id), {
     status: "completed",
     completedAt: serverTimestamp(),
@@ -154,6 +191,15 @@ export async function markCourseCompleted(id: string): Promise<void> {
         })
       )
     );
+
+    // Trigger automated lifecycle email (Certificate eligible vs Catch-up needed)
+    if (typeof window !== "undefined") {
+      fetch("/api/notifications/lifecycle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "course_completed", courseId: id }),
+      }).catch((err) => console.error("Course completed email trigger error:", err));
+    }
   } catch(err) {
     console.error(err);
   }
@@ -162,5 +208,6 @@ export async function markCourseCompleted(id: string): Promise<void> {
 /** Raw delete. Cascade (enrollments → assignments → submissions) is orchestrated
  *  by lib/services/cascade.ts (delivered in the admin group). */
 export async function deleteCourse(id: string): Promise<void> {
+  delete singleCourseCache[id];
   await deleteDoc(courseDoc(id));
 }

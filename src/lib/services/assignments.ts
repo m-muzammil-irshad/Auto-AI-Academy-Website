@@ -106,6 +106,21 @@ export async function createAssignment(
         })
       )
     );
+
+    // Trigger automated lifecycle email to all enrolled students
+    if (typeof window !== "undefined") {
+      fetch("/api/notifications/lifecycle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event: "new_assignment",
+          courseId: input.courseId,
+          assignmentTitle: input.title.trim(),
+          description: input.description.trim(),
+          dueDateMillis: input.dueDate.toMillis(),
+        }),
+      }).catch((err) => console.error("New assignment email trigger error:", err));
+    }
   } catch (err) {
     console.error(err);
   }

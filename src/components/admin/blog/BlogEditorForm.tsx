@@ -115,19 +115,21 @@ export function BlogEditorForm({ post }: BlogEditorFormProps) {
         </Link>
         <div className="flex items-center gap-3">
           {post && (
-            <Badge variant={isPublished ? "success" : "neutral"}>{isPublished ? "Published" : "Draft"}</Badge>
+            <Badge variant={isPublished ? "success" : "neutral"} className="neu-flat border-none shadow-sm font-bold">
+              {isPublished ? "Published" : "Draft"}
+            </Badge>
           )}
-          <Button variant="secondary" onClick={() => save("draft")} loading={saving === "draft"} disabled={busy}>
+          <Button variant="secondary" onClick={() => save("draft")} loading={saving === "draft"} disabled={busy} className="rounded-full neu-btn font-semibold">
             {isPublished ? "Unpublish to draft" : "Save draft"}
           </Button>
-          <Button onClick={() => save("published")} loading={saving === "published"} disabled={busy}>
+          <Button onClick={() => save("published")} loading={saving === "published"} disabled={busy} className="neu-btn-primary rounded-full font-bold">
             {isPublished ? "Update post" : "Publish"}
           </Button>
         </div>
       </div>
 
       {error && (
-        <div role="alert" className="mb-6 animate-shake rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300">
+        <div role="alert" className="mb-6 animate-shake rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-red-600 dark:text-red-400">
           {error}
         </div>
       )}
@@ -152,7 +154,7 @@ export function BlogEditorForm({ post }: BlogEditorFormProps) {
 
         {/* Post settings */}
         <aside className="space-y-5 xl:sticky xl:top-24 xl:self-start">
-          <div className="card-surface space-y-4 p-5">
+          <div className="neu-flat rounded-3xl space-y-4 p-6">
             <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">Post details</h2>
             <Textarea
               label="Summary"
@@ -188,7 +190,7 @@ export function BlogEditorForm({ post }: BlogEditorFormProps) {
             />
           </div>
 
-          <div className="card-surface space-y-4 p-5">
+          <div className="neu-flat rounded-3xl space-y-4 p-6">
             <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">Cover image</h2>
             <Input
               label="Image address"
@@ -200,9 +202,11 @@ export function BlogEditorForm({ post }: BlogEditorFormProps) {
               disabled={busy}
             />
             {isHttpsUrl(coverImage) && (
-              // Plain <img>: this is only a preview of whatever address was pasted.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={coverImage.trim()} alt="Cover preview" className="aspect-video w-full rounded-xl object-cover" />
+              <div className="neu-pressed-sm rounded-2xl p-1 overflow-hidden">
+                {/* Plain <img>: this is only a preview of whatever address was pasted. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={coverImage.trim()} alt="Cover preview" className="aspect-video w-full rounded-xl object-cover" />
+              </div>
             )}
           </div>
         </aside>

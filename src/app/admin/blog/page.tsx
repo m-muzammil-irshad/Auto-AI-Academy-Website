@@ -80,20 +80,20 @@ export default function AdminBlogPage() {
           </p>
         </div>
         <Link href="/admin/blog/new">
-          <Button>New post</Button>
+          <Button className="neu-btn-primary rounded-full font-bold">New post</Button>
         </Link>
       </div>
 
       {error && (
-        <div role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300">
+        <div role="alert" className="animate-shake rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-red-600 dark:text-red-400">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="card-surface p-4">
+            <div key={i} className="neu-flat rounded-3xl p-6">
               <Skeleton className="mb-2 h-5 w-1/2" />
               <Skeleton className="h-4 w-1/3" />
             </div>
@@ -128,7 +128,7 @@ export default function AdminBlogPage() {
                       <h3 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
                         {post.title || "Untitled post"}
                       </h3>
-                      <Badge variant={published ? "success" : "neutral"}>
+                      <Badge variant={published ? "success" : "neutral"} className="neu-flat border-none shadow-sm font-bold">
                         {published ? "Published" : "Draft"}
                       </Badge>
                     </div>
@@ -142,13 +142,13 @@ export default function AdminBlogPage() {
                   <div className="flex shrink-0 flex-wrap gap-2">
                     {published && (
                       <a href={`/blog/${post.slug}`} target="_blank" rel="noopener noreferrer">
-                        <Button variant="ghost" size="sm">View</Button>
+                        <Button variant="ghost" size="sm" className="rounded-full neu-btn">View</Button>
                       </a>
                     )}
                     <Link href={`/admin/blog/${post.id}`}>
-                      <Button variant="secondary" size="sm">Edit</Button>
+                      <Button variant="secondary" size="sm" className="rounded-full neu-btn font-semibold">Edit</Button>
                     </Link>
-                    <Button variant="danger" size="sm" onClick={() => setDeleteTarget(post)}>
+                    <Button variant="danger" size="sm" onClick={() => setDeleteTarget(post)} className="rounded-full">
                       Delete
                     </Button>
                   </div>

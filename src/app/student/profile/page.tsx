@@ -120,7 +120,7 @@ export default function StudentProfilePage() {
       </motion.div>
 
       <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
-        <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+        <Card className="transition-all">
           <CardHeader>
             <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">Name</h2>
           </CardHeader>
@@ -137,10 +137,12 @@ export default function StudentProfilePage() {
               disabled={savingName}
             />
             {nameSaved && (
-              <p className="text-sm text-green-700">Name updated.</p>
+              <p className="neu-pressed-sm rounded-xl px-3 py-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold inline-block">
+                Name updated successfully.
+              </p>
             )}
             <div className="flex justify-end">
-              <Button type="submit" size="sm" loading={savingName}>
+              <Button type="submit" size="sm" loading={savingName} className="neu-btn-primary rounded-full font-bold">
                 Save name
               </Button>
             </div>
@@ -150,7 +152,7 @@ export default function StudentProfilePage() {
       </motion.div>
 
       <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
-        <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+        <Card className="transition-all">
           <CardHeader>
             <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">Email</h2>
           </CardHeader>
@@ -175,6 +177,7 @@ export default function StudentProfilePage() {
               <Button
                 variant="secondary"
                 size="sm"
+                className="rounded-full font-medium"
                 onClick={handleResendVerification}
                 loading={resending}
               >
@@ -191,7 +194,7 @@ export default function StudentProfilePage() {
 
       {isPasswordProvider && (
         <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
-          <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+          <Card className="transition-all">
             <CardHeader>
               <h2 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
                 Change password
@@ -206,13 +209,13 @@ export default function StudentProfilePage() {
               {passwordError && (
                 <div
                   role="alert"
-                  className="rounded-md bg-red-50 p-3 text-sm text-red-700"
+                  className="animate-shake rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-red-600 dark:text-red-400"
                 >
                   {passwordError}
                 </div>
               )}
               {passwordSaved && (
-                <div className="rounded-md bg-green-50 dark:bg-green-900/30 p-3 text-sm text-green-700 dark:text-green-400">
+                <div className="rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-emerald-600 dark:text-emerald-400">
                   Password reset link has been sent to your email. Please check your inbox and spam folder.
                 </div>
               )}
@@ -220,6 +223,7 @@ export default function StudentProfilePage() {
                 <Button 
                   type="button" 
                   size="sm" 
+                  className="neu-btn-primary rounded-full font-bold"
                   onClick={handleSendResetLink}
                   loading={savingPassword}
                   disabled={passwordSaved}
@@ -234,7 +238,7 @@ export default function StudentProfilePage() {
       )}
 
       <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
-        <Card className="transition-all hover:shadow-md dark:hover:shadow-accent-500/5">
+        <Card className="transition-all">
           <CardBody className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
             <div>
               <p className="text-sm font-medium text-slate-800 dark:text-white">Sign out</p>
@@ -242,7 +246,7 @@ export default function StudentProfilePage() {
                 You’ll need to sign in again to access your courses.
               </p>
             </div>
-            <Button variant="secondary" onClick={handleSignOut}>
+            <Button variant="danger" onClick={handleSignOut} className="rounded-full">
               Sign out
             </Button>
           </CardBody>

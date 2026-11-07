@@ -47,9 +47,14 @@ export const metadata: Metadata = {
   }
 };
 
-import { FloatingAITutor } from "@/components/layout/FloatingAITutor";
+import dynamic from "next/dynamic";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import NextTopLoader from 'nextjs-toploader';
+import NextTopLoader from "nextjs-toploader";
+
+const FloatingAITutor = dynamic(
+  () => import("@/components/layout/FloatingAITutor").then((mod) => mod.FloatingAITutor),
+  { ssr: false }
+);
 
 export default function RootLayout({
   children,
@@ -58,7 +63,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${lexend.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen font-body transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
+      <body className="min-h-screen font-body transition-colors duration-300 bg-[#e8ecf4] text-slate-800 dark:bg-[#10131d] dark:text-slate-100">
         <NextTopLoader color="#0ea5e9" showSpinner={false} />
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />

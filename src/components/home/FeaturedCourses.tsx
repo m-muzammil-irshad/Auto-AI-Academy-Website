@@ -9,11 +9,12 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Sparkles } from "lucide-react";
 import { fadeUp, viewportOnce } from "@/lib/motion";
+import type { Course } from "@/lib/types";
 
 const FEATURED_LIMIT = 3;
 
-export function FeaturedCourses() {
-  const { courses, loading, error } = useCourses(FEATURED_LIMIT);
+export function FeaturedCourses({ initialCourses }: { initialCourses?: Course[] } = {}) {
+  const { courses, loading, error } = useCourses(FEATURED_LIMIT, initialCourses);
 
   return (
     <section id="courses" className="relative overflow-hidden bg-transparent transition-colors duration-300 py-24 sm:py-32">
@@ -26,11 +27,11 @@ export function FeaturedCourses() {
           className="mb-16 flex flex-col items-center justify-between gap-8 md:flex-row md:items-end"
         >
           <div className="max-w-2xl text-center md:text-left">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent-200 bg-accent-50 px-3 py-1 text-sm font-semibold text-accent-700 dark:border-accent-500/30 dark:bg-accent-500/10 dark:text-accent-400 shadow-sm">
+            <div className="mb-4 neu-pressed-sm inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent-600 dark:text-accent-400">
               <Sparkles className="h-4 w-4" />
-              <span>Premium Content. 100% Free.</span>
+              <span>Premium Curriculum · 100% Free</span>
             </div>
-            <h2 className="font-heading text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
+            <h2 className="font-heading text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
               Featured <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 to-purple-600 dark:from-accent-400 dark:to-purple-400">Programs</span>
             </h2>
             <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
@@ -38,7 +39,7 @@ export function FeaturedCourses() {
             </p>
           </div>
           <Link href="/courses" className="shrink-0">
-            <Button size="lg" className="rounded-full shadow-lg shadow-accent-500/25 hover:shadow-xl hover:shadow-accent-500/30">
+            <Button size="lg" className="neu-btn-primary rounded-full px-8 py-3.5 font-bold">
               Explore All Courses
             </Button>
           </Link>
@@ -48,9 +49,9 @@ export function FeaturedCourses() {
           // Same shape as CourseCard so nothing jumps when the data arrives.
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="card-surface p-1">
-                <Skeleton className="aspect-video w-full rounded-xl" />
-                <div className="p-5">
+              <div key={i} className="neu-flat rounded-3xl p-3">
+                <Skeleton className="aspect-video w-full rounded-2xl" />
+                <div className="p-4">
                   <Skeleton className="mb-3 h-6 w-3/4" />
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="mt-2 h-4 w-5/6" />

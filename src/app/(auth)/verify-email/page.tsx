@@ -86,29 +86,29 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="space-y-4 text-center">
-      <h1 className="font-heading text-2xl font-semibold">Verify your email</h1>
-      <p className="text-sm text-slate-600">
+      <h1 className="font-heading text-2xl font-bold text-slate-900 dark:text-white">Verify your email</h1>
+      <p className="text-sm text-slate-600 dark:text-slate-400">
         We sent a verification link to{" "}
-        <strong className="break-all">{user?.email}</strong>. Click it to
+        <strong className="break-all text-slate-900 dark:text-white">{user?.email}</strong>. Click it to
         activate your account.
       </p>
 
       {notice && (
-        <div className="rounded-md bg-green-50 p-3 text-sm text-green-700">
+        <div className="rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-emerald-600 dark:text-emerald-400">
           {notice}
         </div>
       )}
       {error && (
         <div
           role="alert"
-          className="animate-shake rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300"
+          className="animate-shake rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-red-600 dark:text-red-400"
         >
           {error}
         </div>
       )}
 
-      <div className="flex flex-col gap-2 pt-2">
-        <Button onClick={handleCheck} loading={checking} size="lg">
+      <div className="flex flex-col gap-2.5 pt-2">
+        <Button onClick={handleCheck} loading={checking} size="lg" className="neu-btn-primary rounded-full font-bold">
           I’ve verified my email
         </Button>
         <Button
@@ -116,6 +116,7 @@ export default function VerifyEmailPage() {
           loading={sending}
           variant="secondary"
           size="lg"
+          className="rounded-full"
         >
           Resend verification email
         </Button>
@@ -124,7 +125,7 @@ export default function VerifyEmailPage() {
       <button
         type="button"
         onClick={handleSignOut}
-        className="pt-2 text-sm text-slate-500 hover:text-slate-700"
+        className="pt-2 text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
       >
         Sign out
       </button>

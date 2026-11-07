@@ -58,6 +58,15 @@ export async function enrollInCourse(
     courseId,
     enrolledAt: serverTimestamp(),
   });
+
+  // Trigger automated course welcome email
+  if (typeof window !== "undefined") {
+    fetch("/api/notifications/lifecycle", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event: "enrollment_welcome", userId, courseId }),
+    }).catch((err) => console.error("Welcome email trigger error:", err));
+  }
 }
 
 /** Admin-side cascade helper (also called from cascade.ts). */

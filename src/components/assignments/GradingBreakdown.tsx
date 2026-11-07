@@ -19,7 +19,7 @@ function CriterionRow({ label, value }: { label: string; value: number }) {
 
 export function GradingBreakdown({ grading }: GradingBreakdownProps) {
   return (
-    <div className="rounded-xl border border-slate-200/50 bg-slate-50/60 p-4 backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-900/50">
+    <div className="rounded-2xl neu-pressed-sm p-5">
       <div className="mb-3 flex items-center justify-between">
         <p className="font-heading text-sm font-semibold text-slate-800 dark:text-white">
           Your grade

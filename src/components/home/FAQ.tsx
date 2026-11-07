@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, HelpCircle } from "lucide-react";
 import { DURATION, EASE, fadeUp, viewportOnce } from "@/lib/motion";
 import { FAQS } from "@/lib/faqs";
-
 
 export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
@@ -18,14 +17,18 @@ export function FAQ() {
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
-          className="mb-12 text-center"
+          className="mb-14 text-center"
         >
-          <span className="mb-4 inline-block font-heading text-sm font-bold tracking-widest text-accent-600 dark:text-accent-400 uppercase">
-            FAQ
-          </span>
-          <h2 className="font-heading text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-            Questions, answered
+          <div className="mb-4 neu-pressed-sm inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent-600 dark:text-accent-400">
+            <HelpCircle className="h-4 w-4" />
+            <span>Got Questions?</span>
+          </div>
+          <h2 className="font-heading text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
+            Frequently <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-600 to-purple-600 dark:from-accent-400 dark:to-purple-400">Answered</span>
           </h2>
+          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400">
+            Everything you need to know about our free curriculum, certificates, and community.
+          </p>
         </motion.div>
 
         <motion.div
@@ -33,25 +36,32 @@ export function FAQ() {
           initial="hidden"
           whileInView="show"
           viewport={viewportOnce}
-          className="card-surface divide-y divide-slate-200/60 bg-white/80 dark:divide-slate-800/60 dark:bg-slate-900/80"
+          className="space-y-4"
         >
           {FAQS.map((item, i) => {
             const isOpen = open === i;
             return (
-              <div key={item.q}>
+              <div
+                key={item.q}
+                className="neu-flat rounded-2xl overflow-hidden transition-all duration-300"
+              >
                 <h3>
                   <button
                     type="button"
                     onClick={() => setOpen(isOpen ? null : i)}
                     aria-expanded={isOpen}
                     aria-controls={`faq-panel-${i}`}
-                    className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left font-heading text-base font-semibold text-slate-900 transition-colors duration-150 hover:text-accent-600 dark:text-white dark:hover:text-accent-400 sm:text-lg"
+                    className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left font-heading text-base sm:text-lg font-bold text-slate-900 transition-colors duration-150 hover:text-accent-600 dark:text-white dark:hover:text-accent-400"
                   >
-                    {item.q}
-                    <ChevronDown
-                      aria-hidden="true"
-                      className={`h-5 w-5 shrink-0 text-slate-400 transition-transform duration-200 ease-smooth ${isOpen ? "rotate-180" : ""}`}
-                    />
+                    <span>{item.q}</span>
+                    <div className="neu-pressed-sm h-8 w-8 rounded-full flex items-center justify-center shrink-0">
+                      <ChevronDown
+                        aria-hidden="true"
+                        className={`h-4 w-4 text-slate-500 dark:text-slate-400 transition-transform duration-300 ease-smooth ${
+                          isOpen ? "rotate-180 text-accent-600 dark:text-accent-400" : ""
+                        }`}
+                      />
+                    </div>
                   </button>
                 </h3>
                 <AnimatePresence initial={false}>
@@ -64,9 +74,11 @@ export function FAQ() {
                       transition={{ duration: DURATION.ui, ease: EASE }}
                       className="overflow-hidden"
                     >
-                      <p className="px-6 pb-5 text-base leading-relaxed text-slate-600 dark:text-slate-400">
-                        {item.a}
-                      </p>
+                      <div className="neu-pressed-sm rounded-xl p-5 mx-6 mb-5">
+                        <p className="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-300">
+                          {item.a}
+                        </p>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -78,3 +90,4 @@ export function FAQ() {
     </section>
   );
 }
+

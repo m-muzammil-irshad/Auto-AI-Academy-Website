@@ -25,6 +25,26 @@ export interface AppUser {
   allTimeSubmissionCount: number;
 }
 
+export interface Lesson {
+  id: string;
+  title: string;
+  youtubeUrl: string;
+  duration?: string;
+  description?: string;
+  order: number;
+}
+
+export interface UserCourseProgress {
+  id: string; // `${userId}_${courseId}`
+  userId: string;
+  courseId: string;
+  currentLessonId: string;
+  lastTimestampSeconds: number;
+  completedLessonIds: string[];
+  lastWatchedAt?: Timestamp;
+  updatedAt?: Timestamp;
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -37,6 +57,7 @@ export interface Course {
   duration: string;
   lessonCount: number | null;
   outcomes: string[];
+  lessons?: Lesson[];
   status: CourseStatus;
   createdAt: Timestamp;
   completedAt: Timestamp | null;
@@ -75,6 +96,7 @@ export interface Submission {
   description: string;
   submittedAt: Timestamp;
   isLate: boolean;
+  isCatchUp?: boolean;
   locked: boolean;
   grading: Grading | null;
   gradedAt: Timestamp | null;

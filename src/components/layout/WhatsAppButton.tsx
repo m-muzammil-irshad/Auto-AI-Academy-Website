@@ -1,25 +1,33 @@
 "use client";
 
-import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useSiteSettings, buildWhatsAppUrl } from "@/hooks/useSiteSettings";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface WhatsAppButtonProps {
   className?: string;
+  message?: string;
 }
 
 /**
- * Icon-only WhatsApp support link.
- * Number is read from settings/config (falling back to the deployed default).
+ * Icon-only WhatsApp community link with pre-filled message.
  */
-export function WhatsAppButton({ className = "" }: WhatsAppButtonProps) {
-  const { whatsappUrl } = useSiteSettings();
+export function WhatsAppButton({ className = "", message }: WhatsAppButtonProps) {
+  const { settings, getWhatsAppCommunityUrl } = useSiteSettings();
+  const { user, profile } = useAuth();
+
+  const studentName = profile?.name || user?.displayName || "";
+  const finalUrl = message
+    ? buildWhatsAppUrl(settings.whatsappNumber, message)
+    : getWhatsAppCommunityUrl(studentName);
 
   return (
     <a
-      href={whatsappUrl}
+      href={finalUrl}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Contact support on WhatsApp"
-      className={`inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-500 text-white shadow-md transition-colors hover:bg-green-600 ${className}`}
+      aria-label="Join WhatsApp Community"
+      title="Join WhatsApp Community"
+      className={`inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-[#20bd5a] ${className}`}
     >
       <svg
         viewBox="0 0 24 24"

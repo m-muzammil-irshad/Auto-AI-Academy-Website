@@ -84,19 +84,20 @@ export function PruneSubmissions({
           variant="danger"
           onClick={() => setConfirmOpen(true)}
           disabled={!daysValid || candidates.length === 0 || loading}
+          className="rounded-full"
         >
           Prune {candidates.length > 0 ? `${candidates.length} submission(s)` : ""}
         </Button>
       </div>
 
-      <div className="rounded-md border border-slate-200/50 dark:border-slate-800/50 bg-slate-50/60 dark:bg-slate-800/50 p-3 text-xs text-slate-600 dark:text-slate-400">
+      <div className="rounded-2xl neu-pressed-sm p-4 text-xs text-slate-600 dark:text-slate-300 font-medium">
         {candidates.length === 0 ? (
           <span>
             Nothing to prune with the current setting.
           </span>
         ) : (
           <span>
-            <strong>{candidates.length}</strong> graded submission(s) are
+            <strong className="text-slate-900 dark:text-white">{candidates.length}</strong> graded submission(s) are
             older than {parsedDays} days
             {oldest !== null && ` — oldest from ${formatDate(oldest)}`}
             .
@@ -105,14 +106,14 @@ export function PruneSubmissions({
       </div>
 
       {done && (
-        <div className="rounded-md bg-green-50 p-3 text-sm text-green-700">
+        <div className="rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-emerald-600 dark:text-emerald-400">
           {done}
         </div>
       )}
       {error && (
         <div
           role="alert"
-          className="rounded-md bg-red-50 p-3 text-sm text-red-700"
+          className="animate-shake rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-red-600 dark:text-red-400"
         >
           {error}
         </div>
@@ -138,10 +139,11 @@ export function PruneSubmissions({
               variant="secondary"
               onClick={() => setConfirmOpen(false)}
               disabled={loading}
+              className="rounded-full"
             >
               Cancel
             </Button>
-            <Button variant="danger" onClick={handleConfirm} loading={loading}>
+            <Button variant="danger" onClick={handleConfirm} loading={loading} className="rounded-full">
               Yes, prune
             </Button>
           </div>

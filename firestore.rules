@@ -100,13 +100,13 @@ service cloud.firestore {
 
     // ---------------------------------------------------------------------
     // assignments/{assignmentId}
-    //   - Read: any signed-in user (the UI scopes to enrolled courses anyway).
+    //   - Read: public (course syllabus details and chatbot assistant).
     //   - Write: admin only.
     //   - Create blocked if the parent course is already "completed" — mirrors
     //     the service-side guard so the assignment list stays frozen.
     // ---------------------------------------------------------------------
     match /assignments/{assignmentId} {
-      allow read: if isSignedIn();
+      allow read: if true;
 
       allow create: if isAdmin()
         && get(/databases/$(database)/documents/courses/$(request.resource.data.courseId)).data.status != "completed";
@@ -177,6 +177,59 @@ service cloud.firestore {
     match /blogPosts/{postId} {
       allow read: if resource.data.status == "published" || isAdmin();
       allow write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // email_broadcasts/{broadcastId}
+    //   - Admin-only read, writes dispatched via Next.js admin API.
+    // ---------------------------------------------------------------------
+    match /email_broadcasts/{broadcastId} {
+      allow read: if isAdmin();
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // emailDeliveryLogs/{logId}
+    //   - Real-time recipient delivery logs for broadcasts & lifecycle flows.
+    //   - Read: admin only.
+    //   - Write: background dispatchers & API routes.
+    // ---------------------------------------------------------------------
+    match /emailDeliveryLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // emailAutomationLogs/{logId}
+    //   - Lifecycle email automation deduplication logs.
+    // ---------------------------------------------------------------------
+    match /emailAutomationLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // courseProgress/{progressId}
+    //   - Doc ID: `{userId}_{courseId}`
+    //   - Read: owner or admin
+    //   - Write: owner or admin (separate create and update so partial updateDoc
+    //     does not require courseId/userId in request payload).
+    // ---------------------------------------------------------------------
+    match /courseProgress/{progressId} {
+      allow read: if isSignedIn()
+        && (resource == null || resource.data.userId == request.auth.uid || isAdmin());
+
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && progressId == request.resource.data.userId + "_" + request.resource.data.courseId;
+
+      allow update: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isAdmin());
+
+      allow delete: if isAdmin();
     }
 
     // Default: deny anything not explicitly matched above.

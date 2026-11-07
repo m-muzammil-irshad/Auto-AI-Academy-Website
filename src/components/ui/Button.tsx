@@ -16,12 +16,13 @@ export interface ButtonProps
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent-600/90 hover:bg-accent-600 backdrop-blur-md text-white shadow-sm hover:shadow-accent-500/25 disabled:bg-accent-600/50 dark:bg-accent-500/90 dark:hover:bg-accent-500 dark:disabled:bg-accent-500/50",
+    "neu-btn-primary text-white font-semibold disabled:opacity-50 active:scale-[0.98]",
   secondary:
-    "bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-slate-900 dark:text-white border border-slate-300/50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50",
-  danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-600/50 dark:bg-red-500 dark:hover:bg-red-600",
+    "neu-btn text-slate-800 dark:text-slate-100 font-medium disabled:opacity-50 active:scale-[0.98]",
+  danger:
+    "neu-btn-danger text-white font-semibold disabled:opacity-50 active:scale-[0.98]",
   ghost:
-    "bg-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50",
+    "bg-transparent text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 hover:neu-pressed-sm active:scale-[0.98] disabled:opacity-50",
 };
 
 const sizes: Record<Size, string> = {

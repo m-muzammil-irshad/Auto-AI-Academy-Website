@@ -32,7 +32,7 @@ export function NotificationBell({ href }: NotificationBellProps) {
     <Link
       href={href}
       aria-label="Notifications"
-      className="relative inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-600 hover:bg-slate-100"
+      className="relative inline-flex h-9 w-9 items-center justify-center rounded-full neu-btn text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 transition-transform active:scale-95"
     >
       <svg
         viewBox="0 0 24 24"

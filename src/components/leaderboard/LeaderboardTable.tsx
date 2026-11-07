@@ -18,7 +18,7 @@ export function LeaderboardTable({
       initial="hidden"
       animate="show"
       variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
-      className="divide-y divide-slate-100/50 dark:divide-slate-800/50 rounded-2xl border border-slate-200/50 bg-white/50 dark:bg-slate-900/50 dark:border-slate-800/50 backdrop-blur-md"
+      className="divide-y divide-black/5 dark:divide-white/5 rounded-3xl neu-flat p-3 overflow-hidden"
     >
       {entries.map((e) => (
         <LeaderboardRow

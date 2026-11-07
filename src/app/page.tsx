@@ -10,6 +10,7 @@ import { FAQ } from "@/components/home/FAQ";
 import { FinalCTA } from "@/components/home/FinalCTA";
 import { HomeAuthRedirect } from "@/components/home/HomeAuthRedirect";
 import { FAQS } from "@/lib/faqs";
+import { getPublicCourses } from "@/lib/coursesPublic";
 import { DEFAULT_OG_IMAGE, ORGANIZATION_JSON_LD, SITE_URL, seoAlternates } from "@/lib/seo";
 
 // Brand first, so a search for the academy's name matches the start of the title.
@@ -29,7 +30,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const publicCourses = await getPublicCourses();
+  const initialCourses = publicCourses.slice(0, 3).map((pc) => ({
+    id: pc.id,
+    title: pc.title,
+    description: pc.description,
+    thumbnail: pc.thumbnail,
+    youtubeChannelUrl: "",
+    level: (pc.level as any) || "",
+    duration: pc.duration || "",
+    lessonCount: null,
+    outcomes: [],
+    status: (pc.status as any) || "ongoing",
+    createdAt: null as any,
+    completedAt: null,
+  }));
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -59,7 +75,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+    <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] text-slate-800 dark:text-slate-100 transition-colors duration-300">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -69,7 +85,7 @@ export default function HomePage() {
       <main className="flex-1">
         <Hero />
         <HowItWorks />
-        <FeaturedCourses />
+        <FeaturedCourses initialCourses={initialCourses} />
         <ValueStrip />
         <LeaderboardTeaser />
         <FAQ />

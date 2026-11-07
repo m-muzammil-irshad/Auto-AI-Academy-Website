@@ -71,13 +71,13 @@ export function GoogleButton({
         size="lg"
         onClick={handleClick}
         loading={loading}
-        className="w-full"
+        className="w-full neu-btn rounded-full font-semibold"
       >
         {!loading && <GoogleIcon />}
         {label}
       </Button>
       {error && (
-        <p className="mt-2 text-center text-xs text-red-600">{error}</p>
+        <p className="mt-2 text-center text-xs text-red-600 dark:text-red-400">{error}</p>
       )}
     </div>
   );

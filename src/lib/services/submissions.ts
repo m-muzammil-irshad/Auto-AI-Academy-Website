@@ -28,6 +28,8 @@ export interface SubmitInput {
   driveLink: string;
   description: string;
   isLate: boolean;
+  isCatchUp?: boolean;
+  assignmentTitle?: string;
 }
 
 function mapSubmission(
@@ -52,6 +54,7 @@ function mapSubmission(
     description: (data.description as string) ?? "",
     submittedAt: (data.submittedAt as Timestamp) ?? Timestamp.now(),
     isLate: !!data.isLate,
+    isCatchUp: !!data.isCatchUp,
     locked: !!data.locked,
     grading,
     gradedAt: (data.gradedAt as Timestamp | null) ?? null,
@@ -82,10 +85,24 @@ export async function submitAssignment(input: SubmitInput): Promise<void> {
     description: input.description.trim(),
     submittedAt: serverTimestamp(),
     isLate: input.isLate,
+    isCatchUp: !!input.isCatchUp,
     locked: true,
     grading: null,
     gradedAt: null,
   });
+
+  // Trigger automated submission received lifecycle email
+  if (typeof window !== "undefined") {
+    fetch("/api/notifications/lifecycle", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "submission_received",
+        userId: input.userId,
+        assignmentTitle: input.assignmentTitle || "Assignment",
+      }),
+    }).catch((err) => console.error("Submission email trigger error:", err));
+  }
 }
 
 export async function fetchSubmissionsForUser(
@@ -119,15 +136,16 @@ export async function fetchSubmissionsForAssignment(
  *   1. Save grading + gradedAt on the submission.
  *   2. Update the student's monthlyStars[YYYY-MM] + all-time counters,
  *      applying only the DELTA so re-grading never double-counts.
- *   3. Push a "graded" notification (only on the first grade).
- *
- * Leaderboard reads pull these counters directly, so no cron/reset is needed.
+ *      NOTE: If submission was a late catch-up submission on a completed course,
+ *      leaderboard counters are locked/skipped.
+ *   3. Push in-app notification & trigger automated lifecycle email.
  */
 export async function gradeSubmission(params: {
   submissionId: string;
   userId: string;
   grading: Grading;
   assignmentTitle: string;
+  courseId?: string;
 }): Promise<void> {
   const ref = submissionDoc(params.submissionId);
   const snap = await getDoc(ref);
@@ -138,9 +156,10 @@ export async function gradeSubmission(params: {
   const existing = snap.data() as Record<string, unknown>;
   const oldGrading = existing.grading as Grading | null | undefined;
   const wasGraded = !!oldGrading;
+  const isCatchUp = !!existing.isCatchUp;
 
   const oldStars = wasGraded ? oldGrading!.finalStars : 0;
-  const delta = params.grading.finalStars - oldStars;
+  const delta = Math.round((params.grading.finalStars - oldStars) * 10) / 10;
   const countDelta = wasGraded ? 0 : 1;
 
   // 1. Save the submission's grade.
@@ -149,14 +168,16 @@ export async function gradeSubmission(params: {
     gradedAt: serverTimestamp(),
   });
 
-  // 2. Update the student's counters.
-  const mKey = monthKey();
-  await updateDoc(userDoc(params.userId), {
-    [`monthlyStars.${mKey}.totalStars`]: increment(delta),
-    [`monthlyStars.${mKey}.submissionCount`]: increment(countDelta),
-    allTimeStars: increment(delta),
-    allTimeSubmissionCount: increment(countDelta),
-  });
+  // 2. Update the student's counters ONLY IF not a catch-up submission on a completed course
+  if (!isCatchUp) {
+    const mKey = monthKey();
+    await updateDoc(userDoc(params.userId), {
+      [`monthlyStars.${mKey}.totalStars`]: increment(delta),
+      [`monthlyStars.${mKey}.submissionCount`]: increment(countDelta),
+      allTimeStars: increment(delta),
+      allTimeSubmissionCount: increment(countDelta),
+    });
+  }
 
   // 3. Notify the student on their first grade only.
   if (!wasGraded) {
@@ -166,6 +187,22 @@ export async function gradeSubmission(params: {
       message: `You were graded on "${params.assignmentTitle}" — ${params.grading.finalStars.toFixed(1)} ★`,
       link: `/student/assignments`,
     });
+  }
+
+  // 4. Trigger automated lifecycle email (Grade result + Leaderboard position + 80% check)
+  if (typeof window !== "undefined") {
+    fetch("/api/notifications/lifecycle", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "submission_graded",
+        userId: params.userId,
+        assignmentTitle: params.assignmentTitle,
+        grading: params.grading,
+        courseId: params.courseId,
+        isCatchUp,
+      }),
+    }).catch((err) => console.error("Grading email trigger error:", err));
   }
 }
 

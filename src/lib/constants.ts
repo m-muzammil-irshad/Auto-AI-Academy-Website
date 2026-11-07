@@ -23,6 +23,7 @@ export const ADMIN_NAV = [
   { href: "/admin/courses", label: "Courses", icon: "book" },
   { href: "/admin/assignments", label: "Assignments", icon: "clipboard" },
   { href: "/admin/submissions", label: "Submissions", icon: "check" },
+  { href: "/admin/broadcast", label: "Email Broadcast", icon: "mail" },
   { href: "/admin/blog", label: "Blog", icon: "pen" },
   { href: "/admin/students", label: "Students", icon: "users" },
   { href: "/admin/settings", label: "Settings", icon: "settings" },

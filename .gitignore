@@ -8,5 +8,5 @@ build/
 .vercel
 .DS_Store
 *.tsbuildinfo
-next-env.d.tspackage-lock.json
+next-env.d.ts
 .claude/

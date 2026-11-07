@@ -10,7 +10,7 @@ import { CourseGrid } from "@/components/courses/CourseGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { COURSE_STATUS_LABELS } from "@/lib/constants";
 import { DURATION, EASE, fadeUp } from "@/lib/motion";
-import type { CourseStatus } from "@/lib/types";
+import type { Course, CourseStatus } from "@/lib/types";
 
 type StatusFilter = "all" | CourseStatus;
 
@@ -21,8 +21,8 @@ const FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "completed", label: COURSE_STATUS_LABELS.completed },
 ];
 
-export function CoursesCatalog() {
-  const { courses, loading, error } = useCourses();
+export function CoursesCatalog({ initialCourses }: { initialCourses?: Course[] } = {}) {
+  const { courses, loading, error } = useCourses(undefined, initialCourses);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
 
@@ -38,7 +38,7 @@ export function CoursesCatalog() {
   }, [courses, query, status]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950 transition-colors duration-300 relative overflow-x-clip">
+    <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] transition-colors duration-300 relative overflow-x-clip">
       {/* Background glow */}
       <div className="pointer-events-none absolute right-1/4 top-[-10rem] z-0 h-[30rem] w-[30rem] rounded-full bg-accent-500/10 blur-[100px]" />
 
@@ -65,10 +65,10 @@ export function CoursesCatalog() {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search courses"
                 aria-label="Search courses"
-                className="block w-full rounded-xl border border-slate-200/60 bg-white/70 py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 backdrop-blur-sm transition-colors duration-150 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-slate-800/60 dark:bg-slate-900/60 dark:text-slate-100 dark:placeholder:text-slate-500"
+                className="block w-full rounded-full neu-pressed-sm py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 transition-colors duration-150 focus:outline-none dark:text-slate-100 dark:placeholder:text-slate-500 border-none"
               />
             </div>
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <div className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-full neu-pressed-sm">
               {FILTERS.map((filter) => {
                 const active = status === filter.value;
                 return (
@@ -77,19 +77,12 @@ export function CoursesCatalog() {
                     type="button"
                     onClick={() => setStatus(filter.value)}
                     aria-pressed={active}
-                    className={`relative whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-medium transition-colors duration-150 ${
+                    className={`relative whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
                       active
-                        ? "border-transparent text-white dark:text-slate-900"
-                        : "border-slate-200 text-slate-600 hover:border-slate-400 dark:border-slate-800 dark:text-slate-400 dark:hover:border-slate-600"
+                        ? "neu-btn text-accent-600 dark:text-accent-400 font-bold shadow-sm"
+                        : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
-                    {active && (
-                      <motion.span
-                        layoutId="course-status-filter"
-                        transition={{ duration: DURATION.ui, ease: EASE }}
-                        className="absolute inset-0 rounded-full bg-slate-900 dark:bg-white"
-                      />
-                    )}
                     <span className="relative">{filter.label}</span>
                   </button>
                 );
@@ -100,9 +93,9 @@ export function CoursesCatalog() {
           {loading ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[0, 1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="card-surface p-1">
-                  <div className="skeleton aspect-video w-full rounded-xl" />
-                  <div className="p-5">
+                <div key={i} className="neu-flat rounded-3xl p-3.5">
+                  <div className="skeleton aspect-video w-full rounded-2xl" />
+                  <div className="p-4">
                     <div className="skeleton mb-3 h-6 w-3/4" />
                     <div className="skeleton h-4 w-full" />
                     <div className="skeleton mt-2 h-4 w-5/6" />

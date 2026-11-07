@@ -31,16 +31,16 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="space-y-4 text-center">
-        <h1 className="font-heading text-2xl font-semibold">
+        <h1 className="font-heading text-2xl font-bold text-slate-900 dark:text-white">
           Check your inbox
         </h1>
-        <p className="text-sm text-slate-600">
-          If an account exists for <strong>{email.trim()}</strong>, we sent a
+        <div className="neu-pressed-sm rounded-2xl p-4 text-sm text-slate-600 dark:text-slate-300">
+          If an account exists for <strong className="text-slate-900 dark:text-white">{email.trim()}</strong>, we sent a
           password reset link. Open it to choose a new password.
-        </p>
+        </div>
         <Link
           href="/login"
-          className="inline-block text-sm font-medium text-accent-600 hover:text-accent-700"
+          className="inline-block text-sm font-semibold text-accent-600 hover:text-accent-700 dark:text-accent-400 dark:hover:text-accent-300"
         >
           Back to sign in
         </Link>
@@ -51,8 +51,8 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <div className="mb-6">
-        <h1 className="font-heading text-2xl font-semibold">Reset password</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <h1 className="font-heading text-2xl font-bold text-slate-900 dark:text-white">Reset password</h1>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           Enter your email and we’ll send a reset link.
         </p>
       </div>
@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
         {error && (
           <div
             role="alert"
-            className="animate-shake rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300"
+            className="animate-shake rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-red-600 dark:text-red-400"
           >
             {error}
           </div>
@@ -74,13 +74,13 @@ export default function ForgotPasswordPage() {
           required
           disabled={loading}
         />
-        <Button type="submit" size="lg" loading={loading} className="w-full">
+        <Button type="submit" size="lg" loading={loading} className="w-full neu-btn-primary rounded-full font-bold">
           Send reset link
         </Button>
-        <p className="pt-2 text-center text-sm text-slate-600">
+        <p className="pt-2 text-center text-sm text-slate-600 dark:text-slate-400">
           <Link
             href="/login"
-            className="font-medium text-accent-600 hover:text-accent-700"
+            className="font-medium text-accent-600 hover:text-accent-700 dark:text-accent-400 dark:hover:text-accent-300"
           >
             Back to sign in
           </Link>

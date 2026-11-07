@@ -41,7 +41,7 @@ export function CodeCopyHandler() {
 }
 
 const shareButtonClass =
-  "inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition-colors duration-150 hover:border-slate-400 hover:text-slate-900 dark:border-slate-800 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-white";
+  "neu-btn inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-600 dark:text-slate-300 transition-all duration-200 hover:scale-105 active:scale-95";
 
 export function ShareButtons({ url, title }: { url: string; title: string }) {
   const [copied, setCopied] = useState(false);

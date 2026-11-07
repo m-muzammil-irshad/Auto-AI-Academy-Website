@@ -12,12 +12,18 @@ import { MobileTableOfContents, TableOfContents } from "@/components/blog/TableO
 import { CodeCopyHandler, ReadingProgress, ShareButtons } from "@/components/blog/ArticleExtras";
 import { isoDate, prepareArticle, readingTime } from "@/lib/blog";
 import { getPublishedPost, getPublishedPosts } from "@/lib/blogPublic";
+import { SHIMMER_BLUR_16_9 } from "@/lib/imageBlur";
 import { SITE_NAME } from "@/lib/constants";
 import { ORGANIZATION_JSON_LD, absoluteUrl, seoAlternates } from "@/lib/seo";
 
 // Posts come from the database; serve a cached page for up to a minute.
 // Keep in sync with BLOG_REVALIDATE_SECONDS in lib/blogPublic.ts.
 export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const posts = await getPublishedPosts();
+  return posts.map((p) => ({ slug: p.slug }));
+}
 
 interface Props {
   params: { slug: string };
@@ -90,7 +96,7 @@ export default async function BlogPostPage({ params }: Props) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-slate-950 transition-colors duration-300">
+    <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] transition-colors duration-300">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -107,10 +113,10 @@ export default async function BlogPostPage({ params }: Props) {
               Blog
             </Link>
             <ChevronRight className="h-4 w-4" aria-hidden="true" />
-            <span className="font-medium text-accent-600 dark:text-accent-400">{post.category}</span>
+            <span className="font-semibold text-accent-600 dark:text-accent-400">{post.category}</span>
           </nav>
 
-          <h1 className="font-heading text-[2rem] font-bold leading-[1.15] tracking-tight text-slate-900 dark:text-white sm:text-[2.5rem] md:text-5xl md:leading-[1.1]">
+          <h1 className="font-heading text-[2rem] font-extrabold leading-[1.15] tracking-tight text-slate-900 dark:text-white sm:text-[2.5rem] md:text-5xl md:leading-[1.1]">
             {post.title}
           </h1>
 
@@ -118,11 +124,11 @@ export default async function BlogPostPage({ params }: Props) {
             {post.excerpt}
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-y border-slate-200 py-4 dark:border-slate-800">
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-y border-black/5 dark:border-white/5 py-4">
             <div className="flex items-center gap-3">
               <Avatar name={post.author} size="lg" />
               <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">{post.author}</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">{post.author}</p>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   <time dateTime={isoDate(post.date)}>{post.date}</time> &middot; {readingTime(post.content)}
                 </p>
@@ -134,15 +140,19 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Cover image: wider than the text column */}
         <div className="mx-auto mt-10 w-full max-w-5xl px-4 sm:px-6">
-          <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-900">
-            <Image
-              src={post.coverImage}
-              alt=""
-              fill
-              sizes="(max-width: 1024px) 100vw, 976px"
-              className="object-cover"
-              priority
-            />
+          <div className="neu-pressed-sm relative aspect-video w-full overflow-hidden rounded-3xl p-1.5 sm:p-2">
+            <div className="relative h-full w-full overflow-hidden rounded-2xl bg-slate-200 dark:bg-[#151926]">
+              <Image
+                src={post.coverImage}
+                alt={post.title}
+                fill
+                placeholder="blur"
+                blurDataURL={SHIMMER_BLUR_16_9}
+                sizes="(max-width: 1024px) 100vw, 976px"
+                className="object-cover"
+                priority
+              />
+            </div>
           </div>
         </div>
 
@@ -156,7 +166,7 @@ export default async function BlogPostPage({ params }: Props) {
             <article className="article" dangerouslySetInnerHTML={{ __html: html }} />
 
             {/* Call to action */}
-            <div className="mt-14 rounded-2xl bg-gradient-to-br from-accent-600 to-purple-600 p-8 text-white sm:p-10">
+            <div className="mt-14 rounded-3xl neu-flat-lg bg-gradient-to-br from-accent-600 to-purple-600 p-8 text-white sm:p-10">
               <h2 className="font-heading text-2xl font-bold text-white sm:text-3xl">
                 Put this into practice
               </h2>
@@ -164,14 +174,14 @@ export default async function BlogPostPage({ params }: Props) {
                 {SITE_NAME} courses are completely free, with assignments, feedback, and a certificate when you finish.
               </p>
               <Link href="/courses" className="mt-6 inline-block">
-                <Button size="lg" variant="secondary" className="rounded-full border-transparent bg-white px-8 text-accent-700 hover:bg-accent-50 dark:bg-white dark:text-accent-700 dark:hover:bg-accent-50">
+                <Button size="lg" variant="secondary" className="rounded-full border-none bg-white px-8 font-bold text-accent-700 shadow-lg hover:bg-slate-100 dark:bg-white dark:text-accent-700 dark:hover:bg-slate-100 transition-transform hover:scale-105 active:scale-95">
                   Browse free courses
                 </Button>
               </Link>
             </div>
 
             {/* Author and share */}
-            <div className="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-slate-200 pt-8 dark:border-slate-800">
+            <div className="mt-12 flex flex-wrap items-center justify-between gap-6 border-t border-black/5 dark:border-white/5 pt-8">
               <div className="flex items-center gap-4">
                 <Avatar name={post.author} size="lg" />
                 <div>
@@ -197,7 +207,7 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Keep reading */}
         {relatedPosts.length > 0 && (
-          <section className="mx-auto mt-20 w-full max-w-6xl border-t border-slate-200 px-4 pt-14 dark:border-slate-800 sm:px-6">
+          <section className="mx-auto mt-20 w-full max-w-6xl border-t border-black/5 dark:border-white/5 px-4 pt-14 sm:px-6">
             <div className="mb-10 flex items-end justify-between gap-4">
               <h2 className="font-heading text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
                 Keep reading

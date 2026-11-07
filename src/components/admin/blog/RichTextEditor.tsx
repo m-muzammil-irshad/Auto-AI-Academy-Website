@@ -95,11 +95,11 @@ function ToolbarButton({
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       className={cn(
-        "inline-flex h-9 items-center justify-center rounded-lg text-sm font-medium transition-colors duration-150 disabled:opacity-40",
+        "inline-flex h-9 items-center justify-center rounded-xl text-sm font-medium transition-all duration-150 disabled:opacity-40",
         wide ? "px-3" : "w-9",
         active
-          ? "bg-accent-600 text-white dark:bg-accent-500"
-          : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+          ? "neu-btn text-accent-600 dark:text-accent-400 font-bold shadow-sm"
+          : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
       )}
     >
       {children}
@@ -107,7 +107,7 @@ function ToolbarButton({
   );
 }
 
-const Divider = () => <span aria-hidden="true" className="mx-1 h-6 w-px bg-slate-200 dark:bg-slate-700" />;
+const Divider = () => <span aria-hidden="true" className="mx-1 h-6 w-px bg-black/10 dark:bg-white/10" />;
 
 type Panel = "link" | "image" | null;
 
@@ -140,10 +140,10 @@ function Toolbar({ editor }: { editor: Editor }) {
   };
 
   const inputClass =
-    "h-9 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100";
+    "h-9 min-w-0 flex-1 rounded-xl neu-pressed-sm px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-slate-100 border-none";
 
   return (
-    <div className="sticky top-16 z-20 rounded-t-2xl border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
+    <div className="sticky top-16 z-20 border-b border-black/5 dark:border-white/5 bg-[#e8ecf4]/90 dark:bg-[#151926]/90 backdrop-blur-md">
       <div className="flex flex-wrap items-center gap-1 p-2">
         {/* Text type: the three sizes an article is built from */}
         <ToolbarButton label="Normal text" wide active={editor.isActive("paragraph")} onClick={() => editor.chain().focus().setParagraph().run()}>
@@ -206,7 +206,7 @@ function Toolbar({ editor }: { editor: Editor }) {
       </div>
 
       {panel && (
-        <form onSubmit={submitPanel} className="flex flex-wrap items-center gap-2 border-t border-slate-200 p-2 dark:border-slate-800">
+        <form onSubmit={submitPanel} className="flex flex-wrap items-center gap-2 border-t border-black/5 dark:border-white/5 p-2.5">
           <input
             autoFocus
             type="text"
@@ -226,10 +226,10 @@ function Toolbar({ editor }: { editor: Editor }) {
               className={inputClass}
             />
           )}
-          <button type="submit" className="h-9 rounded-lg bg-accent-600 px-4 text-sm font-medium text-white transition-colors duration-150 hover:bg-accent-700">
+          <button type="submit" className="h-9 rounded-xl neu-btn-primary px-4 text-sm font-bold text-white">
             {panel === "link" ? "Apply link" : "Insert image"}
           </button>
-          <button type="button" onClick={() => setPanel(null)} className="h-9 rounded-lg px-3 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+          <button type="button" onClick={() => setPanel(null)} className="h-9 rounded-xl neu-btn px-3 text-sm font-medium text-slate-600 dark:text-slate-300">
             Cancel
           </button>
         </form>
@@ -271,7 +271,7 @@ export function RichTextEditor({ initialContent, onChange }: RichTextEditorProps
   });
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+    <div className="rounded-3xl neu-flat overflow-hidden">
       {editor && <Toolbar editor={editor} />}
       <div className="px-5 py-6 sm:px-8 sm:py-8">
         <EditorContent editor={editor} />

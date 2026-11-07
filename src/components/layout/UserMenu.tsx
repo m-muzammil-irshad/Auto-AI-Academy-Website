@@ -49,7 +49,7 @@ export function UserMenu({ profileHref }: UserMenuProps) {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex items-center rounded-full p-0.5 hover:bg-slate-100"
+        className="flex items-center rounded-full p-1 neu-btn transition-transform hover:scale-105 active:scale-95"
       >
         <Avatar name={profile.name} size="sm" />
       </button>
@@ -57,28 +57,28 @@ export function UserMenu({ profileHref }: UserMenuProps) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-40 mt-2 w-60 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+          className="neu-flat-lg absolute right-0 z-40 mt-3 w-64 rounded-2xl p-2 animate-in fade-in zoom-in-95 duration-150"
         >
-          <div className="px-3 py-2">
-            <p className="truncate text-sm font-medium text-slate-900">
+          <div className="px-3 py-2.5">
+            <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
               {profile.name}
             </p>
-            <p className="truncate text-xs text-slate-500">{profile.email}</p>
+            <p className="truncate text-xs text-slate-500 dark:text-slate-400">{profile.email}</p>
           </div>
-          <hr className="my-1 border-slate-100" />
+          <hr className="my-1 border-black/5 dark:border-white/5" />
           <Link
             href={profileHref}
             role="menuitem"
             onClick={() => setOpen(false)}
-            className="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+            className="block rounded-xl px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
           >
-            Profile
+            Settings & Profile
           </Link>
           <button
             type="button"
             role="menuitem"
             onClick={handleSignOut}
-            className="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+            className="block w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors"
           >
             Sign out
           </button>

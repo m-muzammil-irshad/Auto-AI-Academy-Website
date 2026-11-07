@@ -24,9 +24,9 @@ export default function StudentAssignmentsPage() {
 
   const loading = enrollLoading || assignLoading || subsLoading || coursesLoading;
 
-  const courseTitleById = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const c of courses) map.set(c.id, c.title);
+  const courseById = useMemo(() => {
+    const map = new Map<string, (typeof courses)[number]>();
+    for (const c of courses) map.set(c.id, c);
     return map;
   }, [courses]);
 
@@ -37,14 +37,18 @@ export default function StudentAssignmentsPage() {
       list.push(a);
       map.set(a.courseId, list);
     }
-    return Array.from(map.entries()).map(([courseId, list]) => ({
-      courseId,
-      courseTitle: courseTitleById.get(courseId) ?? "Course",
-      list: [...list].sort(
-        (a, b) => a.dueDate.toMillis() - b.dueDate.toMillis()
-      ),
-    }));
-  }, [assignments, courseTitleById]);
+    return Array.from(map.entries()).map(([courseId, list]) => {
+      const course = courseById.get(courseId);
+      return {
+        courseId,
+        courseTitle: course?.title ?? "Course",
+        courseStatus: course?.status ?? "ongoing",
+        list: [...list].sort(
+          (a, b) => a.dueDate.toMillis() - b.dueDate.toMillis()
+        ),
+      };
+    });
+  }, [assignments, courseById]);
 
   const submissionByAssignmentId = useMemo(() => {
     const map = new Map<string, (typeof submissions)[number]>();
@@ -55,9 +59,10 @@ export default function StudentAssignmentsPage() {
   const handleSubmit = useCallback(
     async (
       assignmentId: string,
-      input: { driveLink: string; description: string; isLate: boolean }
+      input: { driveLink: string; description: string; isLate: boolean; isCatchUp?: boolean }
     ) => {
       if (!user || !profile) throw new Error("You must be signed in.");
+      const currentAssignment = assignments.find((a) => a.id === assignmentId);
       await submitAssignment({
         assignmentId,
         userId: user.uid,
@@ -65,10 +70,12 @@ export default function StudentAssignmentsPage() {
         driveLink: input.driveLink,
         description: input.description,
         isLate: input.isLate,
+        isCatchUp: input.isCatchUp,
+        assignmentTitle: currentAssignment?.title || "Assignment",
       });
       await reload();
     },
-    [user, profile, reload]
+    [user, profile, reload, assignments]
   );
 
   return (
@@ -96,7 +103,7 @@ export default function StudentAssignmentsPage() {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4"
+              className="neu-flat rounded-3xl p-6"
             >
               <Skeleton className="mb-3 h-5 w-1/2" />
               <Skeleton className="mb-2 h-4 w-full" />
@@ -111,31 +118,49 @@ export default function StudentAssignmentsPage() {
         />
       ) : (
         <div className="space-y-10">
-          {grouped.map((group, i) => (
-            <motion.section 
-              key={group.courseId}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, delay: i * 0.1 }}
-            >
-              <h2 className="mb-4 font-heading text-lg font-semibold text-slate-900 dark:text-white">
-                {group.courseTitle}
-              </h2>
-              <div className="space-y-4">
-                {group.list.map((a) => (
-                  <AssignmentCard
-                    key={a.id}
-                    assignment={a}
-                    studentName={profile?.name ?? ""}
-                    existingSubmission={
-                      submissionByAssignmentId.get(a.id) ?? null
-                    }
-                    onSubmit={handleSubmit}
-                  />
-                ))}
-              </div>
-            </motion.section>
-          ))}
+          {grouped.map((group, i) => {
+            const isCompleted = group.courseStatus === "completed";
+            const totalInCourse = group.list.length;
+            const submittedInCourse = group.list.filter((a) =>
+              submissionByAssignmentId.has(a.id)
+            ).length;
+            const isCatchUpEligible =
+              isCompleted && totalInCourse > 0 && submittedInCourse / totalInCourse < 0.8;
+
+            return (
+              <motion.section 
+                key={group.courseId}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: i * 0.1 }}
+              >
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="font-heading text-lg font-semibold text-slate-900 dark:text-white">
+                    {group.courseTitle}
+                  </h2>
+                  {isCatchUpEligible && (
+                    <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                      🎓 Catch-up Mode ({submittedInCourse}/{totalInCourse} Submitted · 80% needed for certificate)
+                    </span>
+                  )}
+                </div>
+                <div className="space-y-4">
+                  {group.list.map((a) => (
+                    <AssignmentCard
+                      key={a.id}
+                      assignment={a}
+                      studentName={profile?.name ?? ""}
+                      existingSubmission={
+                        submissionByAssignmentId.get(a.id) ?? null
+                      }
+                      isCatchUpEligible={isCatchUpEligible}
+                      onSubmit={handleSubmit}
+                    />
+                  ))}
+                </div>
+              </motion.section>
+            );
+          })}
         </div>
       )}
     </div>

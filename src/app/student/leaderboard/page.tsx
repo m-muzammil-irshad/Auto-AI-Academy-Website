@@ -54,7 +54,7 @@ export default function StudentLeaderboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, delay: 0.1 }}
-          className="space-y-2 rounded-2xl border border-slate-200/50 bg-white/50 backdrop-blur-md p-2 dark:border-slate-800/50 dark:bg-slate-900/50"
+          className="space-y-3 rounded-3xl neu-flat p-4"
         >
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-3 py-3">

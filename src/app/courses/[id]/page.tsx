@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEnrollments } from "@/hooks/useEnrollments";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SHIMMER_BLUR_16_9 } from "@/lib/imageBlur";
 import { fadeUp, stagger } from "@/lib/motion";
 
 // What every course on the platform comes with.
@@ -69,7 +70,7 @@ export default function CourseDetailPage() {
     setEnrollError("");
     try {
       await enroll(id);
-      router.push("/student/courses");
+      router.push(`/student/courses/${id}/learn`);
     } catch (err) {
       setEnrollError(err instanceof Error ? err.message : "Failed to enroll.");
     } finally {
@@ -79,18 +80,18 @@ export default function CourseDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
+      <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] transition-colors duration-300">
         <SiteHeader />
         <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-12 sm:py-20">
           {/* Same outline as the loaded course so the page doesn't jump */}
-          <div className="card-surface overflow-hidden rounded-3xl">
-            <Skeleton className="aspect-video w-full rounded-none" />
-            <div className="p-8 sm:p-12">
+          <div className="neu-flat overflow-hidden rounded-3xl p-6 sm:p-8">
+            <Skeleton className="aspect-video w-full rounded-2xl" />
+            <div className="p-4 sm:p-6">
               <Skeleton className="mb-6 h-10 w-2/3" />
               <Skeleton className="mb-3 h-5 w-full" />
               <Skeleton className="mb-3 h-5 w-full" />
               <Skeleton className="mb-10 h-5 w-3/5" />
-              <Skeleton className="h-12 w-40 rounded-xl" />
+              <Skeleton className="h-12 w-40 rounded-full" />
             </div>
           </div>
         </main>
@@ -101,7 +102,7 @@ export default function CourseDetailPage() {
 
   if (error || !course) {
     return (
-      <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
+      <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] transition-colors duration-300">
         <SiteHeader />
         <main className="flex-1 flex items-center justify-center p-4">
           <EmptyState title="Course Not Found" description={error || "The course you are looking for does not exist."} />
@@ -117,7 +118,7 @@ export default function CourseDetailPage() {
   const userIsEnrolled = user && isEnrolled(id);
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950 relative overflow-x-clip transition-colors duration-300">
+    <div className="flex min-h-screen flex-col bg-[#e8ecf4] dark:bg-[#10131d] relative overflow-x-clip transition-colors duration-300">
       <div className="pointer-events-none absolute left-1/4 top-[-10rem] z-0 h-[30rem] w-[30rem] rounded-full bg-accent-500/10 blur-[100px]" />
 
       <SiteHeader />
@@ -130,27 +131,30 @@ export default function CourseDetailPage() {
           className="grid items-start gap-8 lg:grid-cols-3"
         >
           {/* Course content */}
-          <motion.article variants={fadeUp} className="card-surface overflow-hidden rounded-3xl lg:col-span-2">
+          <motion.article variants={fadeUp} className="neu-flat overflow-hidden rounded-3xl p-4 sm:p-6 lg:col-span-2">
             {course.thumbnail ? (
-              <div className="w-full relative bg-slate-100 dark:bg-slate-900 flex justify-center">
+              <div className="w-full relative neu-pressed-sm rounded-2xl p-2 overflow-hidden flex justify-center">
                 <Image
                   src={course.thumbnail}
                   alt={course.title}
                   width={1280}
                   height={720}
-                  className="w-full h-auto object-contain max-h-[600px]"
+                  placeholder="blur"
+                  blurDataURL={SHIMMER_BLUR_16_9}
+                  sizes="(max-width: 1024px) 100vw, 850px"
+                  className="w-full h-auto object-contain max-h-[600px] rounded-xl"
                   priority={true}
                 />
               </div>
             ) : (
-              <div className="w-full relative aspect-video flex items-center justify-center bg-gradient-to-br from-accent-500/20 to-purple-500/20">
+              <div className="w-full relative aspect-video flex items-center justify-center neu-pressed-sm rounded-2xl p-4">
                 <span className="font-heading text-3xl font-bold text-accent-700/50 dark:text-accent-400/50">
                   Auto AI Academy
                 </span>
               </div>
             )}
 
-            <div className="p-8 sm:p-10">
+            <div className="pt-8 sm:pt-10">
               <h1 className="mb-6 font-heading text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
                 {course.title}
               </h1>
@@ -184,7 +188,7 @@ export default function CourseDetailPage() {
                     href={course.outlineUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-medium transition-colors duration-150 shadow-sm"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full neu-btn text-slate-900 dark:text-white font-semibold transition-all duration-150"
                   >
                     <FileText className="h-5 w-5 text-accent-500" aria-hidden="true" />
                     View Course Outline
@@ -195,17 +199,17 @@ export default function CourseDetailPage() {
           </motion.article>
 
           {/* Enrollment card stays in view while the description scrolls */}
-          <motion.aside variants={fadeUp} className="card-surface rounded-3xl p-6 sm:p-8 lg:sticky lg:top-24">
+          <motion.aside variants={fadeUp} className="neu-flat rounded-3xl p-6 sm:p-8 lg:sticky lg:top-24">
             <div className="flex items-center justify-between gap-4">
               <p className="font-heading text-3xl font-bold text-slate-900 dark:text-white">Free</p>
-              <Badge variant={courseStatusVariant(course.status)} className="w-fit px-3 py-1 text-sm">
+              <Badge variant={courseStatusVariant(course.status)} className="w-fit px-3 py-1 text-sm neu-flat border-none shadow-sm font-bold">
                 {COURSE_STATUS_LABELS[course.status]}
               </Badge>
             </div>
 
             <CourseMeta course={course} className="mt-4 text-sm" />
 
-            <ul className="mt-6 space-y-3 border-t border-slate-200/60 pt-6 dark:border-slate-800/60">
+            <ul className="mt-6 space-y-3 border-t border-black/5 dark:border-white/5 pt-6">
               {INCLUDED.map((item) => (
                 <li key={item.text} className="flex items-start gap-3 text-sm text-slate-600 dark:text-slate-300">
                   <item.icon className="mt-0.5 h-5 w-5 shrink-0 text-accent-500" aria-hidden="true" />
@@ -216,19 +220,25 @@ export default function CourseDetailPage() {
 
             <div className="mt-8">
               {userIsEnrolled ? (
-                <Button size="lg" className="w-full" onClick={() => router.push("/student/courses")}>
-                  Go to Dashboard
-                </Button>
+                <div className="flex flex-col gap-2.5">
+                  <Button size="lg" className="w-full neu-btn-primary rounded-full font-bold flex items-center justify-center gap-2" onClick={() => router.push(`/student/courses/${id}/learn`)}>
+                    <PlayCircle className="h-5 w-5" />
+                    <span>Go to Classroom</span>
+                  </Button>
+                  <Button size="sm" variant="secondary" className="w-full neu-btn rounded-full font-medium text-xs text-slate-600 dark:text-slate-300" onClick={() => router.push("/student/courses")}>
+                    View in Dashboard
+                  </Button>
+                </div>
               ) : (
                 <>
                   {isOngoing && (
-                    <Button size="lg" className="w-full shadow-lg shadow-accent-500/25 hover:shadow-xl hover:shadow-accent-500/30" onClick={handleEnroll} loading={enrollLoading || enrollmentsLoading}>
+                    <Button size="lg" className="w-full neu-btn-primary rounded-full font-bold" onClick={handleEnroll} loading={enrollLoading || enrollmentsLoading}>
                       {user ? "Enroll Now" : "Sign in to Enroll"}
                     </Button>
                   )}
                   {isSoon && (
                     <>
-                      <Button size="lg" variant="secondary" disabled className="w-full">
+                      <Button size="lg" variant="secondary" disabled className="w-full neu-btn rounded-full font-semibold">
                         Coming Soon
                       </Button>
                       <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -238,7 +248,7 @@ export default function CourseDetailPage() {
                   )}
                   {isCompleted && (
                     <>
-                      <Button size="lg" variant="secondary" disabled className="w-full">
+                      <Button size="lg" variant="secondary" disabled className="w-full neu-btn rounded-full font-semibold">
                         Completed
                       </Button>
                       <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -253,7 +263,7 @@ export default function CourseDetailPage() {
             {enrollError && (
               <p
                 role="alert"
-                className="mt-4 animate-shake rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-300"
+                className="mt-4 animate-shake rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-red-600 dark:text-red-400"
               >
                 {enrollError}
               </p>

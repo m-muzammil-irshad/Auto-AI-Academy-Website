@@ -29,7 +29,7 @@ export function MobileNav({ open, onClose, children }: MobileNavProps) {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: DURATION.ui, ease: EASE }}
-            className="absolute left-0 top-0 h-full w-72 max-w-[85vw] border-r border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-950"
+            className="absolute left-0 top-0 h-full w-72 max-w-[85vw] border-r border-white/60 dark:border-white/5 bg-[#e8ecf4] dark:bg-[#10131d] shadow-[4px_0_20px_rgba(163,177,198,0.25)] dark:shadow-[4px_0_25px_rgba(0,0,0,0.85)]"
           >
             {children}
           </motion.aside>

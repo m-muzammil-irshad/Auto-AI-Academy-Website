@@ -57,7 +57,7 @@ export async function fetchLeaderboard(
       if (b.submissionCount !== a.submissionCount) {
         return b.submissionCount - a.submissionCount;
       }
-      return a.name.localeCompare(b.name);
+      return (a.name || "").localeCompare(b.name || "");
     })
     .map<LeaderboardEntry>((c, i) => ({ ...c, rank: i + 1 }));
 

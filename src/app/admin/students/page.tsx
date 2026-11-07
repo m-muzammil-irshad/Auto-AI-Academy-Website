@@ -29,7 +29,7 @@ export default function AdminStudentsPage() {
       ]);
       setStudents(
         [...users].sort((a, b) =>
-          a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+          (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" })
         )
       );
       const counts = new Map<string, number>();
@@ -72,11 +72,11 @@ export default function AdminStudentsPage() {
       )}
 
       {loading ? (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {[0, 1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4"
+              className="neu-flat rounded-3xl p-5"
             >
               <Skeleton className="h-5 w-1/3" />
             </div>

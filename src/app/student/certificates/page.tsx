@@ -31,11 +31,11 @@ export default function StudentCertificatesPage() {
       )}
 
       {loading ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4"
+              className="neu-flat rounded-3xl p-6"
             >
               <Skeleton className="mb-2 h-5 w-1/2" />
               <Skeleton className="h-4 w-1/3" />

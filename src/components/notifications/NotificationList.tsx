@@ -13,7 +13,7 @@ export function NotificationList({
   onItemClick,
 }: NotificationListProps) {
   return (
-    <ul className="divide-y divide-slate-100/50 dark:divide-slate-800/50">
+    <ul className="divide-y divide-black/5 dark:divide-white/5">
       {items.map((n) => (
         <li key={n.id}>
           <NotificationItem item={n} onClick={onItemClick} />

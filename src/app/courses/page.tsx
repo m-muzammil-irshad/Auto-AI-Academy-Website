@@ -23,6 +23,21 @@ export const metadata: Metadata = {
 export default async function PublicCoursesPage() {
   // Describe the real course catalogue to search engines.
   const courses = await getPublicCourses();
+  const initialCourses = courses.map((pc) => ({
+    id: pc.id,
+    title: pc.title,
+    description: pc.description,
+    thumbnail: pc.thumbnail,
+    youtubeChannelUrl: "",
+    level: (pc.level as any) || "",
+    duration: pc.duration || "",
+    lessonCount: null,
+    outcomes: [],
+    status: (pc.status as any) || "ongoing",
+    createdAt: null as any,
+    completedAt: null,
+  }));
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -48,7 +63,7 @@ export default async function PublicCoursesPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <CoursesCatalog />
+      <CoursesCatalog initialCourses={initialCourses} />
     </>
   );
 }

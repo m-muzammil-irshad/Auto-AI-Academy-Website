@@ -48,10 +48,6 @@ export function useCertificateEligibility(): UseCertificateEligibilityResult {
     coursesLoading || enrollLoading || assignLoading || subsLoading;
   const error = coursesError || enrollError;
 
-  const [settled, setSettled] = useState(false);
-  useEffect(() => {
-    if (!loading) setSettled(true);
-  }, [loading]);
 
   const statuses = useMemo<CertificateStatus[]>(() => {
     if (loading) return [];
@@ -128,7 +124,7 @@ export function useCertificateEligibility(): UseCertificateEligibilityResult {
 
   return {
     statuses,
-    loading: loading || !settled,
+    loading,
     error,
   };
 }

@@ -14,9 +14,10 @@ export interface AssignmentCardProps {
   assignment: Assignment;
   studentName: string;
   existingSubmission: Submission | null;
+  isCatchUpEligible?: boolean;
   onSubmit: (
     assignmentId: string,
-    input: { driveLink: string; description: string; isLate: boolean }
+    input: { driveLink: string; description: string; isLate: boolean; isCatchUp?: boolean }
   ) => Promise<void>;
 }
 
@@ -24,6 +25,7 @@ export function AssignmentCard({
   assignment,
   studentName,
   existingSubmission,
+  isCatchUpEligible = false,
   onSubmit,
 }: AssignmentCardProps) {
   const deadlinePassed = useMemo(
@@ -37,7 +39,9 @@ export function AssignmentCard({
         ? "graded"
         : "submitted"
       : deadlinePassed
-        ? "submitted" // show as closed
+        ? isCatchUpEligible
+          ? "not_submitted"
+          : "submitted" // show as closed
         : "not_submitted";
 
   const statusBadge = () => {
@@ -48,13 +52,16 @@ export function AssignmentCard({
       return <Badge variant="info">Submitted</Badge>;
     }
     if (deadlinePassed) {
+      if (isCatchUpEligible) {
+        return <Badge variant="info">Catch-up open</Badge>;
+      }
       return <Badge variant="neutral">Closed</Badge>;
     }
     return <Badge variant="warning">Not submitted</Badge>;
   };
 
   return (
-    <Card className="transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent-500/10 dark:hover:shadow-accent-500/5">
+    <Card className="neu-flat-interactive transition-all duration-300">
       <CardBody className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
@@ -84,6 +91,7 @@ export function AssignmentCard({
           assignment={assignment}
           studentName={studentName}
           existingSubmission={existingSubmission}
+          isCatchUpEligible={isCatchUpEligible}
           onSubmit={(input) => onSubmit(assignment.id, input)}
         />
 

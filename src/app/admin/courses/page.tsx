@@ -104,7 +104,7 @@ export default function AdminCoursesPage() {
             Create, edit, mark completed, or delete courses.
           </p>
         </div>
-        <Button onClick={openCreate}>Add course</Button>
+        <Button onClick={openCreate} className="neu-btn-primary rounded-full font-bold">Add course</Button>
       </motion.div>
 
       {error && (
@@ -112,11 +112,11 @@ export default function AdminCoursesPage() {
       )}
 
       {loading ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4"
+              className="neu-flat rounded-3xl p-6"
             >
               <Skeleton className="mb-2 h-5 w-1/3" />
               <Skeleton className="h-4 w-2/3" />
@@ -206,7 +206,7 @@ function CourseRow({
             <h3 className="font-heading text-base font-semibold text-slate-900 dark:text-white">
               {course.title}
             </h3>
-            <Badge variant={courseStatusVariant(course.status)}>
+            <Badge variant={courseStatusVariant(course.status)} className="neu-flat border-none shadow-sm font-bold">
               {COURSE_STATUS_LABELS[course.status]}
             </Badge>
           </div>
@@ -220,15 +220,15 @@ function CourseRow({
         </div>
 
         <div className="flex shrink-0 flex-wrap gap-2">
-          <Button variant="secondary" size="sm" onClick={onEdit}>
+          <Button variant="secondary" size="sm" onClick={onEdit} className="rounded-full neu-btn font-semibold">
             Edit
           </Button>
           {canMarkCompleted && (
-            <Button variant="secondary" size="sm" onClick={onMarkCompleted}>
+            <Button variant="secondary" size="sm" onClick={onMarkCompleted} className="rounded-full neu-btn font-semibold">
               Mark completed
             </Button>
           )}
-          <Button variant="danger" size="sm" onClick={onDelete}>
+          <Button variant="danger" size="sm" onClick={onDelete} className="rounded-full">
             Delete
           </Button>
         </div>

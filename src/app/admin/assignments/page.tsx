@@ -141,13 +141,13 @@ export default function AdminAssignmentsPage() {
             Add, edit, or delete assignments for your courses.
           </p>
         </div>
-        <Button onClick={openCreate} disabled={noOngoingCourses}>
+        <Button onClick={openCreate} disabled={noOngoingCourses} className="neu-btn-primary rounded-full font-bold">
           Add assignment
         </Button>
       </motion.div>
 
       {noOngoingCourses && courses.length > 0 && (
-        <div className="rounded-2xl border border-amber-200/50 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-900/20 backdrop-blur-md p-4 text-sm text-amber-800 dark:text-amber-200">
+        <div className="rounded-2xl neu-pressed-sm p-4 text-sm font-medium text-amber-800 dark:text-amber-300">
           No ongoing courses available. Assignments can only be added to
           courses with status <strong>Ongoing</strong>. Flip a course from
           “Coming Soon” to “Ongoing” in Course Management first.
@@ -159,11 +159,11 @@ export default function AdminAssignmentsPage() {
       )}
 
       {loading ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4"
+              className="neu-flat rounded-3xl p-6"
             >
               <Skeleton className="mb-2 h-5 w-1/3" />
               <Skeleton className="h-4 w-2/3" />
@@ -200,7 +200,7 @@ export default function AdminAssignmentsPage() {
                   <h2 className="font-heading text-lg font-semibold text-slate-900 dark:text-white">
                     {course.title}
                   </h2>
-                  <Badge variant={courseStatusVariant(course.status)}>
+                  <Badge variant={courseStatusVariant(course.status)} className="neu-flat border-none shadow-sm font-bold">
                     {COURSE_STATUS_LABELS[course.status]}
                   </Badge>
                   {isCompleted && (
@@ -322,11 +322,11 @@ function AssignmentRow({
         </div>
 
         <div className="flex shrink-0 flex-wrap gap-2">
-          <Button variant="secondary" size="sm" onClick={onEdit}>
+          <Button variant="secondary" size="sm" onClick={onEdit} className="rounded-full neu-btn font-semibold">
             Edit
           </Button>
           {onDelete && (
-            <Button variant="danger" size="sm" onClick={onDelete}>
+            <Button variant="danger" size="sm" onClick={onDelete} className="rounded-full">
               Delete
             </Button>
           )}

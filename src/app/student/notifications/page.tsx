@@ -38,7 +38,7 @@ export default function StudentNotificationsPage() {
           </p>
         </div>
         {unreadCount > 0 && (
-          <Button variant="secondary" size="sm" onClick={markAllRead}>
+          <Button variant="secondary" size="sm" className="rounded-full font-medium" onClick={markAllRead}>
             Mark all as read
           </Button>
         )}
@@ -49,11 +49,11 @@ export default function StudentNotificationsPage() {
       )}
 
       {loading ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[0, 1, 2, 3].map((i) => (
             <div
               key={i}
-              className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md p-4"
+              className="neu-flat rounded-3xl p-4"
             >
               <Skeleton className="mb-2 h-4 w-3/4" />
               <Skeleton className="h-3 w-1/3" />
@@ -70,7 +70,7 @@ export default function StudentNotificationsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md overflow-hidden"
+          className="rounded-3xl neu-flat overflow-hidden p-2"
         >
           <NotificationList
             items={notifications}

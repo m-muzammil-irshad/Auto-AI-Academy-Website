@@ -67,8 +67,8 @@ export function TableOfContents({ items }: { items: TocItem[] }) {
   if (items.length === 0) return null;
 
   return (
-    <nav aria-label="On this page" className="border-l border-slate-200 pl-5 dark:border-slate-800">
-      <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white">
+    <nav aria-label="On this page" className="neu-flat rounded-3xl p-6 sticky top-24">
+      <p className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
         On this page
       </p>
       <TocList items={items} activeId={activeId} />
@@ -81,8 +81,8 @@ export function MobileTableOfContents({ items }: { items: TocItem[] }) {
   if (items.length === 0) return null;
 
   return (
-    <details className="group rounded-xl border border-slate-200 bg-white px-5 py-4 dark:border-slate-800 dark:bg-slate-900">
-      <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-slate-900 dark:text-white [&::-webkit-details-marker]:hidden">
+    <details className="group rounded-2xl neu-flat px-5 py-4">
+      <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-bold text-slate-900 dark:text-white [&::-webkit-details-marker]:hidden">
         On this page
         <span aria-hidden="true" className="text-slate-400 transition-transform duration-200 ease-smooth group-open:rotate-180">
           ▾

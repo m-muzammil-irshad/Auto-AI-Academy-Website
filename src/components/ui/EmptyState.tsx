@@ -17,7 +17,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md px-6 py-12 text-center transition-colors",
+        "flex flex-col items-center justify-center rounded-3xl neu-pressed p-8 sm:p-12 text-center transition-all",
         className
       )}
     >
