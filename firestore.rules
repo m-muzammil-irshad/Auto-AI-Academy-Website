@@ -221,6 +221,14 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------
+    // email_templates/{templateId}
+    //   - Saved email templates for admin reuse.
+    // ---------------------------------------------------------------------
+    match /email_templates/{templateId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
     // courseProgress/{progressId}
     //   - Doc ID: `{userId}_{courseId}`
     //   - Read: owner or admin

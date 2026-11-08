@@ -28,6 +28,8 @@ import {
   UserCheck,
   Inbox,
   ArrowUpRight,
+  Bookmark,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
@@ -45,6 +47,12 @@ import { fetchAllAssignments } from "@/lib/services/assignments";
 import { getDocs, query, orderBy, limit } from "firebase/firestore";
 import { emailBroadcastsCol } from "@/lib/firebase/collections";
 import { buildEmailTemplate } from "@/lib/services/emailTemplates";
+import {
+  fetchSavedEmailTemplates,
+  autoSaveEmailTemplate,
+  deleteSavedEmailTemplate,
+  type SavedEmailTemplate,
+} from "@/lib/services/emailTemplatesService";
 import {
   fetchEmailDeliveryLogs,
   CATEGORY_LABELS,
@@ -429,6 +437,50 @@ export default function AdminBroadcastPage() {
     message: string;
   } | null>(null);
 
+  // Saved Email Templates
+  const [savedTemplates, setSavedTemplates] = useState<SavedEmailTemplate[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [templateTab, setTemplateTab] = useState<"saved" | "presets">("saved");
+  const [templateSavedNotice, setTemplateSavedNotice] = useState(false);
+
+  const loadSavedTemplates = useCallback(async () => {
+    setLoadingTemplates(true);
+    try {
+      const list = await fetchSavedEmailTemplates();
+      setSavedTemplates(list);
+    } catch (err) {
+      console.warn("Could not load templates:", err);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadSavedTemplates();
+  }, [loadSavedTemplates]);
+
+  const handleManualSaveTemplate = async () => {
+    if (!subject.trim() || !body.trim()) {
+      alert("Please enter both a subject and email body before saving as a template.");
+      return;
+    }
+    await autoSaveEmailTemplate({
+      subject: subject.trim(),
+      body: body.trim(),
+      source: "manual",
+    });
+    setTemplateSavedNotice(true);
+    setTimeout(() => setTemplateSavedNotice(false), 3000);
+    await loadSavedTemplates();
+  };
+
+  const handleDeleteTemplate = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Are you sure you want to delete this saved template?")) return;
+    await deleteSavedEmailTemplate(id);
+    await loadSavedTemplates();
+  };
+
   // Run On-Demand Automation Checks
   const handleRunAutomationChecks = async () => {
     setIsCheckingAutomation(true);
@@ -655,6 +707,11 @@ export default function AdminBroadcastPage() {
         type: "success",
         message: `Test email sent to ${testEmailAddress}! Check your inbox (or spam).`,
       });
+      void autoSaveEmailTemplate({
+        subject: subject.trim(),
+        body: body.trim(),
+        source: "broadcast",
+      }).then(() => loadSavedTemplates());
     } catch (err: any) {
       setSendFeedback({
         type: "error",
@@ -720,8 +777,13 @@ export default function AdminBroadcastPage() {
         }`,
       });
 
-      // Reload broadcast history
+      // Reload broadcast history & saved templates
       void loadData();
+      void autoSaveEmailTemplate({
+        subject: subject.trim(),
+        body: body.trim(),
+        source: "broadcast",
+      }).then(() => loadSavedTemplates());
     } catch (err: any) {
       setSendFeedback({
         type: "error",
@@ -983,33 +1045,98 @@ export default function AdminBroadcastPage() {
               </CardBody>
             </Card>
 
-            {/* Quick Presets & Templates */}
+            {/* Saved Templates & Quick Presets */}
             <Card className="neu-flat border-none">
-              <CardHeader>
-                <h2 className="font-heading text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5 uppercase tracking-wider">
-                  <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                  Quick Email Templates
-                </h2>
-              </CardHeader>
-              <CardBody className="space-y-2">
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Click any template to auto-fill proven broadcast copy:
-                </p>
-                <div className="space-y-1.5">
-                  {PRESET_TEMPLATES.map((tmpl, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => {
-                        setSubject(tmpl.subject);
-                        setBody(tmpl.body);
-                      }}
-                      className="w-full text-left p-2.5 rounded-xl neu-flat-sm text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-accent-500 hover:scale-[1.01] transition-all cursor-pointer border border-black/5 dark:border-white/5"
-                    >
-                      {tmpl.label}
-                    </button>
-                  ))}
+              <CardHeader className="flex flex-col gap-2 pb-2">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-heading text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5 uppercase tracking-wider">
+                    <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                    Email Templates
+                  </h2>
                 </div>
+                {/* Sub tabs: Saved vs Presets */}
+                <div className="grid grid-cols-2 gap-1 p-1 neu-pressed-sm rounded-lg text-xs font-medium">
+                  <button
+                    type="button"
+                    onClick={() => setTemplateTab("saved")}
+                    className={`py-1 text-center rounded-md transition-all ${
+                      templateTab === "saved"
+                        ? "bg-white dark:bg-slate-800 text-accent-600 dark:text-accent-400 font-bold shadow-xs"
+                        : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                    }`}
+                  >
+                    Saved ({savedTemplates.length})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTemplateTab("presets")}
+                    className={`py-1 text-center rounded-md transition-all ${
+                      templateTab === "presets"
+                        ? "bg-white dark:bg-slate-800 text-accent-600 dark:text-accent-400 font-bold shadow-xs"
+                        : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                    }`}
+                  >
+                    Starter ({PRESET_TEMPLATES.length})
+                  </button>
+                </div>
+              </CardHeader>
+              <CardBody className="space-y-2 pt-1">
+                {templateTab === "saved" ? (
+                  <div className="space-y-1.5 max-h-[360px] overflow-y-auto pr-1">
+                    {loadingTemplates ? (
+                      <p className="text-[11px] text-slate-400 py-3 text-center">Loading templates...</p>
+                    ) : savedTemplates.length === 0 ? (
+                      <div className="p-3 text-center rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-700/60 text-[11px] text-slate-500">
+                        <Bookmark className="h-4 w-4 mx-auto mb-1 text-slate-400" />
+                        Har email jo aap send krtay hain yahan automatically template ban kar save ho jati hai ta k next time 1-click se use kar sakein.
+                      </div>
+                    ) : (
+                      savedTemplates.map((tmpl) => (
+                        <div
+                          key={tmpl.id}
+                          onClick={() => {
+                            setSubject(tmpl.subject);
+                            setBody(tmpl.body);
+                          }}
+                          className="group relative flex items-start justify-between gap-2 p-2.5 rounded-xl neu-flat-sm text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-accent-500 hover:scale-[1.01] transition-all cursor-pointer border border-black/5 dark:border-white/5"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-slate-900 dark:text-slate-100 truncate">
+                              {tmpl.subject}
+                            </p>
+                            <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5 line-clamp-1">
+                              {tmpl.body.slice(0, 70)}...
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            title="Delete template"
+                            onClick={(e) => handleDeleteTemplate(tmpl.id, e)}
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-500 rounded transition-opacity"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    {PRESET_TEMPLATES.map((tmpl, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setSubject(tmpl.subject);
+                          setBody(tmpl.body);
+                        }}
+                        className="w-full text-left p-2.5 rounded-xl neu-flat-sm text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-accent-500 hover:scale-[1.01] transition-all cursor-pointer border border-black/5 dark:border-white/5"
+                      >
+                        {tmpl.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </CardBody>
             </Card>
           </div>
@@ -1017,7 +1144,7 @@ export default function AdminBroadcastPage() {
           {/* Right Column: Email Composer & Live Preview (8 cols) */}
           <div className="lg:col-span-8 space-y-6">
             <Card className="neu-flat border-none">
-              <CardHeader className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-3">
+              <CardHeader className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 dark:border-white/5 pb-3">
                 <div className="flex items-center gap-2">
                   <FileText className="h-5 w-5 text-accent-500" />
                   <h2 className="font-heading text-base font-bold text-slate-900 dark:text-white">
@@ -1025,8 +1152,21 @@ export default function AdminBroadcastPage() {
                   </h2>
                 </div>
 
-                {/* Tab Switcher: Write vs Preview */}
-                <div className="flex items-center gap-1 neu-pressed-sm p-1 rounded-full">
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleManualSaveTemplate}
+                    className="neu-btn text-xs font-medium flex items-center gap-1.5 rounded-full px-3 py-1.5"
+                    title="Save current subject & body as a reusable template"
+                  >
+                    <Bookmark className="h-3.5 w-3.5 text-accent-500" />
+                    <span>{templateSavedNotice ? "Saved!" : "Save Template"}</span>
+                  </Button>
+
+                  {/* Tab Switcher: Write vs Preview */}
+                  <div className="flex items-center gap-1 neu-pressed-sm p-1 rounded-full">
                   <button
                     type="button"
                     onClick={() => setActiveTab("write")}
@@ -1051,7 +1191,8 @@ export default function AdminBroadcastPage() {
                     Live Preview
                   </button>
                 </div>
-              </CardHeader>
+              </div>
+            </CardHeader>
 
               <CardBody className="space-y-5 pt-4">
                 {activeTab === "write" ? (

@@ -77,6 +77,16 @@ export async function POST(request: Request) {
           config,
         });
 
+        // Auto-save template for future 1-click reuse
+        try {
+          const { autoSaveEmailTemplate } = await import("@/lib/services/emailTemplatesService");
+          await autoSaveEmailTemplate({
+            subject: subject.trim(),
+            body: body.trim(),
+            source: "broadcast",
+          });
+        } catch {}
+
         return NextResponse.json({
           success: true,
           message: `Test email sent successfully to ${testEmail}!`,
@@ -145,6 +155,16 @@ export async function POST(request: Request) {
           adminUserId: userId,
           adminEmail: adminProfile.email,
         });
+
+        // Auto-save broadcast template for future 1-click reuse
+        try {
+          const { autoSaveEmailTemplate } = await import("@/lib/services/emailTemplatesService");
+          await autoSaveEmailTemplate({
+            subject: subject.trim(),
+            body: body.trim(),
+            source: "broadcast",
+          });
+        } catch {}
 
         // Also record to emailDeliveryLogs so admin can filter recipient history
         const { recordEmailDelivery } = await import("@/lib/services/emailLogs");
