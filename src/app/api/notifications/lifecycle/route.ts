@@ -54,27 +54,49 @@ export async function POST(request: Request) {
 
       // 2. New Assignment Created in a Course
       case "new_assignment": {
-        const { courseId, assignmentTitle, description, dueDateMillis } = data;
+        const { courseId, assignmentTitle, description, dueDateMillis, recipients } = data;
         if (!courseId || !assignmentTitle) break;
 
-        const [course, enrollments] = await Promise.all([
-          fetchCourse(courseId),
-          fetchEnrollmentsForCourse(courseId),
-        ]);
-
-        if (!course || enrollments.length === 0) break;
+        const course = await fetchCourse(courseId);
+        if (!course) break;
 
         const dueDateFormatted = dueDateMillis
           ? new Date(dueDateMillis).toLocaleString()
           : "Check Student Portal";
 
-        // Dispatch in batches of 10 to avoid overwhelming SMTP
-        const userIds = enrollments.map((e) => e.userId);
-        const users = await Promise.all(userIds.map((id) => getUserProfile(id)));
+        let studentList: Array<{ name: string; email: string }> = [];
 
-        for (const u of users) {
+        // 1. If explicit recipients provided from authenticated client, use directly
+        if (Array.isArray(recipients) && recipients.length > 0) {
+          studentList = recipients;
+        } else {
+          // 2. Otherwise try enrollments, then fallback to registered students
+          try {
+            const enrollments = await fetchEnrollmentsForCourse(courseId);
+            if (enrollments && enrollments.length > 0) {
+              const userProfiles = await Promise.all(
+                enrollments.map((e) => getUserProfile(e.userId))
+              );
+              studentList = userProfiles
+                .filter((u): u is NonNullable<typeof u> => Boolean(u?.email))
+                .map((u) => ({ name: u.name || "Student", email: u.email }));
+            }
+          } catch (err) {
+            console.warn("Could not query enrollments on server:", err);
+          }
+
+          if (studentList.length === 0) {
+            const allUsers = await fetchAllUsers();
+            studentList = allUsers
+              .filter((u) => Boolean(u.email) && u.role === "student")
+              .map((u) => ({ name: u.name || "Student", email: u.email }));
+          }
+        }
+
+        let sentCount = 0;
+        for (const u of studentList) {
           if (u?.email) {
-            await sendNewAssignmentEmail({
+            const ok = await sendNewAssignmentEmail({
               studentEmail: u.email,
               studentName: u.name || "Student",
               courseTitle: course.title,
@@ -82,9 +104,10 @@ export async function POST(request: Request) {
               description: description || "",
               dueDateFormatted,
             });
+            if (ok) sentCount++;
           }
         }
-        break;
+        return NextResponse.json({ success: true, event, sentCount });
       }
 
       // 3. Assignment Submission Received

@@ -106,3 +106,4 @@ export async function autoSaveEmailTemplate({
 export async function deleteSavedEmailTemplate(id: string): Promise<void> {
   await deleteDoc(emailTemplateDoc(id));
 }
+

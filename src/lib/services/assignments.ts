@@ -107,25 +107,92 @@ export async function createAssignment(
       )
     );
 
-    // Trigger automated lifecycle email to all enrolled students
+    // Trigger automated lifecycle email to all enrolled students (or active students)
     if (typeof window !== "undefined") {
-      fetch("/api/notifications/lifecycle", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          event: "new_assignment",
-          courseId: input.courseId,
-          assignmentTitle: input.title.trim(),
-          description: input.description.trim(),
-          dueDateMillis: input.dueDate.toMillis(),
-        }),
-      }).catch((err) => console.error("New assignment email trigger error:", err));
+      void dispatchAssignmentNotificationEmail({
+        courseId: input.courseId,
+        assignmentTitle: input.title.trim(),
+        description: input.description.trim(),
+        dueDateMillis: input.dueDate.toMillis(),
+      });
     }
   } catch (err) {
     console.error(err);
   }
 
   return ref.id;
+}
+
+/**
+ * Dispatches an automated assignment alert email to enrolled students
+ * (with automatic fallback to all registered students if no students are enrolled in the course yet).
+ */
+export async function dispatchAssignmentNotificationEmail({
+  courseId,
+  assignmentTitle,
+  description,
+  dueDateMillis,
+}: {
+  courseId: string;
+  assignmentTitle: string;
+  description?: string;
+  dueDateMillis?: number;
+}): Promise<{ success: boolean; sentCount?: number; error?: string }> {
+  try {
+    const { fetchEnrollmentsForCourse } = await import("@/lib/services/enrollments");
+    const { getUserProfile, fetchAllUsers } = await import("@/lib/services/users");
+
+    let targetRecipients: Array<{ uid: string; name: string; email: string }> = [];
+
+    try {
+      const enrollments = await fetchEnrollmentsForCourse(courseId);
+      if (enrollments && enrollments.length > 0) {
+        const userProfiles = await Promise.all(
+          enrollments.map((e) => getUserProfile(e.userId))
+        );
+        targetRecipients = userProfiles
+          .filter((u): u is NonNullable<typeof u> => Boolean(u && u.email))
+          .map((u) => ({ uid: u.uid, name: u.name || "Student", email: u.email }));
+      }
+    } catch (e) {
+      console.warn("Could not fetch course enrollments:", e);
+    }
+
+    // Fallback: alert all registered students
+    if (targetRecipients.length === 0) {
+      try {
+        const allUsers = await fetchAllUsers();
+        targetRecipients = allUsers
+          .filter((u) => Boolean(u.email) && u.role === "student")
+          .map((u) => ({ uid: u.uid, name: u.name || "Student", email: u.email }));
+      } catch (e) {
+        console.warn("Could not fetch platform users:", e);
+      }
+    }
+
+    const res = await fetch("/api/notifications/lifecycle", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "new_assignment",
+        courseId,
+        assignmentTitle,
+        description: description || "",
+        dueDateMillis,
+        recipients: targetRecipients,
+      }),
+    });
+
+    const data = await res.json();
+    return {
+      success: res.ok,
+      sentCount: data.sentCount || targetRecipients.length,
+      error: data.error,
+    };
+  } catch (err: any) {
+    console.error("Failed to dispatch assignment email:", err);
+    return { success: false, error: err.message };
+  }
 }
 
 /**

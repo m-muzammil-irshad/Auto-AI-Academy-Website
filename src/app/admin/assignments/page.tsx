@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { Mail, CheckCircle2, AlertCircle } from "lucide-react";
 import { Card, CardBody } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge, courseStatusVariant } from "@/components/ui/Badge";
@@ -16,6 +17,7 @@ import {
   createAssignment,
   fetchAllAssignments,
   updateAssignment,
+  dispatchAssignmentNotificationEmail,
   type AssignmentInput,
 } from "@/lib/services/assignments";
 import { deleteAssignmentCascade } from "@/lib/services/cascade";
@@ -295,6 +297,36 @@ function AssignmentRow({
   onEdit: () => void;
   onDelete: (() => void) | null;
 }) {
+  const [isSendingAlert, setIsSendingAlert] = useState(false);
+  const [alertNotice, setAlertNotice] = useState<string | null>(null);
+
+  const handleSendAlert = async () => {
+    if (!confirm(`Send "New Assignment Alert" email for "${assignment.title}" to students?`)) {
+      return;
+    }
+
+    setIsSendingAlert(true);
+    try {
+      const res = await dispatchAssignmentNotificationEmail({
+        courseId: assignment.courseId,
+        assignmentTitle: assignment.title,
+        description: assignment.description,
+        dueDateMillis: assignment.dueDate.toMillis(),
+      });
+
+      if (res.success) {
+        setAlertNotice(`Sent to ${res.sentCount ?? 1} students!`);
+        setTimeout(() => setAlertNotice(null), 5000);
+      } else {
+        alert("Could not send email alert: " + (res.error || "Please verify SMTP settings."));
+      }
+    } catch (err: any) {
+      alert("Failed to send alert: " + err.message);
+    } finally {
+      setIsSendingAlert(false);
+    }
+  };
+
   return (
     <motion.div variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}>
       <Card className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1 dark:hover:shadow-accent-500/5">
@@ -321,7 +353,27 @@ function AssignmentRow({
             )}
         </div>
 
-        <div className="flex shrink-0 flex-wrap gap-2">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleSendAlert}
+            disabled={isSendingAlert}
+            className={`rounded-full neu-btn text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              alertNotice
+                ? "bg-emerald-600 text-white dark:bg-emerald-600"
+                : "text-accent-600 dark:text-accent-400 hover:text-accent-700"
+            }`}
+            title="Dispatch email notification to students for this assignment"
+          >
+            {alertNotice ? (
+              <CheckCircle2 className="h-3.5 w-3.5" />
+            ) : (
+              <Mail className="h-3.5 w-3.5" />
+            )}
+            <span>{isSendingAlert ? "Sending..." : alertNotice || "Send Email Alert"}</span>
+          </Button>
+
           <Button variant="secondary" size="sm" onClick={onEdit} className="rounded-full neu-btn font-semibold">
             Edit
           </Button>
