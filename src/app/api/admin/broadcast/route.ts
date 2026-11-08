@@ -22,6 +22,7 @@ export async function POST(request: Request) {
       testEmail,
       filterLabel = "All Students",
       courseTitle = "",
+      config,
     } = await request.json();
 
     // 1. Verify caller has admin privileges
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
     // 2. Action: Test SMTP Connection
     if (action === "verify_smtp") {
       try {
-        await verifySmtpConnection();
+        await verifySmtpConnection(config);
         return NextResponse.json({ success: true, message: "SMTP connection verified successfully!" });
       } catch (err: any) {
         return NextResponse.json(
@@ -73,6 +74,7 @@ export async function POST(request: Request) {
           to: testEmail,
           subject,
           body,
+          config,
         });
 
         return NextResponse.json({

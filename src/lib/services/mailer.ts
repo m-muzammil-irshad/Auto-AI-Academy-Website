@@ -46,6 +46,39 @@ export function getActiveSmtpConfig(override?: SmtpConfig): SmtpConfig {
   return { host, port, user, pass, fromName, fromEmail };
 }
 
+/**
+ * Resolves SMTP configuration asynchronously:
+ * 1. override (if provided with credentials)
+ * 2. process.env (SMTP_USER, SMTP_PASS, etc.)
+ * 3. Firestore document `admin_settings/smtp` (if configured by admin in Settings UI)
+ */
+export async function resolveSmtpConfig(override?: SmtpConfig): Promise<SmtpConfig> {
+  const syncConfig = getActiveSmtpConfig(override);
+  if (syncConfig.user && syncConfig.pass) {
+    return syncConfig;
+  }
+
+  // Fallback to Firestore admin_settings/smtp (allows web-based configuration on deployed Vercel)
+  try {
+    const { fetchSmtpSettings } = await import("@/lib/services/settings");
+    const dbSettings = await fetchSmtpSettings();
+    if (dbSettings.user && dbSettings.pass) {
+      return {
+        host: dbSettings.host || syncConfig.host,
+        port: dbSettings.port || syncConfig.port,
+        user: dbSettings.user,
+        pass: dbSettings.pass,
+        fromName: dbSettings.fromName || syncConfig.fromName,
+        fromEmail: dbSettings.fromEmail || dbSettings.user || syncConfig.fromEmail,
+      };
+    }
+  } catch (err) {
+    console.warn("Could not read SMTP settings from Firestore:", err);
+  }
+
+  return syncConfig;
+}
+
 let defaultTransporter: ReturnType<typeof nodemailer.createTransport> | null = null;
 let lastTransporterKey = "";
 
@@ -94,7 +127,8 @@ export function createSmtpTransporter(override?: SmtpConfig) {
  * Verifies SMTP connection.
  */
 export async function verifySmtpConnection(override?: SmtpConfig): Promise<boolean> {
-  const transporter = createSmtpTransporter(override);
+  const config = await resolveSmtpConfig(override);
+  const transporter = createSmtpTransporter(config);
   await transporter.verify();
   return true;
 }
@@ -116,8 +150,8 @@ export async function sendTestEmail({
   body: string;
   config?: SmtpConfig;
 }) {
-  const transporter = createSmtpTransporter(config);
-  const activeConfig = getActiveSmtpConfig(config);
+  const activeConfig = await resolveSmtpConfig(config);
+  const transporter = createSmtpTransporter(activeConfig);
 
   const cleanSubject = subject.startsWith("[") ? subject : `[Auto AI Academy] ${subject}`;
 
@@ -156,8 +190,8 @@ export async function sendBroadcastEmails({
   courseTitle = "",
   config,
 }: SendBroadcastOptions): Promise<BroadcastResult> {
-  const transporter = createSmtpTransporter(config);
-  const activeConfig = getActiveSmtpConfig(config);
+  const activeConfig = await resolveSmtpConfig(config);
+  const transporter = createSmtpTransporter(activeConfig);
 
   let sent = 0;
   let failed = 0;

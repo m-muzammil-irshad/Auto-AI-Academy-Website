@@ -169,6 +169,15 @@ service cloud.firestore {
     }
 
     // ---------------------------------------------------------------------
+    // admin_settings/{docId}
+    //   - Sensitive platform settings (SMTP credentials, etc.)
+    //   - Admin-only read and write. Completely private from public/students.
+    // ---------------------------------------------------------------------
+    match /admin_settings/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // ---------------------------------------------------------------------
     // blogPosts/{postId}
     //   - Public read of published posts only; drafts are admin-only.
     //     Public queries must therefore filter on status == "published".

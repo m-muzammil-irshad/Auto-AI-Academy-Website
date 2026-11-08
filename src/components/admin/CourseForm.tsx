@@ -174,11 +174,12 @@ export function CourseForm({ course, onCancel, onSubmit }: CourseFormProps) {
       />
 
       <Input
-        label="YouTube channel / playlist link"
+        label="YouTube Link (Course Video, Playlist, or Channel)"
         type="url"
         value={youtubeChannelUrl}
         onChange={(e) => setYoutubeChannelUrl(e.target.value)}
-        placeholder="https://youtube.com/..."
+        placeholder="https://www.youtube.com/watch?v=... or https://youtube.com/@AutoAIAcademy"
+        hint="Paste a specific course video URL, a playlist URL, or your official YouTube channel link."
         required
         disabled={loading}
       />

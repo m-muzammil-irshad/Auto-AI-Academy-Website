@@ -44,3 +44,52 @@ export async function updateWhatsAppNumber(
     { merge: true }
   );
 }
+
+export interface SmtpSettings {
+  host: string;
+  port: number;
+  user: string;
+  pass: string;
+  fromName: string;
+  fromEmail: string;
+  updatedAt?: unknown;
+}
+
+export const DEFAULT_SMTP_SETTINGS: SmtpSettings = {
+  host: "smtp.gmail.com",
+  port: 465,
+  user: "",
+  pass: "",
+  fromName: "Auto AI Academy",
+  fromEmail: "",
+};
+
+function smtpSettingsRef() {
+  return doc(db, "admin_settings", "smtp");
+}
+
+export async function fetchSmtpSettings(): Promise<SmtpSettings> {
+  const snap = await getDoc(smtpSettingsRef());
+  if (!snap.exists()) return DEFAULT_SMTP_SETTINGS;
+  const data = snap.data() as Partial<SmtpSettings>;
+  return {
+    host: typeof data.host === "string" && data.host.trim() ? data.host.trim() : DEFAULT_SMTP_SETTINGS.host,
+    port: Number(data.port) || DEFAULT_SMTP_SETTINGS.port,
+    user: typeof data.user === "string" ? data.user.trim() : "",
+    pass: typeof data.pass === "string" ? data.pass.trim() : "",
+    fromName: typeof data.fromName === "string" && data.fromName.trim() ? data.fromName.trim() : DEFAULT_SMTP_SETTINGS.fromName,
+    fromEmail: typeof data.fromEmail === "string" ? data.fromEmail.trim() : "",
+    updatedAt: data.updatedAt,
+  };
+}
+
+export async function updateSmtpSettings(settings: Partial<SmtpSettings>): Promise<void> {
+  await setDoc(
+    smtpSettingsRef(),
+    {
+      ...settings,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+}

@@ -1,4 +1,4 @@
-import { createSmtpTransporter, getActiveSmtpConfig } from "@/lib/services/mailer";
+import { createSmtpTransporter, resolveSmtpConfig } from "@/lib/services/mailer";
 import { buildEmailTemplate, htmlToPlainText } from "@/lib/services/emailTemplates";
 import { SITE_NAME } from "@/lib/constants";
 import { SITE_URL } from "@/lib/seo";
@@ -32,7 +32,7 @@ async function safeSendMail({
   let errorMsg: string | undefined;
 
   try {
-    const config = getActiveSmtpConfig();
+    const config = await resolveSmtpConfig();
     if (!config.user || !config.pass) {
       console.warn("SMTP not configured. Skipping lifecycle email to:", to);
       return false;

@@ -1,9 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, ChevronLeft, ChevronRight, Play, RotateCcw, ExternalLink } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  RotateCcw,
+  ExternalLink,
+  Sparkles,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { extractYouTubeVideoId, extractYouTubePlaylistId, formatVideoTime } from "@/lib/utils/youtube";
+import {
+  resolvePlayableMedia,
+  formatVideoTime,
+  type PlayableMedia,
+} from "@/lib/utils/youtube";
 import type { Lesson } from "@/lib/types";
 
 // Declare YouTube global for TypeScript
@@ -16,6 +28,7 @@ declare global {
 
 interface CoursePlayerProps {
   lesson: Lesson;
+  courseTitle?: string;
   initialTimestampSeconds?: number;
   isCompleted: boolean;
   hasNext: boolean;
@@ -29,6 +42,7 @@ interface CoursePlayerProps {
 
 export function CoursePlayer({
   lesson,
+  courseTitle = "",
   initialTimestampSeconds = 0,
   isCompleted,
   hasNext,
@@ -49,8 +63,12 @@ export function CoursePlayer({
   const [apiReady, setApiReady] = useState(false);
   const [useFallbackIframe, setUseFallbackIframe] = useState(false);
 
-  const videoId = extractYouTubeVideoId(lesson.youtubeUrl);
-  const playlistId = !videoId ? extractYouTubePlaylistId(lesson.youtubeUrl) : null;
+  // Guaranteed valid media resolution — NEVER null or error
+  const media: PlayableMedia = resolvePlayableMedia(
+    lesson.youtubeUrl,
+    courseTitle,
+    lesson.title
+  );
 
   const onTimeUpdateRef = useRef(onTimeUpdate);
   onTimeUpdateRef.current = onTimeUpdate;
@@ -67,7 +85,7 @@ export function CoursePlayer({
     }
 
     const timer = setTimeout(() => {
-      // If after 2.5s window.YT is not ready (e.g. adblocker or slow network), fallback to pure iframe
+      // If after 2.5s window.YT is not ready (e.g. adblocker or slow connection), fallback to pure iframe
       if (!window.YT || !window.YT.Player) {
         setUseFallbackIframe(true);
       }
@@ -88,9 +106,10 @@ export function CoursePlayer({
     return () => clearTimeout(timer);
   }, []);
 
-  // Initialize or update YouTube Player
+  // Initialize or update YouTube Player when media is a single video
   useEffect(() => {
-    if (!apiReady || !videoId || !containerRef.current) return;
+    if (media.type !== "video" || !media.videoId) return;
+    if (!apiReady || useFallbackIframe || !containerRef.current) return;
 
     // Clear previous timer
     if (timerRef.current) {
@@ -101,14 +120,14 @@ export function CoursePlayer({
     const playerId = `yt-player-${lesson.id}`;
     let innerDiv = document.getElementById(playerId);
     if (!innerDiv) {
-      containerRef.current.innerHTML = `<div id="${playerId}" class="w-full h-full rounded-2xl"></div>`;
+      containerRef.current.innerHTML = `<div id="${playerId}" class="w-full h-full rounded-xl"></div>`;
     }
 
     try {
       playerRef.current = new window.YT.Player(playerId, {
-        videoId: videoId,
+        videoId: media.videoId,
         playerVars: {
-          autoplay: 0, // Manual play only to ensure YouTube counts views
+          autoplay: 0,
           rel: 0,
           modestbranding: 1,
           playsinline: 1,
@@ -159,7 +178,8 @@ export function CoursePlayer({
         },
       });
     } catch (err) {
-      console.error("YouTube Player error:", err);
+      console.warn("YouTube Player initialization warning, falling back to iframe:", err);
+      setUseFallbackIframe(true);
     }
 
     return () => {
@@ -174,67 +194,42 @@ export function CoursePlayer({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiReady, videoId, lesson.id]);
+  }, [apiReady, media.videoId, media.type, lesson.id, useFallbackIframe]);
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Video Container */}
+      {/* Video Container — Always plays smoothly */}
       <div className="relative aspect-video w-full rounded-xl border border-slate-200/80 dark:border-slate-800 overflow-hidden bg-slate-950 shadow-sm">
-        {videoId ? (
-          useFallbackIframe ? (
-            <iframe
-              key={`fallback-${videoId}`}
-              src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1&playsinline=1`}
-              title={lesson.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              className="w-full h-full border-0"
-            />
-          ) : (
-            <div ref={containerRef} className="w-full h-full overflow-hidden relative">
-              {!apiReady && (
-                <div className="flex flex-col items-center justify-center w-full h-full text-slate-400 gap-3">
-                  <div className="h-7 w-7 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
-                  <p className="text-xs font-medium">Loading player…</p>
-                </div>
-              )}
-            </div>
-          )
-        ) : playlistId ? (
+        {media.type === "playlist" ? (
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}&rel=0&modestbranding=1`}
+            key={`pl-${media.playlistId}`}
+            src={media.src}
+            title={lesson.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            className="w-full h-full border-0"
+          />
+        ) : useFallbackIframe ? (
+          <iframe
+            key={`fallback-${media.videoId}`}
+            src={media.src}
             title={lesson.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
             className="w-full h-full border-0"
           />
         ) : (
-          <div className="relative flex flex-col items-center justify-center w-full h-full p-6 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-600/10 border border-red-500/20 text-red-500 mb-3">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6" aria-hidden="true">
-                <path d="M23.5 6.19a3.02 3.02 0 00-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 002.12-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z" />
-              </svg>
-            </div>
-            <h3 className="text-base sm:text-lg font-medium text-slate-100 max-w-lg mb-1.5">
-              {lesson.title || "Course Lectures"}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-400 max-w-md mb-5 leading-relaxed">
-              Lectures for this course are hosted on our official YouTube channel. Watch the lessons on YouTube and complete your assignments below.
-            </p>
-            <a
-              href={lesson.youtubeUrl || "https://youtube.com/@AutoAIAcademy"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-xs sm:text-sm font-medium text-white hover:bg-red-700 transition-colors shadow-sm"
-            >
-              <Play className="h-3.5 w-3.5 fill-current" />
-              <span>Watch lectures on YouTube</span>
-              <ExternalLink className="h-3.5 w-3.5 opacity-80" />
-            </a>
+          <div ref={containerRef} className="w-full h-full overflow-hidden relative">
+            {!apiReady && (
+              <div className="flex flex-col items-center justify-center w-full h-full text-slate-400 gap-3">
+                <div className="h-7 w-7 animate-spin rounded-full border-2 border-accent-500 border-t-transparent" />
+                <p className="text-xs font-medium">Loading video player…</p>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Resumed notice banner */}
+        {/* Resumed timestamp notice */}
         {resumedNotice && (
           <div className="absolute top-3 left-3 z-20 flex items-center gap-2 bg-slate-900/95 text-white backdrop-blur-md px-3 py-1.5 rounded-lg text-xs font-medium shadow-md border border-white/10 animate-fade-in">
             <RotateCcw className="h-3.5 w-3.5 text-accent-400" />
@@ -242,6 +237,27 @@ export function CoursePlayer({
           </div>
         )}
       </div>
+
+      {/* Fallback channel hint banner if admin provided a channel link instead of a specific video ID */}
+      {media.isFallback && (
+        <div className="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-lg border border-amber-500/20 bg-amber-500/5 text-amber-900 dark:text-amber-200 text-xs">
+          <div className="flex items-center gap-2 truncate">
+            <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
+            <span className="truncate">
+              Featuring foundational course lecture • You can also watch additional episodes on our YouTube channel.
+            </span>
+          </div>
+          <a
+            href={lesson.youtubeUrl || "https://youtube.com/@AutoAIAcademy"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 font-medium text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1"
+          >
+            <span>Open Channel</span>
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        </div>
+      )}
 
       {/* Action Controls & Navigation Bar */}
       <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-3 flex flex-wrap items-center justify-between gap-3">
@@ -251,10 +267,12 @@ export function CoursePlayer({
           size="sm"
           disabled={!hasPrevious}
           onClick={onPreviousLesson}
-          className="rounded-lg px-3.5 font-medium flex items-center gap-1.5"
+          className="rounded-lg px-3.5 font-medium flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
+          title={hasPrevious ? "Previous lesson" : "First lesson"}
         >
           <ChevronLeft className="h-4 w-4" />
-          <span className="hidden sm:inline">Previous</span>
+          <span className="hidden sm:inline">Previous Lesson</span>
+          <span className="sm:hidden">Prev</span>
         </Button>
 
         {/* Center: Mark Complete / Status */}
@@ -263,7 +281,7 @@ export function CoursePlayer({
             variant={isCompleted ? "primary" : "secondary"}
             size="sm"
             onClick={onToggleComplete}
-            className={`rounded-lg px-4 font-medium flex items-center gap-2 transition-colors ${
+            className={`rounded-lg px-4 font-medium flex items-center gap-2 transition-colors cursor-pointer ${
               isCompleted
                 ? "bg-emerald-600 hover:bg-emerald-700 text-white"
                 : "border border-slate-200/80 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800"
@@ -281,9 +299,10 @@ export function CoursePlayer({
           size="sm"
           disabled={!hasNext}
           onClick={onNextLesson}
-          className="rounded-lg px-4 font-medium flex items-center gap-1.5"
+          className="rounded-lg px-4 font-medium flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
+          title={hasNext ? "Next lesson" : "Last lesson in course"}
         >
-          <span>{hasNext ? "Next" : "Last lesson"}</span>
+          <span>{hasNext ? "Next Lesson" : "Last Lesson"}</span>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

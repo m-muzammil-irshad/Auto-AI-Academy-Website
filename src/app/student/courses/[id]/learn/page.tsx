@@ -102,12 +102,35 @@ export default function CourseLearnPage() {
     };
   }, [courseId, user?.uid]);
 
-  // Normalized Lessons list (ensure at least 1 lesson exists even if course only has youtubeChannelUrl)
+  // Normalized Lessons list (ensures rich multi-lesson curriculum even if course has only outcomes or youtubeChannelUrl)
   const lessons: Lesson[] = useMemo(() => {
     if (!course) return [];
     if (course.lessons && course.lessons.length > 0) {
       return course.lessons;
     }
+
+    // If course has outcomes, generate structured learning modules so navigation and progress tracking work out of the box
+    if (course.outcomes && course.outcomes.length > 0) {
+      return [
+        {
+          id: "lesson-intro",
+          title: `${course.title} - Foundation & Overview`,
+          youtubeUrl: course.youtubeChannelUrl,
+          duration: course.duration ? `${course.duration} Module 1` : "Course Intro",
+          description: course.description || "Foundational concepts, platform architecture, and roadmap.",
+          order: 1,
+        },
+        ...course.outcomes.map((outcome, idx) => ({
+          id: `lesson-outcome-${idx + 1}`,
+          title: `Lesson ${idx + 2}: ${outcome}`,
+          youtubeUrl: course.youtubeChannelUrl,
+          duration: "25 mins",
+          description: `Practical hands-on implementation and exercises for: ${outcome}`,
+          order: idx + 2,
+        })),
+      ];
+    }
+
     // Fallback default lesson from course youtubeChannelUrl
     return [
       {
@@ -326,6 +349,7 @@ export default function CourseLearnPage() {
             {activeLesson ? (
               <CoursePlayer
                 lesson={activeLesson}
+                courseTitle={course.title}
                 initialTimestampSeconds={initialSeconds}
                 isCompleted={completedIds.includes(activeLesson.id)}
                 hasNext={hasNext}
