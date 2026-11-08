@@ -58,10 +58,10 @@ export interface SmtpSettings {
 export const DEFAULT_SMTP_SETTINGS: SmtpSettings = {
   host: "smtp.gmail.com",
   port: 465,
-  user: "",
-  pass: "",
+  user: "autoaiacademy261@gmail.com",
+  pass: "bfsqxvsxxhkxnvev",
   fromName: "Auto AI Academy",
-  fromEmail: "",
+  fromEmail: "autoaiacademy261@gmail.com",
 };
 
 function smtpSettingsRef() {
@@ -75,10 +75,10 @@ export async function fetchSmtpSettings(): Promise<SmtpSettings> {
   return {
     host: typeof data.host === "string" && data.host.trim() ? data.host.trim() : DEFAULT_SMTP_SETTINGS.host,
     port: Number(data.port) || DEFAULT_SMTP_SETTINGS.port,
-    user: typeof data.user === "string" ? data.user.trim() : "",
-    pass: typeof data.pass === "string" ? data.pass.trim() : "",
+    user: typeof data.user === "string" && data.user.trim() ? data.user.trim() : DEFAULT_SMTP_SETTINGS.user,
+    pass: typeof data.pass === "string" && data.pass.trim() ? data.pass.trim() : DEFAULT_SMTP_SETTINGS.pass,
     fromName: typeof data.fromName === "string" && data.fromName.trim() ? data.fromName.trim() : DEFAULT_SMTP_SETTINGS.fromName,
-    fromEmail: typeof data.fromEmail === "string" ? data.fromEmail.trim() : "",
+    fromEmail: typeof data.fromEmail === "string" && data.fromEmail.trim() ? data.fromEmail.trim() : DEFAULT_SMTP_SETTINGS.fromEmail,
     updatedAt: data.updatedAt,
   };
 }
