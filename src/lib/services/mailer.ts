@@ -37,12 +37,12 @@ export interface BroadcastResult {
  * Resolves the active SMTP configuration from parameters, environment, or defaults.
  */
 export function getActiveSmtpConfig(override?: SmtpConfig): SmtpConfig {
-  const host = override?.host || process.env.SMTP_HOST || DEFAULT_SMTP_SETTINGS.host;
-  const port = Number(override?.port || process.env.SMTP_PORT || DEFAULT_SMTP_SETTINGS.port);
-  const user = override?.user || process.env.SMTP_USER || DEFAULT_SMTP_SETTINGS.user;
-  const pass = override?.pass || process.env.SMTP_PASS || DEFAULT_SMTP_SETTINGS.pass;
-  const fromName = override?.fromName || process.env.SMTP_FROM_NAME || DEFAULT_SMTP_SETTINGS.fromName || SITE_NAME;
-  const fromEmail = override?.fromEmail || process.env.SMTP_FROM_EMAIL || DEFAULT_SMTP_SETTINGS.fromEmail || user;
+  const host = override?.host || process.env.SMTP_HOST || "smtp.gmail.com";
+  const port = Number(override?.port || process.env.SMTP_PORT || 465);
+  const user = override?.user || process.env.SMTP_USER || "";
+  const pass = override?.pass || process.env.SMTP_PASS || "";
+  const fromName = override?.fromName || process.env.SMTP_FROM_NAME || SITE_NAME;
+  const fromEmail = override?.fromEmail || process.env.SMTP_FROM_EMAIL || user;
 
   return { host, port, user, pass, fromName, fromEmail };
 }

@@ -58,10 +58,10 @@ export interface SmtpSettings {
 export const DEFAULT_SMTP_SETTINGS: SmtpSettings = {
   host: "smtp.gmail.com",
   port: 465,
-  user: "autoaiacademy261@gmail.com",
-  pass: "bfsqxvsxxhkxnvev",
+  user: "",
+  pass: "",
   fromName: "Auto AI Academy",
-  fromEmail: "autoaiacademy261@gmail.com",
+  fromEmail: "",
 };
 
 function smtpSettingsRef() {

@@ -219,10 +219,10 @@ function SmtpSettingsCard() {
 
   const [host, setHost] = useState("smtp.gmail.com");
   const [port, setPort] = useState("465");
-  const [user, setUser] = useState("autoaiacademy261@gmail.com");
+  const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const [fromName, setFromName] = useState("Auto AI Academy");
-  const [fromEmail, setFromEmail] = useState("autoaiacademy261@gmail.com");
+  const [fromEmail, setFromEmail] = useState("");
 
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [connectionResult, setConnectionResult] = useState<{
@@ -485,7 +485,7 @@ function SmtpSettingsCard() {
                     type={showPassword ? "text" : "password"}
                     value={pass}
                     onChange={(e) => setPass(e.target.value)}
-                    placeholder="bfsqxvsxxhkxnvev"
+                    placeholder="16-character app password (e.g. abcd efgh ijkl mnop)"
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 pr-10 text-xs text-slate-900 placeholder:text-slate-400 focus:border-accent-500 focus:outline-none focus:ring-1 focus:ring-accent-500 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                   />
                   <button
@@ -612,7 +612,7 @@ function SmtpSettingsCard() {
                   Create an app name like <strong>&quot;Auto AI Academy&quot;</strong> and click Create.
                 </li>
                 <li>
-                  Copy the 16-character password (e.g. <code>bfsqxvsxxhkxnvev</code>), paste it into{" "}
+                  Copy the 16-character generated password, paste it into{" "}
                   <strong>SMTP_PASS</strong> above, and click <strong>Save Credentials</strong>.
                 </li>
               </ol>
