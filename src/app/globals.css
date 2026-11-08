@@ -271,9 +271,54 @@
   margin-bottom: 1.5em;
 }
 
+/* Table styling inside articles */
+.article table {
+  @apply my-6 w-full border-collapse overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 text-sm;
+  display: table;
+}
+.article thead {
+  @apply bg-slate-100/70 dark:bg-slate-800/60 text-slate-900 dark:text-white font-medium border-b border-slate-200 dark:border-slate-800;
+}
+.article th {
+  @apply border-b border-slate-200 dark:border-slate-800 px-4 py-3 font-semibold text-slate-900 dark:text-white text-left text-xs sm:text-sm tracking-wide;
+}
+.article td {
+  @apply border-b border-slate-100 dark:border-slate-800/60 px-4 py-2.5 text-slate-700 dark:text-slate-300 text-left text-xs sm:text-sm;
+}
+.article tr:last-child td {
+  @apply border-b-0;
+}
+.article tbody tr:nth-child(even) {
+  @apply bg-slate-50/50 dark:bg-slate-900/30;
+}
+.article tbody tr:hover {
+  @apply bg-slate-100/50 dark:bg-slate-800/40 transition-colors;
+}
+
+/* Mobile responsive horizontal scroll for tables */
+@media (max-width: 640px) {
+  .article table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* Admin editor */
 .article.ProseMirror {
   @apply min-h-[28rem] outline-none ring-0;
+}
+.article.ProseMirror table {
+  @apply my-4 w-full border-collapse rounded-xl border border-slate-200 dark:border-slate-800 text-sm overflow-hidden;
+}
+.article.ProseMirror th {
+  @apply border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/80 px-3 py-2 text-left font-semibold text-slate-900 dark:text-white relative;
+}
+.article.ProseMirror td {
+  @apply border border-slate-200/80 dark:border-slate-800 px-3 py-2 text-slate-700 dark:text-slate-300 relative min-w-[5rem];
+}
+.article.ProseMirror .selectedCell:after {
+  @apply bg-indigo-500/15 pointer-events-none absolute inset-0 content-[''] z-10;
 }
 .article.ProseMirror .article-btn-wrap {
   @apply my-4 select-none;

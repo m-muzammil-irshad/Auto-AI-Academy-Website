@@ -6,9 +6,14 @@ import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
 import {
   Bold,
   Code2,
+  Columns,
   ImageIcon,
   Italic,
   Lightbulb,
@@ -17,8 +22,12 @@ import {
   ListChecks,
   ListOrdered,
   MousePointerClick,
+  Plus,
   Quote,
   Redo2,
+  Rows,
+  Table as TableIcon,
+  Trash2,
   TriangleAlert,
   Undo2,
   Unlink,
@@ -207,6 +216,8 @@ function Toolbar({ editor }: { editor: Editor }) {
     setPanel(null);
   };
 
+  const isInsideTable = editor.isActive("table");
+
   const inputClass =
     "h-8 min-w-0 flex-1 rounded-lg border border-slate-200/80 bg-white px-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-slate-600";
 
@@ -258,6 +269,19 @@ function Toolbar({ editor }: { editor: Editor }) {
         <ToolbarButton label="Insert image" active={panel === "image"} onClick={() => openPanel("image")}>
           <ImageIcon className="h-4 w-4" />
         </ToolbarButton>
+        {/* Table insert button */}
+        <ToolbarButton
+          label={isInsideTable ? "Table active" : "Insert table (3×3)"}
+          active={isInsideTable}
+          onClick={() => {
+            if (!isInsideTable) {
+              editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+            }
+          }}
+        >
+          <TableIcon className="h-4 w-4" />
+        </ToolbarButton>
+        <Divider />
         <ToolbarButton label="Tip box" active={editor.isActive("callout", { variant: "tip" })} onClick={() => editor.chain().focus().toggleWrap("callout", { variant: "tip" }).run()}>
           <Lightbulb className="h-4 w-4" />
         </ToolbarButton>
@@ -275,6 +299,109 @@ function Toolbar({ editor }: { editor: Editor }) {
           <Redo2 className="h-4 w-4" />
         </ToolbarButton>
       </div>
+
+      {/* Contextual Table Editing Bar (visible when inside a table) */}
+      {isInsideTable && (
+        <div className="flex flex-wrap items-center gap-1.5 border-t border-slate-200/80 dark:border-slate-800 px-3 py-1.5 bg-slate-50/80 dark:bg-slate-900/70 text-xs text-slate-700 dark:text-slate-300">
+          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mr-1 flex items-center gap-1">
+            <TableIcon className="h-3.5 w-3.5 text-accent-500" />
+            Table:
+          </span>
+
+          {/* Row actions */}
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => editor.chain().focus().addRowAfter().run()}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium cursor-pointer"
+            title="Add row below (or press Tab in last cell)"
+          >
+            <Plus className="h-3 w-3 text-emerald-500" />
+            Row Below
+          </button>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => editor.chain().focus().addRowBefore().run()}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium cursor-pointer"
+            title="Add row above"
+          >
+            <Plus className="h-3 w-3 text-emerald-500" />
+            Row Above
+          </button>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => editor.chain().focus().deleteRow().run()}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 dark:hover:text-red-400 text-xs font-medium cursor-pointer"
+            title="Delete current row"
+          >
+            <Trash2 className="h-3 w-3 text-red-500" />
+            Delete Row
+          </button>
+
+          <span className="mx-1 h-3.5 w-px bg-slate-200 dark:bg-slate-700" />
+
+          {/* Column actions */}
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => editor.chain().focus().addColumnAfter().run()}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium cursor-pointer"
+            title="Add column right"
+          >
+            <Plus className="h-3 w-3 text-emerald-500" />
+            Column Right
+          </button>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => editor.chain().focus().addColumnBefore().run()}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium cursor-pointer"
+            title="Add column left"
+          >
+            <Plus className="h-3 w-3 text-emerald-500" />
+            Column Left
+          </button>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => editor.chain().focus().deleteColumn().run()}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 dark:hover:text-red-400 text-xs font-medium cursor-pointer"
+            title="Delete current column"
+          >
+            <Trash2 className="h-3 w-3 text-red-500" />
+            Delete Column
+          </button>
+
+          <span className="mx-1 h-3.5 w-px bg-slate-200 dark:bg-slate-700" />
+
+          {/* Header toggle & Delete entire table */}
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => editor.chain().focus().toggleHeaderRow().run()}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium cursor-pointer"
+            title="Toggle top row as table header"
+          >
+            Header Row
+          </button>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => editor.chain().focus().deleteTable().run()}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-red-200 bg-red-50/60 text-red-600 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400 text-xs font-medium cursor-pointer"
+            title="Delete entire table"
+          >
+            <Trash2 className="h-3 w-3" />
+            Delete Table
+          </button>
+
+          <span className="hidden sm:inline-block text-[11px] text-slate-400 dark:text-slate-500 ml-auto">
+            ⌨️ Press Tab in last cell for new row
+          </span>
+        </div>
+      )}
 
       {panel && (
         <form onSubmit={submitPanel} className="flex flex-wrap items-center gap-2 border-t border-slate-200/80 dark:border-slate-800 p-2.5">
@@ -299,7 +426,7 @@ function Toolbar({ editor }: { editor: Editor }) {
                 required
                 className={inputClass}
               />
-              <button type="submit" className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white">
+              <button type="submit" className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white cursor-pointer">
                 Insert button
               </button>
             </>
@@ -324,12 +451,12 @@ function Toolbar({ editor }: { editor: Editor }) {
                   className={inputClass}
                 />
               )}
-              <button type="submit" className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white">
+              <button type="submit" className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white cursor-pointer">
                 {panel === "link" ? "Apply link" : "Insert image"}
               </button>
             </>
           )}
-          <button type="button" onClick={() => setPanel(null)} className="h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800">
+          <button type="button" onClick={() => setPanel(null)} className="h-8 rounded-lg border border-slate-200/80 bg-white px-3 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer">
             Cancel
           </button>
         </form>
@@ -346,7 +473,7 @@ export interface RichTextEditorProps {
 
 /**
  * Article editor. The writing area uses the same `.article` styles as the
- * public blog page, so headings, text and images look the way readers will see them.
+ * public blog page, so headings, text, tables and images look the way readers will see them.
  */
 export function RichTextEditor({ initialContent, onChange }: RichTextEditorProps) {
   const editor = useEditor({
@@ -362,6 +489,15 @@ export function RichTextEditor({ initialContent, onChange }: RichTextEditorProps
       }),
       Image.configure({ HTMLAttributes: { loading: "lazy" } }),
       Placeholder.configure({ placeholder: "Start writing your article…" }),
+      Table.configure({
+        resizable: true,
+        HTMLAttributes: {
+          class: "article-table",
+        },
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
       Callout,
       Takeaways,
       CtaButton,
