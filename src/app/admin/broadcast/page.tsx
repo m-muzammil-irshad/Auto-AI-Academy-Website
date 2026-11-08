@@ -70,7 +70,7 @@ interface PastBroadcast {
 const PRESET_TEMPLATES = [
   {
     label: "🚀 New Course Announcement",
-    subject: "[Auto AI Academy] New Course Announcement: Practical Curriculum",
+    subject: "New Course Announcement: Practical Curriculum",
     body: `We are pleased to introduce a brand new practical course on Auto AI Academy!
 
 Whether you want to build autonomous AI workflows, master Python programming, or automate your business leads, this curriculum is designed for 100% hands-on results.
@@ -84,7 +84,7 @@ Visit your student portal to enroll and begin your first module today.`,
   },
   {
     label: "📝 Assignment Deadline Reminder",
-    subject: "[Auto AI Academy] Assignment Reminder: Submission Deadline Approaching for {{courseTitle}}",
+    subject: "Assignment Reminder: Submission Deadline Approaching for {{courseTitle}}",
     body: `This is a reminder regarding your active assignment for {{courseTitle}}.
 
 Submitting your assignments on time ensures full timeliness marks, helps climb the global Leaderboard, and fulfills the criteria for your official QR-verified Certificate.
@@ -98,7 +98,7 @@ If you have questions, our AI Study Tutor is available on your dashboard anytime
   },
   {
     label: "⭐ Weekly Study & Motivation Check-in",
-    subject: "[Auto AI Academy] Weekly Academic Check-in: Consistency in Practice",
+    subject: "Weekly Academic Check-in: Consistency in Practice",
     body: `Consistency is the secret to mastering artificial intelligence, programming, and automation.
 
 Have you worked through this week's video modules? Make sure to write and run code regularly, experiment with scripts, and review lecture notes.
@@ -109,7 +109,7 @@ Keep up the great work and continued progress!`,
   },
   {
     label: "🎓 Certificate Criteria Update",
-    subject: "[Auto AI Academy] Academic Notice: Verified Certificate Criteria",
+    subject: "Academic Notice: Verified Certificate Criteria",
     body: `Here is an important update regarding the issuance of verified course credentials at Auto AI Academy.
 
 Criteria to earn your official certificate:
@@ -141,7 +141,7 @@ const AUTOMATED_FLOWS: AutomatedFlow[] = [
     triggerType: "Instant (Event)",
     triggerDescription: "Triggered instantly when a student clicks 'Enroll Now' on any course.",
     targetAudience: "The newly enrolled student",
-    sampleSubject: "[Auto AI Academy] Welcome to [Course Title] — Getting Started",
+    sampleSubject: "Welcome to [Course Title] — Getting Started",
     keyFeatures: [
       "Congratulates student & confirms enrollment",
       "Explains practical assignments, star grading & certificate policy",
@@ -156,7 +156,7 @@ const AUTOMATED_FLOWS: AutomatedFlow[] = [
     triggerType: "Scheduled (Cron)",
     triggerDescription: "Dispatched automatically when an account is 48 hours old with 0 course enrollments.",
     targetAudience: "Students with 0 enrollments (deduplicated via logs)",
-    sampleSubject: "[Auto AI Academy] Continue Your Learning: Explore Available Courses",
+    sampleSubject: "Continue Your Learning: Explore Available Courses",
     keyFeatures: [
       "Friendly motivational push to take their first step",
       "Features top 3 courses (Agentic AI, Python Automations, Lead Gen)",
@@ -171,7 +171,7 @@ const AUTOMATED_FLOWS: AutomatedFlow[] = [
     triggerType: "Scheduled (Cron)",
     triggerDescription: "Sent when an assignment deadline passed within the last 24h with no submission.",
     targetAudience: "Enrolled students who missed the deadline",
-    sampleSubject: "[Auto AI Academy] Course Update: [Assignment Title] in [Course Title]",
+    sampleSubject: "Course Update: [Assignment Title] in [Course Title]",
     keyFeatures: [
       "Compassionate, non-judgmental encouragement",
       "Emphasizes consistency over perfection",
@@ -188,7 +188,7 @@ const AUTOMATED_FLOWS: AutomatedFlow[] = [
     triggerType: "Admin Action",
     triggerDescription: "Sent the instant faculty publishes a new assignment for any course.",
     targetAudience: "All students enrolled in that specific course",
-    sampleSubject: "[Auto AI Academy] New Assignment Posted: [Title] ([Course Title])",
+    sampleSubject: "New Assignment Posted: [Title] ([Course Title])",
     keyFeatures: [
       "Displays assignment title, topic description & due date",
       "Clearly states grading criteria & star reward (★)",
@@ -203,7 +203,7 @@ const AUTOMATED_FLOWS: AutomatedFlow[] = [
     triggerType: "Scheduled (Cron)",
     triggerDescription: "Dispatched automatically 24 hours before an assignment deadline is reached.",
     targetAudience: "Enrolled students who have not yet submitted (deduplicated)",
-    sampleSubject: "[Auto AI Academy] Reminder: 24 Hours Remaining for [Assignment Title]",
+    sampleSubject: "Reminder: 24 Hours Remaining for [Assignment Title]",
     keyFeatures: [
       "High-urgency friendly reminder with exact countdown",
       "Explains step-by-step how to submit Google Drive or GitHub link",
@@ -218,7 +218,7 @@ const AUTOMATED_FLOWS: AutomatedFlow[] = [
     triggerType: "Instant (Event)",
     triggerDescription: "Fires the second a student successfully submits their assignment link in the portal.",
     targetAudience: "The submitting student",
-    sampleSubject: "[Auto AI Academy] Submission Confirmation: [Assignment Title]",
+    sampleSubject: "Submission Confirmation: [Assignment Title]",
     keyFeatures: [
       "Instant confirmation receipt that project link is recorded",
       "Shows submitted link for student's reference",
@@ -235,7 +235,7 @@ const AUTOMATED_FLOWS: AutomatedFlow[] = [
     triggerType: "Admin Action",
     triggerDescription: "Fires instantly when faculty completes grading in the Admin Review console.",
     targetAudience: "The student whose assignment was graded",
-    sampleSubject: "[Auto AI Academy] Grade Released: [Assignment Title] ([Stars]/5.0 Stars)",
+    sampleSubject: "Grade Released: [Assignment Title] ([Stars]/5.0 Stars)",
     keyFeatures: [
       "Displays full stars earned with breakdown (Correctness, Creativity, Timeliness)",
       "Includes personalized faculty comments & feedback",
@@ -250,7 +250,7 @@ const AUTOMATED_FLOWS: AutomatedFlow[] = [
     triggerType: "Instant (Event)",
     triggerDescription: "Triggered when a graded submission elevates the student into the Top 10 ranks.",
     targetAudience: "Top 10 high-achieving student",
-    sampleSubject: "[Auto AI Academy] Leaderboard Achievement: Rank #[Rank] Milestone",
+    sampleSubject: "Leaderboard Achievement: Rank #[Rank] Milestone",
     keyFeatures: [
       "Celebratory email recognizing high academic performance",
       "Displays official rank badge (#1 through #10) and total stars",

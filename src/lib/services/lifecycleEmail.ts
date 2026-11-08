@@ -40,11 +40,12 @@ async function safeSendMail({
 
     const transporter = createSmtpTransporter(config);
     const textFallback = htmlToPlainText(html);
+    const cleanSubject = subject.replace(/^\[.*?\]\s*/, "").trim();
 
     await transporter.sendMail({
       from: `"${config.fromName || SITE_NAME}" <${config.fromEmail || config.user}>`,
       to: `"${recipientName}" <${to}>`,
-      subject,
+      subject: cleanSubject,
       text: textFallback,
       html,
       headers: {
@@ -100,7 +101,7 @@ export async function sendEnrollmentWelcomeEmail({
   courseId: string;
   youtubeUrl?: string;
 }) {
-  const subject = `[Auto AI Academy] Welcome to ${courseTitle} — Getting Started`;
+  const subject = `Welcome to ${courseTitle} — Getting Started`;
   const bodyContent = `
     <p>Welcome to <strong>${courseTitle}</strong> on ${SITE_NAME}! We are pleased to confirm your enrollment in this cohort.</p>
     <p>Here are key guidelines to make the most of your learning journey:</p>
@@ -149,7 +150,7 @@ export async function sendInactiveSignupEmail({
   studentEmail: string;
   studentName: string;
 }) {
-  const subject = `[Auto AI Academy] Continue Your Learning: Explore Available Courses`;
+  const subject = `Continue Your Learning: Explore Available Courses`;
   const bodyContent = `
     <p>We noticed you recently created your student account on ${SITE_NAME}, but haven't enrolled in a course yet.</p>
     <p>Our practical curriculum is designed to help you build real-world AI and programming skills:</p>
@@ -199,7 +200,7 @@ export async function sendNewAssignmentEmail({
   description: string;
   dueDateFormatted: string;
 }) {
-  const subject = `[Auto AI Academy] New Assignment Posted: "${assignmentTitle}" (${courseTitle})`;
+  const subject = `New Assignment Posted: "${assignmentTitle}" (${courseTitle})`;
   const bodyContent = `
     <p>A new practical assignment has been published for your enrolled course <strong>${courseTitle}</strong>.</p>
     <div style="background-color: #f8fafc; border-left: 4px solid #0284c7; padding: 14px 18px; border-radius: 8px; margin: 16px 0;">
@@ -253,7 +254,7 @@ export async function sendAssignmentDeadlineReminderEmail({
   assignmentTitle: string;
   dueDateFormatted: string;
 }) {
-  const subject = `[Auto AI Academy] Reminder: 24 Hours Remaining for "${assignmentTitle}"`;
+  const subject = `Reminder: 24 Hours Remaining for "${assignmentTitle}"`;
   const bodyContent = `
     <p>This is a notification that the deadline for <strong>"${assignmentTitle}"</strong> in <em>${courseTitle}</em> is in less than 24 hours.</p>
     <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 14px 18px; border-radius: 8px; margin: 16px 0;">
@@ -297,7 +298,7 @@ export async function sendSubmissionReceivedEmail({
   studentName: string;
   assignmentTitle: string;
 }) {
-  const subject = `[Auto AI Academy] Submission Confirmation: "${assignmentTitle}"`;
+  const subject = `Submission Confirmation: "${assignmentTitle}"`;
   const bodyContent = `
     <p>Thank you for submitting your work for <strong>"${assignmentTitle}"</strong>.</p>
     <p>Your submission has been securely logged and placed in the faculty grading queue.</p>
@@ -347,7 +348,7 @@ export async function sendMissedDeadlineEmail({
   courseTitle: string;
   assignmentTitle: string;
 }) {
-  const subject = `[Auto AI Academy] Course Update: "${assignmentTitle}" in ${courseTitle}`;
+  const subject = `Course Update: "${assignmentTitle}" in ${courseTitle}`;
   const bodyContent = `
     <p>We noted that the primary deadline for <strong>"${assignmentTitle}"</strong> in <em>${courseTitle}</em> has elapsed without a registered submission.</p>
     <p>In technical education, consistent learning matters far more than a single milestone. Keep working through your lessons and preparing for upcoming modules.</p>
@@ -396,7 +397,7 @@ export async function sendSubmissionGradedEmail({
   creativity: number;
   timeliness: number;
 }) {
-  const subject = `[Auto AI Academy] Grade Released: "${assignmentTitle}" (${finalStars.toFixed(1)}/5.0 Stars)`;
+  const subject = `Grade Released: "${assignmentTitle}" (${finalStars.toFixed(1)}/5.0 Stars)`;
   const bodyContent = `
     <p>Your submission for <strong>"${assignmentTitle}"</strong> has been reviewed and officially graded by the instruction team.</p>
     <div style="background-color: #f0fdf4; border-left: 4px solid #16a34a; padding: 16px 20px; border-radius: 8px; margin: 16px 0;">
@@ -449,8 +450,8 @@ export async function sendLeaderboardRankEmail({
 }) {
   const isTop10 = rank <= 10;
   const subject = isTop10
-    ? `[Auto AI Academy] Leaderboard Achievement: Rank #${rank} Milestone`
-    : `[Auto AI Academy] Leaderboard Progress Update (${totalStars.toFixed(1)} Stars)`;
+    ? `Leaderboard Achievement: Rank #${rank} Milestone`
+    : `Leaderboard Progress Update (${totalStars.toFixed(1)} Stars)`;
 
   const bodyContent = isTop10
     ? `
@@ -508,7 +509,7 @@ export async function sendCourseCompletedEligibleEmail({
   courseId: string;
   submissionPercentage: number;
 }) {
-  const subject = `[Auto AI Academy] Certificate Eligibility Confirmed: ${courseTitle}`;
+  const subject = `Certificate Eligibility Confirmed: ${courseTitle}`;
   const bodyContent = `
     <p>Congratulations! The course <strong>"${courseTitle}"</strong> has concluded, and you have achieved a <strong>${Math.round(
     submissionPercentage
@@ -561,7 +562,7 @@ export async function sendCourseCompletedCatchUpEmail({
   courseId: string;
   submissionPercentage: number;
 }) {
-  const subject = `[Auto AI Academy] Catch-up Opportunity: Complete Your ${courseTitle} Certificate`;
+  const subject = `Catch-up Opportunity: Complete Your ${courseTitle} Certificate`;
   const bodyContent = `
     <p>The primary cohort for <strong>"${courseTitle}"</strong> has finished. Your current assignment completion is <strong>${Math.round(
     submissionPercentage
@@ -610,7 +611,7 @@ export async function sendCatchUp80PercentReachedEmail({
   studentName: string;
   courseTitle: string;
 }) {
-  const subject = `[Auto AI Academy] 80% Milestone Achieved: Certificate Unlocked for ${courseTitle}`;
+  const subject = `80% Milestone Achieved: Certificate Unlocked for ${courseTitle}`;
   const bodyContent = `
     <p>Congratulations! With your recent submissions, you have reached <strong>80% assignment completion</strong> in <strong>${courseTitle}</strong>.</p>
     <div style="background-color: #ecfdf5; border-left: 4px solid #059669; padding: 16px 20px; border-radius: 8px; margin: 16px 0;">
@@ -665,7 +666,7 @@ export async function sendNewCoursePublishedEmail({
   level?: string;
   duration?: string;
 }) {
-  const subject = `[Auto AI Academy] New Course Released: "${courseTitle}"`;
+  const subject = `New Course Released: "${courseTitle}"`;
   const bodyContent = `
     <p>We are pleased to introduce a brand new course on ${SITE_NAME}: <strong>${courseTitle}</strong>.</p>
     <div style="background-color: #f8fafc; border-left: 4px solid #0284c7; padding: 14px 18px; border-radius: 8px; margin: 16px 0;">
@@ -719,7 +720,7 @@ export async function sendCourseStatusOngoingEmail({
   courseTitle: string;
   courseId: string;
 }) {
-  const subject = `[Auto AI Academy] Course Now Live: "${courseTitle}"`;
+  const subject = `Course Now Live: "${courseTitle}"`;
   const bodyContent = `
     <p>We are pleased to notify you that <strong>"${courseTitle}"</strong> is now officially <strong>Live & Ongoing</strong> on ${SITE_NAME}.</p>
     <p>Course lectures, syllabus outlines, and initial assignment briefs are now active on the portal.</p>

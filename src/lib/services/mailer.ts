@@ -154,7 +154,8 @@ export async function sendTestEmail({
   const activeConfig = await resolveSmtpConfig(config);
   const transporter = createSmtpTransporter(activeConfig);
 
-  const cleanSubject = subject.startsWith("[") ? subject : `[Auto AI Academy] ${subject}`;
+  // Strip any bracket prefix so the exact subject written by the admin is delivered
+  const cleanSubject = subject.replace(/^\[.*?\]\s*/, "").trim();
 
   const html = buildEmailTemplate({
     subject: cleanSubject,
@@ -219,7 +220,9 @@ export async function sendBroadcastEmails({
 
           const personalizedSubject = subject
             .replace(/\{\{name\}\}/gi, recipient.name || "Student")
-            .replace(/\{\{courseTitle\}\}/gi, courseTitle);
+            .replace(/\{\{courseTitle\}\}/gi, courseTitle)
+            .replace(/^\[.*?\]\s*/, "")
+            .trim();
 
           const html = buildEmailTemplate({
             subject: personalizedSubject,
