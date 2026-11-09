@@ -1639,7 +1639,7 @@ export default function AdminBroadcastPage() {
                 </div>
                 <div className="text-slate-400 hidden sm:inline">|</div>
                 <div className="text-slate-600 dark:text-slate-400">
-                  Hourly Cron Scheduler Active
+                  Daily &amp; On-Demand Cron Active
                 </div>
               </div>
 
