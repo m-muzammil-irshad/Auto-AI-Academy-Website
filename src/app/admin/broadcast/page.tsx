@@ -30,6 +30,10 @@ import {
   ArrowUpRight,
   Bookmark,
   Trash2,
+  Edit3,
+  RotateCcw,
+  Code,
+  Copy,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
@@ -58,6 +62,15 @@ import {
   CATEGORY_LABELS,
   type EmailDeliveryRecord,
 } from "@/lib/services/emailLogs";
+import {
+  fetchCustomLifecycleTemplates,
+  saveCustomLifecycleTemplate,
+  resetCustomLifecycleTemplate,
+  LIFECYCLE_TEMPLATES_DEFINITIONS,
+  interpolateVariables,
+  type CustomLifecycleTemplate,
+  type LifecycleTemplateDefinition,
+} from "@/lib/services/lifecycleTemplatesService";
 import type { AppUser, Course, Enrollment, Submission, Assignment } from "@/lib/types";
 
 type FilterType = "all" | "course" | "zero_submissions" | "active_submissions" | "top_performers";
@@ -396,7 +409,6 @@ export default function AdminBroadcastPage() {
   const [historyCategoryFilter, setHistoryCategoryFilter] = useState("all");
   const [historySearch, setHistorySearch] = useState("");
   const [selectedLogForModal, setSelectedLogForModal] = useState<EmailDeliveryRecord | null>(null);
-  const [selectedTemplateForModal, setSelectedTemplateForModal] = useState<AutomatedFlow | null>(null);
 
   const filteredLogs = useMemo(() => {
     return deliveryLogs.filter((log: EmailDeliveryRecord) => {
@@ -480,6 +492,136 @@ export default function AdminBroadcastPage() {
     await deleteSavedEmailTemplate(id);
     await loadSavedTemplates();
   };
+
+  // Lifecycle Custom Templates State
+  const [customLifecycleTemplates, setCustomLifecycleTemplates] = useState<Record<string, CustomLifecycleTemplate>>({});
+  const [loadingLifecycleTemplates, setLoadingLifecycleTemplates] = useState(false);
+  const [editingLifecycleFlow, setEditingLifecycleFlow] = useState<LifecycleTemplateDefinition | null>(null);
+  const [lifecycleEditSubject, setLifecycleEditSubject] = useState("");
+  const [lifecycleEditBody, setLifecycleEditBody] = useState("");
+  const [lifecycleEditTab, setLifecycleEditTab] = useState<"edit" | "preview">("edit");
+  const [isSavingLifecycle, setIsSavingLifecycle] = useState(false);
+  const [lifecycleSaveSuccess, setLifecycleSaveSuccess] = useState(false);
+  const [copiedPlaceholder, setCopiedPlaceholder] = useState<string | null>(null);
+
+  const loadLifecycleTemplates = useCallback(async () => {
+    setLoadingLifecycleTemplates(true);
+    try {
+      const customs = await fetchCustomLifecycleTemplates(true);
+      setCustomLifecycleTemplates(customs);
+    } catch (err) {
+      console.warn("Could not load custom lifecycle templates:", err);
+    } finally {
+      setLoadingLifecycleTemplates(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadLifecycleTemplates();
+  }, [loadLifecycleTemplates]);
+
+  const handleOpenEditLifecycleFlow = (flowId: string) => {
+    const def = LIFECYCLE_TEMPLATES_DEFINITIONS[flowId];
+    if (!def) return;
+    const custom = customLifecycleTemplates[flowId];
+    setEditingLifecycleFlow(def);
+    setLifecycleEditSubject(custom?.subject || def.defaultSubject);
+    setLifecycleEditBody(custom?.body || def.defaultBody);
+    setLifecycleEditTab("edit");
+    setLifecycleSaveSuccess(false);
+  };
+
+  const handleSaveLifecycleTemplate = async () => {
+    if (!editingLifecycleFlow) return;
+    setIsSavingLifecycle(true);
+    try {
+      await saveCustomLifecycleTemplate(editingLifecycleFlow.id, {
+        subject: lifecycleEditSubject,
+        body: lifecycleEditBody,
+      });
+      setCustomLifecycleTemplates((prev) => ({
+        ...prev,
+        [editingLifecycleFlow.id]: {
+          subject: lifecycleEditSubject.trim(),
+          body: lifecycleEditBody.trim(),
+          updatedAt: new Date(),
+        },
+      }));
+      setLifecycleSaveSuccess(true);
+      setTimeout(() => setLifecycleSaveSuccess(false), 3000);
+    } catch (err) {
+      console.error("Error saving lifecycle template:", err);
+      alert("Failed to save template changes. Please try again.");
+    } finally {
+      setIsSavingLifecycle(false);
+    }
+  };
+
+  const handleResetLifecycleTemplate = async () => {
+    if (!editingLifecycleFlow) return;
+    if (
+      !confirm(
+        `Are you sure you want to reset "${editingLifecycleFlow.title}" to its original default copy?`
+      )
+    ) {
+      return;
+    }
+    setIsSavingLifecycle(true);
+    try {
+      await resetCustomLifecycleTemplate(editingLifecycleFlow.id);
+      setCustomLifecycleTemplates((prev) => {
+        const next = { ...prev };
+        delete next[editingLifecycleFlow.id];
+        return next;
+      });
+      setLifecycleEditSubject(editingLifecycleFlow.defaultSubject);
+      setLifecycleEditBody(editingLifecycleFlow.defaultBody);
+      setLifecycleSaveSuccess(true);
+      setTimeout(() => setLifecycleSaveSuccess(false), 3000);
+    } catch (err) {
+      console.error("Error resetting lifecycle template:", err);
+      alert("Failed to reset template. Please try again.");
+    } finally {
+      setIsSavingLifecycle(false);
+    }
+  };
+
+  const handleInsertPlaceholder = (key: string) => {
+    const placeholder = `{{${key}}}`;
+    setLifecycleEditBody((prev) => prev + placeholder);
+    setCopiedPlaceholder(key);
+    setTimeout(() => setCopiedPlaceholder(null), 1500);
+  };
+
+  const editingSampleVars = useMemo(() => {
+    if (!editingLifecycleFlow) return {};
+    const map: Record<string, string> = {};
+    editingLifecycleFlow.placeholders.forEach((p) => {
+      map[p.key] = p.sample;
+    });
+    return map;
+  }, [editingLifecycleFlow]);
+
+  const editingPreviewHtml = useMemo(() => {
+    if (!editingLifecycleFlow) return "";
+    const sampleSubject = interpolateVariables(lifecycleEditSubject, editingSampleVars);
+    const sampleBody = interpolateVariables(lifecycleEditBody, editingSampleVars);
+    return buildEmailTemplate({
+      subject: sampleSubject,
+      bodyContent: sampleBody,
+      studentName: editingSampleVars.studentName || "Muhammad Ali",
+      categoryBadge: editingLifecycleFlow.categoryBadge,
+      ctaText: editingLifecycleFlow.ctaText,
+      ctaUrl: editingLifecycleFlow.ctaUrlPattern.startsWith("http")
+        ? editingLifecycleFlow.ctaUrlPattern
+        : `https://autoaiacademy.com${editingLifecycleFlow.ctaUrlPattern}`,
+    });
+  }, [editingLifecycleFlow, lifecycleEditSubject, lifecycleEditBody, editingSampleVars]);
+
+  const activeFlowMeta = useMemo(() => {
+    if (!editingLifecycleFlow) return null;
+    return AUTOMATED_FLOWS.find((f) => f.id === editingLifecycleFlow.id) || null;
+  }, [editingLifecycleFlow]);
 
   // Run On-Demand Automation Checks
   const handleRunAutomationChecks = async () => {
@@ -1571,51 +1713,64 @@ export default function AdminBroadcastPage() {
               <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Automated Lifecycle Directory (13 Workflows)
               </h3>
-              <span className="text-[11px] text-slate-400">Click inspect to view template copy</span>
+              <span className="text-[11px] text-slate-400">Click &apos;Edit Copy&apos; to customize subject &amp; body content</span>
             </CardHeader>
             <CardBody className="p-0">
               <div className="divide-y divide-black/5 dark:divide-white/5 text-xs">
-                {AUTOMATED_FLOWS.map((flow) => (
-                  <div
-                    key={flow.id}
-                    className="p-3.5 sm:px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.015] dark:hover:bg-white/[0.015] transition-colors"
-                  >
-                    <div className="space-y-1 max-w-2xl">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            flow.triggerType === "Instant (Event)"
-                              ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                              : flow.triggerType === "Scheduled (Cron)"
-                              ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
-                              : "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400"
-                          }`}
-                        >
-                          {flow.triggerType}
-                        </span>
-                        <span className="font-bold text-slate-900 dark:text-white">
-                          {flow.title}
-                        </span>
+                {AUTOMATED_FLOWS.map((flow) => {
+                  const isCustom = Boolean(customLifecycleTemplates[flow.id]);
+                  return (
+                    <div
+                      key={flow.id}
+                      className="p-3.5 sm:px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-black/[0.015] dark:hover:bg-white/[0.015] transition-colors"
+                    >
+                      <div className="space-y-1 max-w-2xl">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              flow.triggerType === "Instant (Event)"
+                                ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                                : flow.triggerType === "Scheduled (Cron)"
+                                ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                                : "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400"
+                            }`}
+                          >
+                            {flow.triggerType}
+                          </span>
+                          <span className="font-bold text-slate-900 dark:text-white">
+                            {flow.title}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-600 dark:text-slate-400 flex flex-wrap items-center gap-2">
+                          <span><strong>Trigger:</strong> {flow.triggerDescription}</span>
+                          <span>•</span>
+                          <span><strong>Target:</strong> {flow.targetAudience}</span>
+                        </div>
                       </div>
-                      <div className="text-[11px] text-slate-600 dark:text-slate-400 flex flex-wrap items-center gap-2">
-                        <span><strong>Trigger:</strong> {flow.triggerDescription}</span>
-                        <span>•</span>
-                        <span><strong>Target:</strong> {flow.targetAudience}</span>
-                      </div>
-                    </div>
 
-                    <div className="shrink-0 flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedTemplateForModal(flow)}
-                        className="neu-flat-sm px-3 py-1.5 rounded-full text-xs font-bold text-accent-600 dark:text-accent-400 hover:text-accent-700 transition-all cursor-pointer inline-flex items-center gap-1"
-                      >
-                        <FileText className="h-3 w-3" />
-                        Inspect Copy
-                      </button>
+                      <div className="shrink-0 flex items-center gap-2">
+                        {isCustom ? (
+                          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            Customized
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-black/5 dark:bg-white/5 text-slate-500 dark:text-slate-400">
+                            Default
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditLifecycleFlow(flow.id)}
+                          className="neu-btn-primary px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5 shadow-sm"
+                        >
+                          <Edit3 className="h-3 w-3" />
+                          Edit Copy
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardBody>
           </Card>
@@ -1846,53 +2001,195 @@ export default function AdminBroadcastPage() {
         )}
       </Modal>
 
-      {/* Subcampaign Template Inspection Modal */}
+      {/* Lifecycle Template Editor & Live Preview Modal */}
       <Modal
-        open={Boolean(selectedTemplateForModal)}
-        onClose={() => setSelectedTemplateForModal(null)}
-        title={selectedTemplateForModal?.title || "Subcampaign Template"}
+        open={Boolean(editingLifecycleFlow)}
+        onClose={() => setEditingLifecycleFlow(null)}
+        title={editingLifecycleFlow ? `Edit Template: ${editingLifecycleFlow.title}` : ""}
+        className="max-w-3xl"
       >
-        {selectedTemplateForModal && (
+        {editingLifecycleFlow && (
           <div className="space-y-4 text-xs">
+            {/* Context & Metadata Bar */}
             <div className="p-3.5 rounded-2xl neu-pressed-sm bg-black/5 dark:bg-white/5 space-y-1.5">
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 font-semibold">Trigger Event: </span>
-                <span className="text-slate-900 dark:text-white">{selectedTemplateForModal.triggerDescription}</span>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent-500/15 text-accent-600 dark:text-accent-400">
+                    {editingLifecycleFlow.categoryBadge}
+                  </span>
+                  <span className="text-slate-500 dark:text-slate-400 font-semibold">
+                    Trigger: <strong className="text-slate-900 dark:text-white font-normal">{activeFlowMeta?.triggerDescription || "Automatic Lifecycle Event"}</strong>
+                  </span>
+                </div>
+                {customLifecycleTemplates[editingLifecycleFlow.id] ? (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    Custom Copy Active
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                    System Default Copy
+                  </span>
+                )}
               </div>
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 font-semibold">Target Audience: </span>
-                <span className="text-slate-900 dark:text-white">{selectedTemplateForModal.targetAudience}</span>
-              </div>
-              <div>
-                <span className="text-slate-500 dark:text-slate-400 font-semibold">Sample Subject: </span>
-                <strong className="text-accent-600 dark:text-accent-400">&quot;{selectedTemplateForModal.sampleSubject}&quot;</strong>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                <strong>Target Audience:</strong> {activeFlowMeta?.targetAudience || "Enrolled students"}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <span className="font-bold text-slate-800 dark:text-slate-200">
-                Email Content Highlights:
-              </span>
-              <ul className="space-y-1.5 pl-1">
-                {selectedTemplateForModal.keyFeatures.map((feat, i) => (
-                  <li key={i} className="flex items-start gap-2 text-slate-600 dark:text-slate-400">
-                    <Check className="h-4 w-4 text-accent-500 shrink-0 mt-0.5" />
-                    <span>{feat}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="text-right pt-3 border-t border-black/5 dark:border-white/5">
-              <Button
+            {/* Editor vs Preview Tabs */}
+            <div className="flex items-center gap-2 border-b border-black/5 dark:border-white/5 pb-2">
+              <button
                 type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => setSelectedTemplateForModal(null)}
-                className="rounded-full neu-btn px-4 text-xs font-semibold cursor-pointer"
+                onClick={() => setLifecycleEditTab("edit")}
+                className={`px-3.5 py-1.5 rounded-full font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
+                  lifecycleEditTab === "edit"
+                    ? "neu-pressed text-accent-600 dark:text-accent-400"
+                    : "neu-flat text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
               >
-                Close
-              </Button>
+                <Edit3 className="h-3.5 w-3.5" />
+                Edit Copy
+              </button>
+              <button
+                type="button"
+                onClick={() => setLifecycleEditTab("preview")}
+                className={`px-3.5 py-1.5 rounded-full font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer ${
+                  lifecycleEditTab === "preview"
+                    ? "neu-pressed text-accent-600 dark:text-accent-400"
+                    : "neu-flat text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <Eye className="h-3.5 w-3.5" />
+                Live HTML Preview
+              </button>
+            </div>
+
+            {lifecycleEditTab === "edit" ? (
+              <div className="space-y-3.5">
+                {/* Placeholders Pills */}
+                <div className="p-3 rounded-xl neu-flat-sm space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-[11px] text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                      <Code className="h-3.5 w-3.5 text-accent-500" />
+                      Dynamic Variables (Click to insert into body):
+                    </span>
+                    {copiedPlaceholder && (
+                      <span className="text-[10px] text-emerald-500 font-bold">
+                        Inserted &apos;{`{{${copiedPlaceholder}}}`}&apos;!
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {editingLifecycleFlow.placeholders.map((p) => (
+                      <button
+                        key={p.key}
+                        type="button"
+                        onClick={() => handleInsertPlaceholder(p.key)}
+                        title={`${p.description} (e.g. ${p.sample})`}
+                        className="px-2.5 py-1 rounded-lg neu-pressed-sm text-[11px] font-mono text-accent-600 dark:text-accent-400 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+                      >
+                        {`{{${p.key}}}`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Subject Line */}
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                    Email Subject Line:
+                  </label>
+                  <Input
+                    type="text"
+                    value={lifecycleEditSubject}
+                    onChange={(e) => setLifecycleEditSubject(e.target.value)}
+                    placeholder="Enter email subject line..."
+                    className="rounded-xl neu-pressed-sm text-xs font-medium"
+                  />
+                </div>
+
+                {/* Email Body */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                      Email Body Content (HTML or Text):
+                    </label>
+                    <span className="text-[10px] text-slate-400">
+                      Supports &lt;p&gt;, &lt;ul&gt;, &lt;strong&gt;, etc.
+                    </span>
+                  </div>
+                  <Textarea
+                    rows={12}
+                    value={lifecycleEditBody}
+                    onChange={(e) => setLifecycleEditBody(e.target.value)}
+                    placeholder="Write email body in clean HTML or text..."
+                    className="rounded-xl neu-pressed-sm text-xs font-mono leading-relaxed"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Real-time preview rendered inside the official Auto AI Academy email frame with sample student data:
+                </div>
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white overflow-hidden max-h-[460px] overflow-y-auto">
+                  <iframe
+                    title="Live Template Preview"
+                    srcDoc={editingPreviewHtml}
+                    className="w-full h-[440px] border-none"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Modal Actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-black/5 dark:border-white/5">
+              <div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleResetLifecycleTemplate}
+                  disabled={isSavingLifecycle || !customLifecycleTemplates[editingLifecycleFlow.id]}
+                  className="rounded-full neu-btn px-3 py-1.5 text-xs font-semibold cursor-pointer text-rose-600 dark:text-rose-400 disabled:opacity-40 inline-flex items-center gap-1.5"
+                  title="Revert back to system default copy"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Reset to Default
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-end gap-2">
+                {lifecycleSaveSuccess && (
+                  <span className="text-emerald-500 font-bold text-xs flex items-center gap-1 mr-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Changes Saved!
+                  </span>
+                )}
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setEditingLifecycleFlow(null)}
+                  className="rounded-full neu-btn px-4 text-xs font-semibold cursor-pointer"
+                >
+                  Close
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handleSaveLifecycleTemplate}
+                  disabled={isSavingLifecycle || !lifecycleEditSubject.trim() || !lifecycleEditBody.trim()}
+                  className="neu-btn-primary rounded-full px-5 py-2 text-xs font-semibold shadow-md inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  {isSavingLifecycle ? (
+                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Check className="h-3.5 w-3.5" />
+                  )}
+                  Save Template
+                </Button>
+              </div>
             </div>
           </div>
         )}

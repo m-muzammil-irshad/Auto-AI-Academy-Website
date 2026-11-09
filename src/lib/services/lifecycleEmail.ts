@@ -1,5 +1,9 @@
 import { createSmtpTransporter, resolveSmtpConfig } from "@/lib/services/mailer";
 import { buildEmailTemplate, htmlToPlainText } from "@/lib/services/emailTemplates";
+import {
+  resolveLifecycleContent,
+  LIFECYCLE_TEMPLATES_DEFINITIONS,
+} from "./lifecycleTemplatesService";
 import { SITE_NAME } from "@/lib/constants";
 import { SITE_URL } from "@/lib/seo";
 
@@ -101,23 +105,13 @@ export async function sendEnrollmentWelcomeEmail({
   courseId: string;
   youtubeUrl?: string;
 }) {
-  const subject = `Welcome to ${courseTitle} — Getting Started`;
-  const bodyContent = `
-    <p>Welcome to <strong>${courseTitle}</strong> on ${SITE_NAME}! We are pleased to confirm your enrollment in this cohort.</p>
-    <p>Here are key guidelines to make the most of your learning journey:</p>
-    <ul style="margin: 0 0 16px 20px; line-height: 1.8; color: #334155;">
-      <li><strong>Structured Video Lectures:</strong> Available directly on your Student Portal and YouTube playlist.</li>
-      <li><strong>Practical Assignments:</strong> Submit your project code or files on time to collect stars (★) and climb the global Leaderboard.</li>
-      <li><strong>24/7 AI Study Tutor:</strong> If you ever encounter a bug or concept question, access your AI Study Tutor from your dashboard anytime.</li>
-      <li><strong>Verified Certificate:</strong> Submit at least 80% of all assignments to earn your official, QR-verified credential upon completion.</li>
-    </ul>
-    ${
-      youtubeUrl
-        ? `<p style="margin-top: 16px;"><a href="${youtubeUrl}" target="_blank" style="color: #0284c7; font-weight: 600; text-decoration: underline;">Open Recommended YouTube Video Series &rarr;</a></p>`
-        : ""
-    }
-    <p>You can now open your portal and begin Lesson 1 at your own pace.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.enrollment_welcome;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "enrollment_welcome",
+    { studentName, courseTitle, youtubeUrl: youtubeUrl || "" },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -150,17 +144,13 @@ export async function sendInactiveSignupEmail({
   studentEmail: string;
   studentName: string;
 }) {
-  const subject = `Continue Your Learning: Explore Available Courses`;
-  const bodyContent = `
-    <p>We noticed you recently created your student account on ${SITE_NAME}, but haven't enrolled in a course yet.</p>
-    <p>Our practical curriculum is designed to help you build real-world AI and programming skills:</p>
-    <ul style="margin: 0 0 16px 20px; line-height: 1.8; color: #334155;">
-      <li><strong>Python Programming:</strong> Master fundamentals, algorithms, and real automation scripts.</li>
-      <li><strong>n8n & AI Automations:</strong> Build intelligent workflows, webhooks, and customer support agents.</li>
-    </ul>
-    <p>Enrollment is 1-click and immediately gives you access to assignment briefs, the AI Tutor, and verified certificates.</p>
-    <p>Explore our active catalog below and choose the path that matches your career goals.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.inactive_48h;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "inactive_48h",
+    { studentName },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -200,21 +190,13 @@ export async function sendNewAssignmentEmail({
   description: string;
   dueDateFormatted: string;
 }) {
-  const subject = `New Assignment Posted: "${assignmentTitle}" (${courseTitle})`;
-  const bodyContent = `
-    <p>A new practical assignment has been published for your enrolled course <strong>${courseTitle}</strong>.</p>
-    <div style="background-color: #f8fafc; border-left: 4px solid #0284c7; padding: 14px 18px; border-radius: 8px; margin: 16px 0;">
-      <p style="margin: 0 0 6px 0; font-weight: 700; color: #0f172a; font-size: 15px;">${assignmentTitle}</p>
-      <p style="margin: 0 0 6px 0; font-size: 13px; color: #64748b;"><strong>Submission Deadline:</strong> ${dueDateFormatted}</p>
-      <p style="margin: 0; font-size: 14px; color: #334155;">${
-        description
-          ? description.slice(0, 220) + (description.length > 220 ? "..." : "")
-          : "Please review the requirements in your student portal."
-      }</p>
-    </div>
-    <p>Submitting on time ensures full timeliness marks and strengthens your standing on the Leaderboard.</p>
-    <p>If you need guidance or code hints, open your <strong>AI Study Tutor</strong> anytime on the portal.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.new_assignment;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "new_assignment",
+    { studentName, courseTitle, assignmentTitle, description, dueDateFormatted },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -254,15 +236,13 @@ export async function sendAssignmentDeadlineReminderEmail({
   assignmentTitle: string;
   dueDateFormatted: string;
 }) {
-  const subject = `Reminder: 24 Hours Remaining for "${assignmentTitle}"`;
-  const bodyContent = `
-    <p>This is a notification that the deadline for <strong>"${assignmentTitle}"</strong> in <em>${courseTitle}</em> is in less than 24 hours.</p>
-    <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 14px 18px; border-radius: 8px; margin: 16px 0;">
-      <p style="margin: 0 0 4px 0; font-weight: 700; color: #92400e; font-size: 15px;">Due Date: ${dueDateFormatted}</p>
-      <p style="margin: 0; font-size: 13px; color: #b45309;">Ensure your Google Drive or GitHub link is shared with public view permissions before submitting.</p>
-    </div>
-    <p>Submitting before the deadline awards full timeliness points and helps maintain your leaderboard rank.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.reminder_24h;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "reminder_24h",
+    { studentName, courseTitle, assignmentTitle, dueDateFormatted },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -298,20 +278,13 @@ export async function sendSubmissionReceivedEmail({
   studentName: string;
   assignmentTitle: string;
 }) {
-  const subject = `Submission Confirmation: "${assignmentTitle}"`;
-  const bodyContent = `
-    <p>Thank you for submitting your work for <strong>"${assignmentTitle}"</strong>.</p>
-    <p>Your submission has been securely logged and placed in the faculty grading queue.</p>
-    <div style="background-color: #f8fafc; border-left: 4px solid #0284c7; padding: 14px 18px; border-radius: 8px; margin: 16px 0;">
-      <p style="margin: 0 0 4px 0; font-weight: 700; color: #0f172a; font-size: 14px;">Evaluation Criteria:</p>
-      <ul style="margin: 0 0 0 16px; font-size: 13px; color: #475569; line-height: 1.6;">
-        <li>Correctness & Code Functionality</li>
-        <li>Creativity & Technical Cleanliness</li>
-        <li>Submission Timeliness</li>
-      </ul>
-    </div>
-    <p>Once graded, your stars and feedback will be published directly to your Student Dashboard.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.submission_received;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "submission_received",
+    { studentName, assignmentTitle },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -348,12 +321,13 @@ export async function sendMissedDeadlineEmail({
   courseTitle: string;
   assignmentTitle: string;
 }) {
-  const subject = `Course Update: "${assignmentTitle}" in ${courseTitle}`;
-  const bodyContent = `
-    <p>We noted that the primary deadline for <strong>"${assignmentTitle}"</strong> in <em>${courseTitle}</em> has elapsed without a registered submission.</p>
-    <p>In technical education, consistent learning matters far more than a single milestone. Keep working through your lessons and preparing for upcoming modules.</p>
-    <p>Upon course completion, late submission catch-up windows become available to help you reach the 80% mark required for graduation.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.missed_deadline;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "missed_deadline",
+    { studentName, courseTitle, assignmentTitle },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -397,21 +371,20 @@ export async function sendSubmissionGradedEmail({
   creativity: number;
   timeliness: number;
 }) {
-  const subject = `Grade Released: "${assignmentTitle}" (${finalStars.toFixed(1)}/5.0 Stars)`;
-  const bodyContent = `
-    <p>Your submission for <strong>"${assignmentTitle}"</strong> has been reviewed and officially graded by the instruction team.</p>
-    <div style="background-color: #f0fdf4; border-left: 4px solid #16a34a; padding: 16px 20px; border-radius: 8px; margin: 16px 0;">
-      <p style="margin: 0 0 10px 0; font-size: 17px; font-weight: 800; color: #15803d;">
-        Final Score: ${finalStars.toFixed(1)} / 5.0 Stars (★)
-      </p>
-      <div style="font-size: 13px; color: #166534; line-height: 1.6;">
-        • Correctness: <strong>${correctness.toFixed(1)} ★</strong><br/>
-        • Creativity: <strong>${creativity.toFixed(1)} ★</strong><br/>
-        • Timeliness: <strong>${timeliness.toFixed(1)} ★</strong>
-      </div>
-    </div>
-    <p>Your stars have been credited to your student profile and updated on the global Leaderboard.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.submission_graded;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "submission_graded",
+    {
+      studentName,
+      assignmentTitle,
+      finalStars: finalStars.toFixed(1),
+      correctness: correctness.toFixed(1),
+      creativity: creativity.toFixed(1),
+      timeliness: timeliness.toFixed(1),
+    },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -448,30 +421,17 @@ export async function sendLeaderboardRankEmail({
   rank: number;
   totalStars: number;
 }) {
-  const isTop10 = rank <= 10;
-  const subject = isTop10
-    ? `Leaderboard Achievement: Rank #${rank} Milestone`
-    : `Leaderboard Progress Update (${totalStars.toFixed(1)} Stars)`;
-
-  const bodyContent = isTop10
-    ? `
-      <p>Congratulations! Your recent assignment scores have positioned you in the <strong>Top 10</strong> across all active students at Auto AI Academy.</p>
-      <div style="background-color: #fefce8; border-left: 4px solid #eab308; padding: 16px 20px; border-radius: 8px; margin: 16px 0;">
-        <p style="margin: 0; font-size: 17px; font-weight: 800; color: #854d0e;">
-          Academy Rank: #${rank} &bull; Total Stars: ${totalStars.toFixed(1)} ★
-        </p>
-      </div>
-      <p>Your dedication serves as an inspiration to the community. Maintain your momentum in upcoming modules to preserve your podium standing.</p>
-    `
-    : `
-      <p>Your recent assignment submissions have updated your standing on the student Leaderboard.</p>
-      <div style="background-color: #f8fafc; border-left: 4px solid #0284c7; padding: 16px 20px; border-radius: 8px; margin: 16px 0;">
-        <p style="margin: 0; font-size: 15px; font-weight: 700; color: #0f172a;">
-          Current Rank: #${rank} &bull; Total Stars: ${totalStars.toFixed(1)} ★
-        </p>
-      </div>
-      <p>Continue completing upcoming assignments on time to earn additional stars and advance your position.</p>
-    `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.leaderboard_rank;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "leaderboard_rank",
+    {
+      studentName,
+      rank,
+      totalStars: totalStars.toFixed(1),
+    },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -509,21 +469,17 @@ export async function sendCourseCompletedEligibleEmail({
   courseId: string;
   submissionPercentage: number;
 }) {
-  const subject = `Certificate Eligibility Confirmed: ${courseTitle}`;
-  const bodyContent = `
-    <p>Congratulations! The course <strong>"${courseTitle}"</strong> has concluded, and you have achieved a <strong>${Math.round(
-    submissionPercentage
-  )}%</strong> assignment submission rate (satisfying the &ge;80% graduation requirement).</p>
-    <div style="background-color: #ecfdf5; border-left: 4px solid #059669; padding: 16px 20px; border-radius: 8px; margin: 16px 0;">
-      <p style="margin: 0 0 6px 0; font-size: 16px; font-weight: 800; color: #065f46;">
-        Verified Certificate Ready
-      </p>
-      <p style="margin: 0; font-size: 14px; color: #047857;">
-        Both graduation criteria have been met: formal cohort completion and verified assignment submissions.
-      </p>
-    </div>
-    <p>You can now generate and verify your credential from your Student Portal under <strong>Certificates</strong>.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.course_completed_eligible;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "course_completed_eligible",
+    {
+      studentName,
+      courseTitle,
+      submissionPercentage: Math.round(submissionPercentage),
+    },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -562,21 +518,17 @@ export async function sendCourseCompletedCatchUpEmail({
   courseId: string;
   submissionPercentage: number;
 }) {
-  const subject = `Catch-up Opportunity: Complete Your ${courseTitle} Certificate`;
-  const bodyContent = `
-    <p>The primary cohort for <strong>"${courseTitle}"</strong> has finished. Your current assignment completion is <strong>${Math.round(
-    submissionPercentage
-  )}%</strong> (80% is needed to graduate).</p>
-    <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px 20px; border-radius: 8px; margin: 16px 0;">
-      <p style="margin: 0 0 4px 0; font-size: 15px; font-weight: 700; color: #1e40af;">
-        Previous Assignments Remain Open
-      </p>
-      <p style="margin: 0; font-size: 13px; color: #1d4ed8;">
-        To ensure every committed student has the opportunity to earn their certificate, previously missed assignments remain accessible on your dashboard.
-      </p>
-    </div>
-    <p>Once your submitted assignments reach the 80% threshold, your verified certificate will unlock automatically.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.course_completed_catchup;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "course_completed_catchup",
+    {
+      studentName,
+      courseTitle,
+      submissionPercentage: Math.round(submissionPercentage),
+    },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -611,19 +563,13 @@ export async function sendCatchUp80PercentReachedEmail({
   studentName: string;
   courseTitle: string;
 }) {
-  const subject = `80% Milestone Achieved: Certificate Unlocked for ${courseTitle}`;
-  const bodyContent = `
-    <p>Congratulations! With your recent submissions, you have reached <strong>80% assignment completion</strong> in <strong>${courseTitle}</strong>.</p>
-    <div style="background-color: #ecfdf5; border-left: 4px solid #059669; padding: 16px 20px; border-radius: 8px; margin: 16px 0;">
-      <p style="margin: 0 0 4px 0; font-size: 16px; font-weight: 800; color: #065f46;">
-        Graduation Verified
-      </p>
-      <p style="margin: 0; font-size: 14px; color: #047857;">
-        Your perseverance has earned you your official credential.
-      </p>
-    </div>
-    <p>Visit your portal to claim your QR-verified certificate.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.catchup_80_percent_reached;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "catchup_80_percent_reached",
+    { studentName, courseTitle },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -666,24 +612,19 @@ export async function sendNewCoursePublishedEmail({
   level?: string;
   duration?: string;
 }) {
-  const subject = `New Course Released: "${courseTitle}"`;
-  const bodyContent = `
-    <p>We are pleased to introduce a brand new course on ${SITE_NAME}: <strong>${courseTitle}</strong>.</p>
-    <div style="background-color: #f8fafc; border-left: 4px solid #0284c7; padding: 14px 18px; border-radius: 8px; margin: 16px 0;">
-      <p style="margin: 0 0 6px 0; font-weight: 700; color: #0f172a; font-size: 15px;">${courseTitle}</p>
-      <p style="margin: 0 0 6px 0; font-size: 13px; color: #64748b;">
-        Level: <strong>${level || "All Levels"}</strong> &bull; Schedule: <strong>${duration || "Self-Paced"}</strong>
-      </p>
-      <p style="margin: 0; font-size: 14px; color: #334155;">
-        ${
-          description
-            ? description.slice(0, 220) + (description.length > 220 ? "..." : "")
-            : "Hands-on, practical curriculum with verified certificates."
-        }
-      </p>
-    </div>
-    <p>Enrollment is accessible directly from your Student Portal.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.new_course_published;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "new_course_published",
+    {
+      studentName,
+      courseTitle,
+      level: level || "All Levels",
+      duration: duration || "Self-Paced",
+      description: description || "Hands-on, practical curriculum with verified certificates.",
+    },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
@@ -720,12 +661,13 @@ export async function sendCourseStatusOngoingEmail({
   courseTitle: string;
   courseId: string;
 }) {
-  const subject = `Course Now Live: "${courseTitle}"`;
-  const bodyContent = `
-    <p>We are pleased to notify you that <strong>"${courseTitle}"</strong> is now officially <strong>Live & Ongoing</strong> on ${SITE_NAME}.</p>
-    <p>Course lectures, syllabus outlines, and initial assignment briefs are now active on the portal.</p>
-    <p>Access your dashboard to confirm your enrollment and review the introductory lecture.</p>
-  `;
+  const def = LIFECYCLE_TEMPLATES_DEFINITIONS.course_status_ongoing;
+  const { subject, bodyContent } = await resolveLifecycleContent(
+    "course_status_ongoing",
+    { studentName, courseTitle },
+    def.defaultSubject,
+    def.defaultBody
+  );
 
   const html = buildEmailTemplate({
     subject,
