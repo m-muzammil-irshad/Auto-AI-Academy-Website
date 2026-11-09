@@ -106,6 +106,7 @@ export async function createCourse(input: CourseInput): Promise<string> {
       fetch("/api/notifications/lifecycle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        keepalive: true,
         body: JSON.stringify({ event: "new_course_published", courseId: ref.id }),
       }).catch((err) => console.error("New course email trigger error:", err));
     }
@@ -160,6 +161,7 @@ export async function updateCourse(
         fetch("/api/notifications/lifecycle", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          keepalive: true,
           body: JSON.stringify({ event: "course_status_ongoing", courseId: id }),
         }).catch((err) => console.error("Course ongoing email trigger error:", err));
       }
@@ -197,6 +199,7 @@ export async function markCourseCompleted(id: string): Promise<void> {
       fetch("/api/notifications/lifecycle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        keepalive: true,
         body: JSON.stringify({ event: "course_completed", courseId: id }),
       }).catch((err) => console.error("Course completed email trigger error:", err));
     }

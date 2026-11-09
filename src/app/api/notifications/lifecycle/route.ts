@@ -158,7 +158,7 @@ export async function POST(request: Request) {
           allUsers.sort((a, b) => (b.allTimeStars || 0) - (a.allTimeStars || 0));
           const rank = allUsers.findIndex((u) => u.uid === userId) + 1;
 
-          if (rank > 0) {
+          if (rank > 0 && rank <= 10) {
             await sendLeaderboardRankEmail({
               studentEmail: user.email,
               studentName: user.name || "Student",

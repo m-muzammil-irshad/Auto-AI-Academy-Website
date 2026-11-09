@@ -96,10 +96,12 @@ export async function submitAssignment(input: SubmitInput): Promise<void> {
     fetch("/api/notifications/lifecycle", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      keepalive: true,
       body: JSON.stringify({
         event: "submission_received",
         userId: input.userId,
         assignmentTitle: input.assignmentTitle || "Assignment",
+        studentName: input.studentName,
       }),
     }).catch((err) => console.error("Submission email trigger error:", err));
   }
@@ -194,6 +196,7 @@ export async function gradeSubmission(params: {
     fetch("/api/notifications/lifecycle", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      keepalive: true,
       body: JSON.stringify({
         event: "submission_graded",
         userId: params.userId,

@@ -64,6 +64,7 @@ export async function enrollInCourse(
     fetch("/api/notifications/lifecycle", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      keepalive: true,
       body: JSON.stringify({ event: "enrollment_welcome", userId, courseId }),
     }).catch((err) => console.error("Welcome email trigger error:", err));
   }
