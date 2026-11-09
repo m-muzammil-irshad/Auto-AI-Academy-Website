@@ -142,6 +142,29 @@ Log in to your student dashboard to track your assignment progress and current s
   },
 ];
 
+const AI_IDEA_PROMPTS = [
+  {
+    label: "🚀 New Course Announcement",
+    topic: "Announce new practical course launch with hands-on projects, verified certification, and free enrollment",
+    tone: "Inspiring and action-oriented",
+  },
+  {
+    label: "⏰ Assignment Deadline Urgency",
+    topic: "Urge students to submit their assignment code before deadline to secure leaderboard points and verified certificate eligibility",
+    tone: "Urgent, clear, and encouraging",
+  },
+  {
+    label: "🔥 Weekly Study & Coding Motivation",
+    topic: "Motivate students to practice code regularly, build practical projects, and use 24/7 AI tutor on their dashboard",
+    tone: "Academic & Motivating",
+  },
+  {
+    label: "🎓 Verified Certificate Criteria",
+    topic: "Clarify the 80% submission requirement and QR verification for official graduation certificates",
+    tone: "Direct & Professional Announcement",
+  },
+];
+
 interface AutomatedFlow {
   id: string;
   group: "onboarding" | "assignments" | "grading" | "courses";
@@ -622,6 +645,76 @@ export default function AdminBroadcastPage() {
     if (!editingLifecycleFlow) return null;
     return AUTOMATED_FLOWS.find((f) => f.id === editingLifecycleFlow.id) || null;
   }, [editingLifecycleFlow]);
+
+  const handleOpenPreviewLifecycleFlow = (flowId: string) => {
+    handleOpenEditLifecycleFlow(flowId);
+    setLifecycleEditTab("preview");
+  };
+
+  // AI Email Writer Assistant State
+  const [aiWriterOpen, setAiWriterOpen] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
+  const [aiAudience, setAiAudience] = useState("");
+  const [aiKeyPoints, setAiKeyPoints] = useState("");
+  const [aiTone, setAiTone] = useState("Academic & Motivating");
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+  const [aiGeneratedResult, setAiGeneratedResult] = useState<{
+    subject: string;
+    body: string;
+    modelUsed: string;
+  } | null>(null);
+  const [aiResultViewTab, setAiResultViewTab] = useState<"preview" | "code">("preview");
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiRequiresKey, setAiRequiresKey] = useState(false);
+  const [aiAppliedNotice, setAiAppliedNotice] = useState(false);
+
+  const handleGenerateAiEmail = async () => {
+    if (!aiTopic.trim()) {
+      alert("Please describe the topic or objective for the email.");
+      return;
+    }
+    setIsGeneratingAi(true);
+    setAiError(null);
+    setAiRequiresKey(false);
+    try {
+      const res = await fetch("/api/admin/generate-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic: aiTopic.trim(),
+          audience: aiAudience.trim() || "All enrolled students",
+          keyPoints: aiKeyPoints.trim(),
+          tone: aiTone,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (data.requiresKey) {
+          setAiRequiresKey(true);
+        }
+        throw new Error(data.message || data.error || "Failed to generate email");
+      }
+      setAiGeneratedResult({
+        subject: data.subject,
+        body: data.body,
+        modelUsed: data.modelUsed,
+      });
+      setAiResultViewTab("preview");
+    } catch (err: any) {
+      setAiError(err.message || "Failed to communicate with AI service.");
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  };
+
+  const handleApplyAiToComposer = () => {
+    if (!aiGeneratedResult) return;
+    setSubject(aiGeneratedResult.subject);
+    setBody(aiGeneratedResult.body);
+    setAiWriterOpen(false);
+    setAiAppliedNotice(true);
+    setTimeout(() => setAiAppliedNotice(false), 3500);
+  };
 
   // Run On-Demand Automation Checks
   const handleRunAutomationChecks = async () => {
@@ -1294,7 +1387,30 @@ export default function AdminBroadcastPage() {
                   </h2>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      const audienceDesc =
+                        filterType === "course"
+                          ? `Students enrolled in ${selectedCourseTitle || "selected course"}`
+                          : filterType === "all"
+                          ? "All registered students across the academy"
+                          : filterType === "zero_submissions"
+                          ? "Students who have 0 submitted assignments"
+                          : filterType === "active_submissions"
+                          ? "Active students who submit assignments on time"
+                          : "Top 10 leaderboard performers";
+                      setAiAudience(audienceDesc);
+                      setAiWriterOpen(true);
+                    }}
+                    className="neu-btn-primary text-xs font-bold flex items-center gap-1.5 rounded-full px-3.5 py-1.5 bg-gradient-to-r from-accent-600 via-indigo-600 to-purple-600 text-white shadow-md hover:scale-[1.02] transition-all cursor-pointer"
+                    title="Write or polish email with Groq AI"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                    <span>AI Writer</span>
+                  </Button>
+
                   <Button
                     type="button"
                     variant="secondary"
@@ -1337,6 +1453,21 @@ export default function AdminBroadcastPage() {
             </CardHeader>
 
               <CardBody className="space-y-5 pt-4">
+                {aiAppliedNotice && (
+                  <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between gap-2 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                      <span>✨ AI-generated subject and HTML body applied to composer!</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setAiAppliedNotice(false)}
+                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
                 {activeTab === "write" ? (
                   <>
                     {/* Subject Input */}
@@ -1759,6 +1890,15 @@ export default function AdminBroadcastPage() {
                             Default
                           </span>
                         )}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenPreviewLifecycleFlow(flow.id)}
+                          className="neu-flat-sm px-3 py-1.5 rounded-full text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 transition-all cursor-pointer inline-flex items-center gap-1.5"
+                          title="Preview how this copy looks with real formatting"
+                        >
+                          <Eye className="h-3 w-3 text-accent-500" />
+                          Preview
+                        </button>
                         <button
                           type="button"
                           onClick={() => handleOpenEditLifecycleFlow(flow.id)}
@@ -2193,6 +2333,253 @@ export default function AdminBroadcastPage() {
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* AI Email Writer Assistant Modal */}
+      <Modal
+        open={aiWriterOpen}
+        onClose={() => setAiWriterOpen(false)}
+        title="AI Academic Email Writer (Groq Powered)"
+        className="max-w-2xl"
+      >
+        <div className="space-y-4 text-xs">
+          {/* Header intro / banner */}
+          <div className="p-3.5 rounded-2xl neu-pressed-sm bg-gradient-to-r from-accent-500/10 via-indigo-500/10 to-purple-500/10 border border-accent-500/20 space-y-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-accent-500" />
+                <strong className="text-slate-900 dark:text-white text-xs">
+                  Groq Ultra-Fast AI Copywriter
+                </strong>
+              </div>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent-500/20 text-accent-600 dark:text-accent-400">
+                GPT-OSS 120B &bull; 3 Fallbacks
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-600 dark:text-slate-300">
+              Apni audience aur objective batayein. AI academy ke professional standard ke mutabiq catchy subject line aur responsive HTML email draft generate karega.
+            </p>
+          </div>
+
+          {/* Quick Idea Chips */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 block">
+              Quick Prompt Ideas (Click to load):
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {AI_IDEA_PROMPTS.map((idea, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setAiTopic(idea.topic);
+                    setAiTone(idea.tone);
+                  }}
+                  className="px-2.5 py-1 rounded-full neu-flat-sm text-[11px] font-medium text-slate-700 dark:text-slate-300 hover:text-accent-600 hover:border-accent-500/40 transition-all cursor-pointer"
+                >
+                  {idea.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Input Fields */}
+          <div className="space-y-3">
+            {/* Target Audience */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                1. Target Audience (Kin logo k liye h):
+              </label>
+              <Input
+                type="text"
+                value={aiAudience}
+                onChange={(e) => setAiAudience(e.target.value)}
+                placeholder="e.g. Students enrolled in n8n Course who missed the first assignment"
+                className="rounded-xl neu-pressed-sm text-xs font-medium"
+              />
+            </div>
+
+            {/* Email Topic / Objective */}
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                2. Email Objective &amp; Message (Kya subject &amp; content ho ga):
+              </label>
+              <Textarea
+                rows={3}
+                value={aiTopic}
+                onChange={(e) => setAiTopic(e.target.value)}
+                placeholder="e.g. Announce that new assignments are live, explain that deadline is Sunday midnight, urge them to submit to maintain top 10 rank..."
+                className="rounded-xl neu-pressed-sm text-xs leading-relaxed"
+              />
+            </div>
+
+            {/* Extra key points & tone (grid) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                  3. Key Points to Include (Optional):
+                </label>
+                <Input
+                  type="text"
+                  value={aiKeyPoints}
+                  onChange={(e) => setAiKeyPoints(e.target.value)}
+                  placeholder="e.g. 80% needed for certificate, AI tutor available"
+                  className="rounded-xl neu-pressed-sm text-xs"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                  4. Tone &amp; Style:
+                </label>
+                <select
+                  value={aiTone}
+                  onChange={(e) => setAiTone(e.target.value)}
+                  className="w-full rounded-xl neu-pressed-sm px-3 py-2 text-xs bg-transparent text-slate-900 dark:text-white border-none focus:outline-none"
+                >
+                  <option value="Academic & Motivating">Academic &amp; Motivating (Recommended)</option>
+                  <option value="Urgent & Action-Oriented">Urgent &amp; Action-Oriented (Deadline)</option>
+                  <option value="Warm, Friendly & Welcoming">Warm, Friendly &amp; Welcoming (Onboarding)</option>
+                  <option value="Celebratory & Inspiring">Celebratory &amp; Inspiring (Achievement)</option>
+                  <option value="Direct & Professional Announcement">Direct &amp; Professional Announcement</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Error / Key Missing Notice */}
+          {aiError && (
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs space-y-1">
+              <div className="font-bold flex items-center gap-1.5">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                {aiRequiresKey ? "Groq API Key Required" : "Generation Error"}
+              </div>
+              <p>{aiError}</p>
+              {aiRequiresKey && (
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 pt-1">
+                  Apni Groq API Key <code className="bg-black/10 dark:bg-white/10 px-1 py-0.5 rounded font-mono">GROQ_COMPOSER_API_KEY</code> ko <code className="bg-black/10 dark:bg-white/10 px-1 py-0.5 rounded font-mono">.env.local</code> aur Vercel me add karein.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Generated Result Card if present */}
+          {aiGeneratedResult && (
+            <div className="p-3.5 rounded-2xl neu-flat-sm space-y-3 border border-emerald-500/30 bg-emerald-500/5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Email Generated Successfully!</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-black/5 dark:bg-white/5 text-slate-500">
+                  Model: {aiGeneratedResult.modelUsed}
+                </span>
+              </div>
+
+              {/* Subject */}
+              <div className="space-y-1">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Generated Subject:
+                </span>
+                <div className="p-2.5 rounded-xl neu-pressed-sm text-xs font-bold text-slate-900 dark:text-white">
+                  {aiGeneratedResult.subject}
+                </div>
+              </div>
+
+              {/* Body Preview / Code switch */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Generated Body:
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setAiResultViewTab("preview")}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                        aiResultViewTab === "preview"
+                          ? "bg-accent-500 text-white"
+                          : "text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                      }`}
+                    >
+                      Formatted View
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAiResultViewTab("code")}
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                        aiResultViewTab === "code"
+                          ? "bg-accent-500 text-white"
+                          : "text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                      }`}
+                    >
+                      HTML Code
+                    </button>
+                  </div>
+                </div>
+
+                <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
+                  {aiResultViewTab === "preview" ? (
+                    <div
+                      className="prose dark:prose-invert prose-xs max-w-none text-xs"
+                      dangerouslySetInnerHTML={{ __html: aiGeneratedResult.body }}
+                    />
+                  ) : (
+                    <pre className="text-[11px] font-mono whitespace-pre-wrap text-slate-700 dark:text-slate-300">
+                      {aiGeneratedResult.body}
+                    </pre>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Actions */}
+          <div className="flex items-center justify-between pt-3 border-t border-black/5 dark:border-white/5">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setAiWriterOpen(false)}
+              className="rounded-full neu-btn px-4 text-xs font-semibold cursor-pointer"
+            >
+              Cancel
+            </Button>
+
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleGenerateAiEmail}
+                disabled={isGeneratingAi || !aiTopic.trim()}
+                className="neu-btn rounded-full px-4 py-2 text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {isGeneratingAi ? (
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3.5 w-3.5 text-accent-500" />
+                )}
+                {isGeneratingAi
+                  ? "Writing with Groq AI..."
+                  : aiGeneratedResult
+                  ? "Regenerate"
+                  : "Generate Email"}
+              </Button>
+
+              {aiGeneratedResult && (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handleApplyAiToComposer}
+                  className="neu-btn-primary rounded-full px-5 py-2 text-xs font-bold shadow-md inline-flex items-center gap-1.5 cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  <Check className="h-3.5 w-3.5" />
+                  Apply to Composer
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
       </Modal>
     </div>
   );
