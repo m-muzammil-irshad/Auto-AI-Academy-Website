@@ -118,14 +118,14 @@ export function resolvePlayableMedia(
 
   // 4. Smart Topic Fallback
   // If the course or lesson is related to n8n, Python, or AI automation,
-  // load a curated, universally embeddable full course video so the student can start learning immediately.
-  const combined = `${courseTitle || ""} ${lessonTitle || ""}`.toLowerCase();
-  let fallbackId = "rfscVS0vtbw"; // Python & Programming Fundamentals
+  // load a curated, universally embeddable full course video from Auto AI Academy so the student can start learning immediately.
+  const combined = `${trimmed} ${courseTitle || ""} ${lessonTitle || ""}`.toLowerCase();
+  let fallbackId = "sNfwc0tNjAI"; // Auto AI Academy: Python Tutorial for Beginners | Lecture 1
 
   if (combined.includes("n8n") || combined.includes("automat")) {
-    fallbackId = "8n4K8qjKzrg"; // n8n Workflow Automation Masterclass
+    fallbackId = "FzzNvpGd2dM"; // Auto AI Academy: n8n Course for Beginners | Lecture 1
   } else if (combined.includes("agent") || combined.includes("ai") || combined.includes("llm")) {
-    fallbackId = "ad79nYk2keg"; // AI Agents & Large Language Models
+    fallbackId = "KyOd26mJ8DQ"; // Auto AI Academy: AI vs Automation | Lecture 2
   }
 
   return {

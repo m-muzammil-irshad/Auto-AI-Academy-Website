@@ -199,7 +199,7 @@ export function CoursePlayer({
   return (
     <div className="flex flex-col gap-4">
       {/* Video Container — Always plays smoothly */}
-      <div className="relative aspect-video w-full rounded-xl border border-slate-200/80 dark:border-slate-800 overflow-hidden bg-slate-950 shadow-sm">
+      <div className="relative aspect-video w-full rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden bg-slate-950 shadow-md">
         {media.type === "playlist" ? (
           <iframe
             key={`pl-${media.playlistId}`}

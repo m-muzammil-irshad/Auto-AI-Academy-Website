@@ -14,6 +14,8 @@ import {
   Share2,
   Sparkles,
   Trophy,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEnrollments } from "@/hooks/useEnrollments";
@@ -46,6 +48,7 @@ export default function CourseLearnPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showCurriculumMobile, setShowCurriculumMobile] = useState(false);
+  const [isTheaterMode, setIsTheaterMode] = useState(false);
 
   // Debounce ref for timestamp writes
   const lastSavedTimeRef = useRef<number>(0);
@@ -260,11 +263,11 @@ export default function CourseLearnPage() {
   if (loading || authLoading || enrollmentsLoading) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 p-4 sm:p-8 flex flex-col items-center justify-center">
-        <div className="w-full max-w-6xl space-y-6">
+        <div className="w-full max-w-[1600px] space-y-6">
           <Skeleton className="h-12 w-full rounded-xl" />
-          <div className="grid gap-6 lg:grid-cols-3">
-            <Skeleton className="lg:col-span-2 aspect-video w-full rounded-xl" />
-            <Skeleton className="h-[450px] w-full rounded-xl" />
+          <div className="grid gap-6 lg:grid-cols-12">
+            <Skeleton className="lg:col-span-8 xl:col-span-9 aspect-video w-full rounded-xl" />
+            <Skeleton className="lg:col-span-4 xl:col-span-3 h-[450px] w-full rounded-xl" />
           </div>
         </div>
       </div>
@@ -288,8 +291,8 @@ export default function CourseLearnPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#090c15] text-slate-900 dark:text-slate-100 transition-colors duration-150">
       {/* Top Learning Navigation Bar */}
-      <header className="sticky top-0 z-30 border-b border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 sm:px-6 py-3">
-        <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-4">
+      <header className="sticky top-0 z-30 border-b border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-3">
+        <div className="mx-auto max-w-[1600px] flex flex-wrap items-center justify-between gap-4">
           {/* Back button & Course Title */}
           <div className="flex items-center gap-3 min-w-0">
             <Link
@@ -312,9 +315,30 @@ export default function CourseLearnPage() {
             </div>
           </div>
 
-          {/* Progress Overview & Mobile Curriculum Toggle */}
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex flex-col items-end gap-1 w-44">
+          {/* Progress Overview, Theater Mode & Mobile Curriculum Toggle */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Desktop Theater Mode Toggle Button */}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setIsTheaterMode(!isTheaterMode)}
+              className="hidden lg:flex items-center gap-1.5 rounded-lg text-xs font-semibold border border-slate-200/80 dark:border-slate-800 cursor-pointer shadow-sm hover:border-accent-500/50"
+              title={isTheaterMode ? "Exit Theater Mode" : "Expand to Theater Mode"}
+            >
+              {isTheaterMode ? (
+                <>
+                  <Minimize2 className="h-3.5 w-3.5 text-accent-500" />
+                  <span>Exit Theater</span>
+                </>
+              ) : (
+                <>
+                  <Maximize2 className="h-3.5 w-3.5 text-accent-500" />
+                  <span>Theater Mode</span>
+                </>
+              )}
+            </Button>
+
+            <div className="hidden sm:flex flex-col items-end gap-1 w-40">
               <div className="flex items-center justify-between w-full text-xs font-medium text-slate-600 dark:text-slate-400">
                 <span>Progress</span>
                 <span className="tabular-nums font-semibold text-slate-900 dark:text-white">
@@ -342,10 +366,10 @@ export default function CourseLearnPage() {
       </header>
 
       {/* Main Classroom Layout */}
-      <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
-        <div className="grid items-start gap-8 lg:grid-cols-3">
+      <main className="mx-auto max-w-[1600px] p-4 sm:p-6 lg:p-8">
+        <div className="grid items-start gap-6 xl:gap-8 lg:grid-cols-12">
           {/* Left Column: Video Player & Lecture Details */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className={`${isTheaterMode ? "lg:col-span-12" : "lg:col-span-8 xl:col-span-9"} space-y-6 transition-all duration-300`}>
             {activeLesson ? (
               <CoursePlayer
                 lesson={activeLesson}
@@ -413,9 +437,13 @@ export default function CourseLearnPage() {
           {/* Right Column: Course Curriculum Playlist */}
           <div
             className={`space-y-4 ${
+              isTheaterMode ? "lg:col-span-12 mt-2" : "lg:col-span-4 xl:col-span-3"
+            } ${
               showCurriculumMobile
                 ? "block fixed inset-0 z-50 p-4 bg-white dark:bg-slate-900 overflow-y-auto"
-                : "hidden lg:block lg:sticky lg:top-24"
+                : isTheaterMode
+                ? "block"
+                : "hidden lg:block lg:sticky lg:top-20"
             }`}
           >
             {/* Mobile close button */}
