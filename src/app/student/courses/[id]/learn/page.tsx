@@ -366,7 +366,7 @@ export default function CourseLearnPage() {
       </header>
 
       {/* Main Classroom Layout */}
-      <main className="mx-auto max-w-[1600px] p-4 sm:p-6 lg:p-8">
+      <main className="mx-auto max-w-[1720px] p-4 sm:p-6 lg:p-8">
         <div className="grid items-start gap-6 xl:gap-8 lg:grid-cols-12">
           {/* Left Column: Video Player & Lecture Details */}
           <div className={`${isTheaterMode ? "lg:col-span-12" : "lg:col-span-8 xl:col-span-9"} space-y-6 transition-all duration-300`}>

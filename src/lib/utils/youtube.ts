@@ -38,26 +38,41 @@ export function extractYouTubePlaylistId(urlOrId?: string | null): string | null
   if (!urlOrId) return null;
   const trimmed = urlOrId.trim();
 
-  // If already a playlist ID
-  if (/^(?:PL|UU|FL|RD|OLAK5uy_)[a-zA-Z0-9_-]+$/i.test(trimmed)) {
-    return trimmed;
-  }
+  let candidate: string | null = null;
 
-  try {
-    if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-      const url = new URL(trimmed);
-      if (url.searchParams.has("list")) {
-        const list = url.searchParams.get("list");
-        if (list && /^[a-zA-Z0-9_-]+$/.test(list)) return list;
+  // If already a valid playlist ID (Standard YouTube PL playlists are 34 chars; legacy >= 18 chars)
+  if (/^(?:PL[a-zA-Z0-9_-]{16,}|UU[a-zA-Z0-9_-]{22}|FL[a-zA-Z0-9_-]{22}|RD[a-zA-Z0-9_-]{11,}|OLAK5uy_[a-zA-Z0-9_-]{33})$/i.test(trimmed)) {
+    candidate = trimmed;
+  } else {
+    try {
+      if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+        const url = new URL(trimmed);
+        if (url.searchParams.has("list")) {
+          const list = url.searchParams.get("list");
+          if (list) candidate = list;
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    if (!candidate) {
+      const match = trimmed.match(/[?&]list=([a-zA-Z0-9_-]+)/i);
+      if (match && match[1]) {
+        candidate = match[1];
       }
     }
-  } catch {
-    // ignore
   }
 
-  const match = trimmed.match(/[?&]list=([a-zA-Z0-9_-]+)/i);
-  if (match && match[1]) {
-    return match[1];
+  // Strictly validate candidate:
+  // Short/corrupt strings like "PLexmcs4V1xjc" (12 chars) or "PLUjGR1B0HaJw" (12 chars) are invalid and cause YouTube "Video unavailable" errors.
+  if (candidate) {
+    if (candidate.startsWith("PL") && candidate.length < 18) {
+      return null;
+    }
+    if (/^[a-zA-Z0-9_-]{16,}$/.test(candidate) || candidate.startsWith("UU") || candidate.startsWith("RD") || candidate.startsWith("FL")) {
+      return candidate;
+    }
   }
 
   return null;
