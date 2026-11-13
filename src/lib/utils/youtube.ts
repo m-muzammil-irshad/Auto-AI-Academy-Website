@@ -79,16 +79,16 @@ export function extractYouTubePlaylistId(urlOrId?: string | null): string | null
 }
 
 export interface PlayableMedia {
-  type: "video" | "playlist";
-  videoId?: string;
-  playlistId?: string;
+  type: "video";
+  videoId: string;
   src: string;
   isFallback: boolean;
 }
 
 /**
- * Resolves a reliable, playable media object from any YouTube URL, playlist, channel, or topic.
- * Guaranteed to NEVER return empty so student video playback never fails.
+ * Resolves a reliable, secure playable media object from any YouTube URL, playlist, channel, or topic.
+ * Guaranteed to NEVER expose YouTube native playlist navigation (next/prev video jump) inside the player,
+ * keeping the classroom progression secure and strict.
  */
 export function resolvePlayableMedia(
   urlOrId?: string | null,
@@ -103,50 +103,29 @@ export function resolvePlayableMedia(
     return {
       type: "video",
       videoId: directVideoId,
-      src: `https://www.youtube-nocookie.com/embed/${directVideoId}?autoplay=0&rel=0&modestbranding=1&playsinline=1`,
+      src: `https://www.youtube-nocookie.com/embed/${directVideoId}?autoplay=0&rel=0&modestbranding=1&playsinline=1&controls=0&iv_load_policy=3&disablekb=1`,
       isFallback: false,
     };
   }
 
-  // 2. Direct YouTube Playlist ID
-  const directPlaylistId = extractYouTubePlaylistId(trimmed);
-  if (directPlaylistId) {
-    return {
-      type: "playlist",
-      playlistId: directPlaylistId,
-      src: `https://www.youtube-nocookie.com/embed/videoseries?list=${directPlaylistId}&rel=0&modestbranding=1&playsinline=1`,
-      isFallback: false,
-    };
-  }
-
-  // 3. YouTube Channel ID (channel/UC...) -> upload playlist UU...
-  const channelMatch = trimmed.match(/channel\/(UC[a-zA-Z0-9_-]{22})/i);
-  if (channelMatch && channelMatch[1]) {
-    const uploadPlaylistId = "UU" + channelMatch[1].slice(2);
-    return {
-      type: "playlist",
-      playlistId: uploadPlaylistId,
-      src: `https://www.youtube-nocookie.com/embed/videoseries?list=${uploadPlaylistId}&rel=0&modestbranding=1&playsinline=1`,
-      isFallback: false,
-    };
-  }
-
-  // 4. Smart Topic Fallback
-  // If the course or lesson is related to n8n, Python, or AI automation,
-  // load a curated, universally embeddable full course video from Auto AI Academy so the student can start learning immediately.
+  // 2. Curated Single-Video Resolution for Playlists, Channels, or Topics
+  // Note: We intentionally avoid embedding "videoseries?list=..." so students cannot jump
+  // between playlist videos inside YouTube's player and bypass completion requirements.
   const combined = `${trimmed} ${courseTitle || ""} ${lessonTitle || ""}`.toLowerCase();
-  let fallbackId = "sNfwc0tNjAI"; // Auto AI Academy: Python Tutorial for Beginners | Lecture 1
+  let resolvedId = "sNfwc0tNjAI"; // Auto AI Academy: Python Tutorial for Beginners | Lecture 1
 
   if (combined.includes("n8n") || combined.includes("automat")) {
-    fallbackId = "FzzNvpGd2dM"; // Auto AI Academy: n8n Course for Beginners | Lecture 1
+    resolvedId = "FzzNvpGd2dM"; // Auto AI Academy: n8n Course for Beginners | Lecture 1
   } else if (combined.includes("agent") || combined.includes("ai") || combined.includes("llm")) {
-    fallbackId = "KyOd26mJ8DQ"; // Auto AI Academy: AI vs Automation | Lecture 2
+    resolvedId = "KyOd26mJ8DQ"; // Auto AI Academy: AI vs Automation | Lecture 2
+  } else if (combined.includes("python")) {
+    resolvedId = "sNfwc0tNjAI";
   }
 
   return {
     type: "video",
-    videoId: fallbackId,
-    src: `https://www.youtube-nocookie.com/embed/${fallbackId}?autoplay=0&rel=0&modestbranding=1&playsinline=1`,
+    videoId: resolvedId,
+    src: `https://www.youtube-nocookie.com/embed/${resolvedId}?autoplay=0&rel=0&modestbranding=1&playsinline=1&controls=0&iv_load_policy=3&disablekb=1`,
     isFallback: true,
   };
 }

@@ -15,7 +15,7 @@ import {
   Minimize,
   ExternalLink,
   Sparkles,
-  SlidersHorizontal,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
@@ -78,7 +78,37 @@ export function CoursePlayer({
   const [isMuted, setIsMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [useNativeControls, setUseNativeControls] = useState(false);
+
+  // 50% watch time tracking and auto-completion
+  const [maxWatchedSeconds, setMaxWatchedSeconds] = useState(initialTimestampSeconds || 0);
+  const autoCompletedRef = useRef(isCompleted);
+
+  // Sync state when lesson or initial timestamp changes
+  useEffect(() => {
+    setMaxWatchedSeconds(initialTimestampSeconds || 0);
+    autoCompletedRef.current = isCompleted;
+  }, [lesson.id, initialTimestampSeconds, isCompleted]);
+
+  // Keep track of maximum reached seconds
+  useEffect(() => {
+    if (currentTime > maxWatchedSeconds) {
+      setMaxWatchedSeconds(currentTime);
+    }
+  }, [currentTime, maxWatchedSeconds]);
+
+  const highestSeconds = Math.max(currentTime, maxWatchedSeconds);
+  const watchPercent = duration > 0 ? (highestSeconds / duration) * 100 : 0;
+  const isUnlocked = isCompleted || (duration > 0 && highestSeconds / duration >= 0.5);
+
+  // Auto mark class as completed when 50% watched
+  useEffect(() => {
+    if (isUnlocked && !autoCompletedRef.current) {
+      autoCompletedRef.current = true;
+      onToggleComplete();
+    }
+  }, [isUnlocked, onToggleComplete]);
+
+  const canGoNext = hasNext && isUnlocked;
 
   // Guaranteed valid media resolution
   const media: PlayableMedia = resolvePlayableMedia(
@@ -152,12 +182,13 @@ export function CoursePlayer({
         videoId: media.videoId,
         playerVars: {
           autoplay: 0,
-          controls: useNativeControls ? 1 : 0, // controls: 0 removes YouTube's lingering 5-second native overlay
+          controls: 0, // controls: 0 removes YouTube's lingering native overlay, next/prev video buttons, and playlist drawer
           rel: 0,
           modestbranding: 1,
           playsinline: 1,
-          disablekb: useNativeControls ? 0 : 1,
-          fs: useNativeControls ? 1 : 0,
+          disablekb: 1, // Disables keyboard skipping to next video (like Shift+N)
+          fs: 0,
+          iv_load_policy: 3, // Disables YouTube video cards & annotations to prevent jumping to external/other videos
           start: initialTimestampSeconds > 5 ? Math.floor(initialTimestampSeconds) : 0,
         },
         events: {
@@ -221,7 +252,7 @@ export function CoursePlayer({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiReady, media.videoId, media.type, lesson.id, useFallbackIframe, useNativeControls]);
+  }, [apiReady, media.videoId, media.type, lesson.id, useFallbackIframe]);
 
   // Player controls handlers
   const handleTogglePlay = useCallback(() => {
@@ -312,7 +343,6 @@ export function CoursePlayer({
 
   // Keyboard navigation shortcuts
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (useNativeControls) return;
     if (e.code === "Space") {
       e.preventDefault();
       handleTogglePlay();
@@ -373,23 +403,10 @@ export function CoursePlayer({
         className="relative aspect-video w-full rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden bg-slate-950 shadow-md group select-none focus:outline-none"
       >
         {/* The YouTube iframe or fallback */}
-        {media.type === "playlist" ? (
+        {useFallbackIframe ? (
           <iframe
-            key={`pl-${media.playlistId}`}
+            key={`fallback-${media.videoId}`}
             src={media.src}
-            title={lesson.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            className="w-full h-full border-0"
-          />
-        ) : useFallbackIframe || useNativeControls ? (
-          <iframe
-            key={`fallback-${media.videoId}-${useNativeControls ? "native" : "clean"}`}
-            src={
-              useNativeControls
-                ? `https://www.youtube-nocookie.com/embed/${media.videoId}?autoplay=0&controls=1&rel=0&modestbranding=1&playsinline=1`
-                : media.src
-            }
             title={lesson.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
@@ -406,8 +423,8 @@ export function CoursePlayer({
           </div>
         )}
 
-        {/* CUSTOM CONTROLS OVERLAY: Active when not using native YouTube controls */}
-        {!useNativeControls && media.type === "video" && !useFallbackIframe && (
+        {/* CUSTOM CONTROLS OVERLAY: Secure, instant hover, no YouTube next/prev buttons */}
+        {!useFallbackIframe && (
           <>
             {/* Center Click Canvas: click to play/pause, double-click for fullscreen */}
             <div
@@ -567,7 +584,7 @@ export function CoursePlayer({
         )}
       </div>
 
-      {/* Mode Switcher & Fallback Banner */}
+      {/* Mode Status / Fallback Banner */}
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
         {media.isFallback ? (
           <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
@@ -590,70 +607,99 @@ export function CoursePlayer({
             Hover to view controls • Move mouse away to immediately hide
           </div>
         )}
-
-        {/* Instant Hover vs YouTube Native Controls Switch */}
-        <button
-          type="button"
-          onClick={() => setUseNativeControls(!useNativeControls)}
-          className="text-[11px] font-medium text-slate-500 hover:text-accent-600 dark:hover:text-accent-400 flex items-center gap-1.5 cursor-pointer ml-auto"
-          title="Toggle between Instant-Hover Clean Player and YouTube native player"
-        >
-          <SlidersHorizontal className="h-3 w-3 text-accent-500" />
-          <span>
-            Controls:{" "}
-            <strong className="text-slate-800 dark:text-slate-200">
-              {useNativeControls ? "YouTube Native" : "Instant Hover (Active)"}
-            </strong>
-          </span>
-        </button>
       </div>
 
       {/* Action Controls & Navigation Bar */}
-      <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-3 flex flex-wrap items-center justify-between gap-3">
-        {/* Previous Button */}
-        <Button
-          variant="secondary"
-          size="sm"
-          disabled={!hasPrevious}
-          onClick={onPreviousLesson}
-          className="rounded-lg px-3.5 font-medium flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
-          title={hasPrevious ? "Previous lesson" : "First lesson"}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          <span className="hidden sm:inline">Previous Lesson</span>
-          <span className="sm:hidden">Prev</span>
-        </Button>
-
-        {/* Center: Mark Complete / Status */}
-        <div className="flex items-center gap-2">
+      <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+        {/* Previous Class Button with Tooltip */}
+        <div className="relative group/prev">
           <Button
-            variant={isCompleted ? "primary" : "secondary"}
+            variant="secondary"
             size="sm"
-            onClick={onToggleComplete}
-            className={`rounded-lg px-4 font-medium flex items-center gap-2 transition-colors cursor-pointer ${
-              isCompleted
-                ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                : "border border-slate-200/80 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800"
+            disabled={!hasPrevious}
+            onClick={onPreviousLesson}
+            className={`rounded-lg px-3.5 font-medium flex items-center gap-1.5 transition-colors ${
+              hasPrevious
+                ? "cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
+                : "cursor-not-allowed opacity-50 text-slate-400 dark:text-slate-500"
             }`}
+            title={hasPrevious ? "Previous Class" : "Pehle koi class nahi hai"}
           >
-            <CheckCircle2
-              className={`h-4 w-4 ${isCompleted ? "text-white" : "text-emerald-500"}`}
-            />
-            <span>{isCompleted ? "Completed" : "Mark as complete"}</span>
+            <ChevronLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Previous Class</span>
+            <span className="sm:hidden">Prev Class</span>
           </Button>
+
+          {/* Tooltip on hover when no previous class */}
+          {!hasPrevious && (
+            <div className="pointer-events-none absolute bottom-full left-0 mb-2 hidden group-hover/prev:flex flex-col items-start z-50 w-60">
+              <div className="bg-slate-900 text-white text-[11px] font-medium px-3 py-1.5 rounded-lg shadow-xl border border-slate-700/80 leading-snug">
+                Yeh pehli class hai, is se pehle koi class nahi hai.
+              </div>
+              <div className="w-2 h-2 bg-slate-900 rotate-45 -mt-1 ml-4 border-r border-b border-slate-700/80" />
+            </div>
+          )}
         </div>
 
-        {/* Next Button */}
-        <Button
-          size="sm"
-          disabled={!hasNext}
-          onClick={onNextLesson}
-          className="rounded-lg px-4 font-medium flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
-          title={hasNext ? "Next lesson" : "Last lesson in course"}
-        >
-          <span>{hasNext ? "Next Lesson" : "Last Lesson"}</span>
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        {/* Center: Automatic Completion Badge (Manual Button Removed) */}
+        <div className="flex items-center">
+          {isUnlocked ? (
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold select-none shadow-xs">
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              <span>Class Completed (Auto)</span>
+            </div>
+          ) : (
+            <div
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-400 text-xs font-medium select-none"
+              title="Class 50% dekhne par automatically complete ho jayegi"
+            >
+              <div className="h-2 w-2 rounded-full bg-accent-500 animate-pulse" />
+              <span>
+                Progress: <strong className="font-semibold text-slate-900 dark:text-slate-100">{Math.min(50, Math.round(watchPercent))}%</strong> / 50% to complete
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Next Class Button with 50% Requirement Tooltip */}
+        <div className="relative group/next">
+          <Button
+            size="sm"
+            disabled={!canGoNext}
+            onClick={onNextLesson}
+            className={`rounded-lg px-4 font-medium flex items-center gap-1.5 transition-all ${
+              canGoNext
+                ? "bg-accent-600 hover:bg-accent-700 text-white cursor-pointer shadow-sm hover:shadow"
+                : "bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 border border-slate-200/60 dark:border-slate-800 cursor-not-allowed opacity-60"
+            }`}
+            title={
+              canGoNext
+                ? "Next Class"
+                : !isUnlocked
+                ? "Agli class unlock karne ke liye is lecture ko kam az kam 50% dekhna lazmi hai"
+                : "Aap is course ki aakhri class par hain"
+            }
+          >
+            <span>Next Class</span>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+
+          {/* Tooltip on hover when disabled */}
+          {!canGoNext && (
+            <div className="pointer-events-none absolute bottom-full right-0 mb-2 hidden group-hover/next:flex flex-col items-end z-50 w-72 text-right">
+              <div className="bg-slate-900 text-white text-[11px] font-medium px-3 py-2 rounded-lg shadow-xl border border-slate-700/80 leading-snug">
+                {!isUnlocked ? (
+                  <span>
+                    Agli class unlock karne ke liye is lecture ko kam az kam <strong>50% dekhna lazmi hai</strong>. (Current: {Math.round(watchPercent)}% / 50%)
+                  </span>
+                ) : (
+                  <span>Aap is course ki aakhri class par hain. Mazeed koi class nahi hai.</span>
+                )}
+              </div>
+              <div className="w-2 h-2 bg-slate-900 rotate-45 -mt-1 mr-4 border-r border-b border-slate-700/80" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -16,6 +16,7 @@ import {
   Trophy,
   Maximize2,
   Minimize2,
+  Lock,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useEnrollments } from "@/hooks/useEnrollments";
@@ -493,21 +494,37 @@ export default function CourseLearnPage() {
                 {lessons.map((lesson, idx) => {
                   const isActive = lesson.id === activeLessonId;
                   const isDone = completedIds.includes(lesson.id);
+                  const isAccessible =
+                    idx === 0 ||
+                    completedIds.includes(lessons[idx - 1]?.id) ||
+                    isDone;
 
                   return (
                     <button
                       key={lesson.id}
-                      onClick={() => switchLesson(lesson)}
+                      onClick={() => isAccessible && switchLesson(lesson)}
+                      disabled={!isAccessible}
+                      title={
+                        isAccessible
+                          ? lesson.title
+                          : "Pichli class ko kam az kam 50% dekhna lazmi hai"
+                      }
                       className={`w-full text-left p-3 rounded-lg flex items-start gap-3 transition-colors ${
                         isActive
                           ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200/80 dark:border-slate-700"
-                          : "hover:bg-slate-50 dark:hover:bg-slate-800/40 text-slate-700 dark:text-slate-300"
+                          : isAccessible
+                          ? "hover:bg-slate-50 dark:hover:bg-slate-800/40 text-slate-700 dark:text-slate-300 cursor-pointer"
+                          : "opacity-45 cursor-not-allowed text-slate-400 dark:text-slate-500"
                       }`}
                     >
-                      {/* Checkmark or Index */}
+                      {/* Checkmark, Lock, or Index */}
                       <div className="mt-0.5 shrink-0">
                         {isDone ? (
                           <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                        ) : !isAccessible ? (
+                          <div className="h-4 w-4 rounded-md flex items-center justify-center text-slate-400 dark:text-slate-500">
+                            <Lock className="h-3.5 w-3.5" />
+                          </div>
                         ) : (
                           <div
                             className={`h-4 w-4 rounded-md flex items-center justify-center text-[10px] font-mono ${
