@@ -584,30 +584,24 @@ export function CoursePlayer({
         )}
       </div>
 
-      {/* Mode Status / Fallback Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-        {media.isFallback ? (
-          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-            <Sparkles className="h-3.5 w-3.5 shrink-0" />
-            <span className="truncate">
-              Featuring foundational course lecture • You can also watch additional episodes on our channel.
-            </span>
-            <a
-              href={lesson.youtubeUrl || "https://youtube.com/@AutoAIAcademy"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold underline ml-1 inline-flex items-center gap-0.5"
-            >
-              <span>Channel</span>
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </div>
-        ) : (
-          <div className="text-slate-400 text-[11px]">
-            Hover to view controls • Move mouse away to immediately hide
-          </div>
-        )}
-      </div>
+      {/* Optional Fallback Notice */}
+      {media.isFallback && (
+        <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 text-xs px-1">
+          <Sparkles className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate">
+            Featuring foundational course lecture • You can also watch additional episodes on our channel.
+          </span>
+          <a
+            href={lesson.youtubeUrl || "https://youtube.com/@AutoAIAcademy"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline ml-1 inline-flex items-center gap-0.5"
+          >
+            <span>Channel</span>
+            <ExternalLink className="h-3 w-3" />
+          </a>
+        </div>
+      )}
 
       {/* Action Controls & Navigation Bar */}
       <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/50 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
